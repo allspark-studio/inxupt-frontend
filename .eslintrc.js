@@ -16,5 +16,9 @@ module.exports = {
     'vue/multi-word-component-names': 'off',
     'max-len': ['warn', 100],
     'no-undef': 'off',
+    'import/no-unresolved': 'off',
+    'import/extensions': 'off',
+    'import/prefer-default-export': 'off',
+    'class-methods-use-this': 'off',
   },
 };
