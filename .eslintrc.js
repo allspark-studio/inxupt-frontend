@@ -10,13 +10,11 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  plugins: [
-    'vue',
-    '@typescript-eslint',
-  ],
+  plugins: ['vue', '@typescript-eslint'],
   rules: {
     // 防止报错：Component name "index" should always be multi-word.
     'vue/multi-word-component-names': 'off',
-    'max-len': [100, 'warn'],
+    'max-len': ['warn', 100],
+    'no-undef': 'off',
   },
 };
