@@ -24,19 +24,9 @@ const state = reactive({
 });
 
 const handleClick = (type, msg, cover = false) => {
-  console.log(123);
   state.show = true;
   state.msg2 = msg;
   state.type = type;
   state.cover = cover;
 };
 </script>
-
-<style lang="scss">
-.index {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-}
-</style>

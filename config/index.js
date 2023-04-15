@@ -1,6 +1,11 @@
+const path = require('path');
+
 const config = {
   projectName: 'inxupt-frontend',
   date: '2023-4-13',
+  alias: {
+    '~': path.resolve(__dirname, '..', 'src'),
+  },
   designWidth(input) {
     if (input?.file?.replace(/\\+/g, '/').indexOf('@nutui') > -1) {
       return 375;
