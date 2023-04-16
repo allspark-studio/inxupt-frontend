@@ -1,4 +1,4 @@
-<div style="text-align: center;">
+<div align="center">
 	<h1>🎉在西邮小程序🎉</h1>
 	<span>原在西邮APP小程序版，西安邮电大学 AllSpark 工作室倾情打造😉——让西邮人用上好用的校园类产品✨</span>
 	<div style="text-align: center;">
@@ -11,6 +11,7 @@
     <a href="https://pinia.vuejs.org/">Pinia</a>
 	</div>
 </div>
+
 ## 📋 简介
 
 在西邮小程序版本，基于 Vue3 + Taro 开发，使用 NutUI 组件库，使用 Pinia 进行状态管理。
@@ -70,7 +71,7 @@ TODO：配置 husky 提交信息检查。
 
 **修改类型**
 
-- **feat：**提交新功能
+- **feat**：提交新功能
 - **fix**：修复了bug
 - **docs**：只修改了文档
 - **style**：调整代码格式，未修改代码逻辑（比如修改空格、格式化、缺少分号等）
@@ -81,7 +82,7 @@ TODO：配置 husky 提交信息检查。
 
 **修改范围**
 
-简短描述修改的影响范围，当修改影响多个范围时，也可以使用“*”。
+简短描述修改的影响范围，当修改影响多个范围时，也可以使用“\*”。
 
 **修改简述**
 
