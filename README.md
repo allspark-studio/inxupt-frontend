@@ -1,7 +1,7 @@
 <div align="center">
 	<h1>🎉在西邮小程序🎉</h1>
 	<span>原在西邮APP小程序版，西安邮电大学 AllSpark 工作室倾情打造😉——让西邮人用上好用的校园类产品✨</span>
-	<div style="text-align: center;">
+	<div align="center">
 		<a href="https://vuejs.org/">Vue3</a>
     |
     <a href="https://taro.jd.com/">Taro</a>
