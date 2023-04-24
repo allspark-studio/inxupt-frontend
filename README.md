@@ -80,6 +80,19 @@ TODO：配置 husky 提交信息检查。
 - **test**：添加或修改代码测试
 - **chore**：对构建流程或辅助工具和依赖库（如文档生成等）的更改
 
+### 分支命名规范
+
+统一以 `[分支类型]/[用户名]/[模块或修改内容]` 的形式命名，每块之间单词使用中划线连接。如: `feature/marston/user-info`、`bugfix/marston/login-error`
+其中[分支类型]可选值为：
+- feature：特性分支，用于开发新功能，从 dev 拉取，功能开发完成后合并至 dev 分支。
+- bugfix: 上线前 bug 修复分支，测试过程中发现的问题时，从 test 分支拉拉取，修复完成之后合并到 test 分支。
+- hotfix：线上 bug 修复分支，从 master 分支拉取，修复完成后先回合至 test 分支进行测试，测试完成后合并到 master 分支。
+
+主干分支说明：
+- dev: 开发分支，feature 分支开发完成后统一合并到 dev 分支，需经过代码评审。
+- test: 测试分支，每个迭代会向此分支合并一次代码并基于该分支发布测试版本。
+- master: 线上分支，线上实际运行的代码，基于此分支发布正式版本。
+
 **修改范围**
 
 简短描述修改的影响范围，当修改影响多个范围时，也可以使用“\*”。
@@ -112,4 +125,3 @@ TODO：配置 husky 提交信息检查。
 2. 页面配置文件 `*.config.ts`。例如：`dashboard_search.config.ts`
 3. 除 vue 之外其他文件均采用小驼峰命名(camalCase)。例如：`user_service.ts`
 4. service 中的文件均已 `*_service.ts`命名。
-
