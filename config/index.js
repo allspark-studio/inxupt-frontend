@@ -1,11 +1,13 @@
+import ComponentsPlugin from 'unplugin-vue-components/webpack'
+import NutUIResolver from '@nutui/nutui-taro/dist/resolver'
 const config = {
   projectName: 'inxupt-frontend',
   date: '2023-4-13',
-  designWidth(input) {
+  designWidth (input) {
     if (input?.file?.replace(/\\+/g, '/').indexOf('@nutui') > -1) {
-      return 375;
+      return 375
     }
-    return 750;
+    return 750
   },
   deviceRatio: {
     640: 2.34 / 2,
@@ -36,6 +38,11 @@ const config = {
     data: '@import "@nutui/nutui-taro/dist/styles/variables.scss";',
   },
   mini: {
+    webpackChain (chain) {
+      chain.plugin('unplugin-vue-components').use(ComponentsPlugin({
+        resolvers: [NutUIResolver({ taro: true })]
+      }))
+    },
     postcss: {
       pxtransform: {
         enable: true,
@@ -78,11 +85,11 @@ const config = {
       },
     },
   },
-};
+}
 
 module.exports = function (merge) {
   if (process.env.NODE_ENV === 'development') {
-    return merge({}, config, require('./dev'));
+    return merge({}, config, require('./dev'))
   }
-  return merge({}, config, require('./prod'));
-};
+  return merge({}, config, require('./prod'))
+}
