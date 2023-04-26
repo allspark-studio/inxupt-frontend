@@ -1,6 +1,6 @@
 export default defineAppConfig({
   pages: [
-    'pages/index/index',"pages/myInformation/index","pages/notice/index","pages/topicConversation/index"
+    'pages/index/index',"pages/MyInformation/index","pages/Notice/index","pages/TopicConversation/index","pages/Search/index"
   ],
   window: {
     backgroundTextStyle: 'light',
@@ -15,18 +15,22 @@ export default defineAppConfig({
     list:[
       {
         "pagePath": "pages/index/index",
-        "text": "组件"
+        "text": "主页"
       },
       {
-        "pagePath": "pages/myInformation/index",
+        "pagePath": "pages/MyInformation/index",
         "text": "我的"
       },
       {
-        "pagePath": "pages/notice/index",
+        "pagePath": "pages/Notice/index",
         "text": "消息"
       },{
-        "pagePath": "pages/topicConversation/index",
-        "text": "组件"
+        "pagePath": "pages/TopicConversation/index",
+        "text": "话题"
+      }
+      ,{
+        "pagePath": "pages/Search/index",
+        "text": "搜索"
       }
     ]
   }

@@ -1,4 +1,6 @@
-<template></template>
+<template>
+  <view>topicc page</view>
+</template>
     
 <script  lang='ts'>
 import { defineComponent } from "vue";
