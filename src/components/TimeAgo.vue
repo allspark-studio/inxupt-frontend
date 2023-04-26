@@ -1,56 +1,46 @@
 <template>
-  <span class="time">{{ Ago }}</span>
+  <span>{{ Ago }}</span>
 </template>
 
 <script>
-import dayjs from 'dayjs'
+import dayjs from "../day/dayjs.config"
+
 export default {
-  name: 'TimeAgo',
+  name: "TimeAgo",
   props: {
     time: {
       type: [String, Number, Date],
-      require: true,
+      required: true,
     },
   },
-  computed: {
-    Ago() {
-      const dateTime = dayjs(this.time)
-      const now = dayjs()
-      const now2 = dayjs(dateTime.format('YYYY-MM-DD'))
-      const now3 = dayjs(dateTime.format('YYYY'))
-      const differMinutes = now.diff(dateTime, 'minute')
-      const differHours = now.diff(dateTime, 'hour')
-      const differDays = now.diff(dateTime, 'days')
-      const differDays2 = now.diff(now2, 'days')
-      const differYears = now.diff(dateTime, 'years')
-      const differYears2 = now.diff(now3, 'years')
-      // console.log(differYears)
-      // console.log(differYears2)
+  setup(props) {
+    const time = dayjs(props.time)
+    const now = dayjs()
+    dayjs.updateLocale("zh-cn", {
+      relativeTime: {
+        past: "%s",
+        s: "刚刚",
+        m: "刚刚",
+        mm: function () {
+          if (now.diff(time, "minute") < 3) return "刚刚"
+          else return now.diff(time, "minute") + "分钟前"
+        },
+        h: time.format("今天 HH:mm"),
+        hh: time.format("今天 HH:mm"),
+        d: time.format("昨天 HH:mm"),
+        dd: time.format("MM.DD"),
+        M: time.format("MM.DD"),
+        MM: time.format("MM.DD"),
+        y: time.format("YYYY.MM.DD"),
+        yy: time.format("YYYY.MM.DD"),
+      },
+    })
 
-      if (differMinutes < 3) {
-        return '刚刚'
-      } else if (differMinutes < 60) {
-        return `${differMinutes}分钟前`
-      } else if (differHours < 24) {
-        if (differDays2 < 1) {
-          return dateTime.format('今天 HH:mm')
-        } else {
-          return dateTime.format('昨天 HH:mm')
-        }
-      } else if (differDays < 2 && differDays >= 1) {
-        return dateTime.format('昨天 HH:mm')
-      } else if (differYears2 < 1) {
-        return dateTime.format('MM.DD')
-      } else if (differYears2 >= 1) {
-        return dateTime.format('YYYY.MM.DD')
-      }
-    },
+    const Ago = time.fromNow()
+
+    return {
+      Ago,
+    }
   },
 }
 </script>
-
-<style scoped>
-.time {
-  color: grey;
-}
-</style>
