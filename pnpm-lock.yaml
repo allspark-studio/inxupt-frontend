@@ -3,6 +3,8 @@ lockfileVersion: 5.4
 specifiers:
   '@babel/core': ^7.8.0
   '@babel/runtime': ^7.7.7
+  '@commitlint/cli': ^17.6.1
+  '@commitlint/config-conventional': ^17.6.1
   '@nutui/icons-vue-taro': ^0.0.9
   '@nutui/nutui-taro': ^4.0.4
   '@tarojs/cli': 3.6.4
@@ -32,6 +34,8 @@ specifiers:
   eslint-config-airbnb-base: ^15.0.0
   eslint-plugin-import: ^2.27.5
   eslint-plugin-vue: ^9.10.0
+  husky: ^8.0.3
+  lint-staged: ^13.2.1
   postcss-loader: 7.1.0
   style-loader: 1.3.0
   stylelint: 9.3.0
@@ -64,6 +68,8 @@ dependencies:
 
 devDependencies:
   '@babel/core': 7.21.4
+  '@commitlint/cli': registry.npmmirror.com/@commitlint/cli/17.6.1
+  '@commitlint/config-conventional': registry.npmmirror.com/@commitlint/config-conventional/17.6.1
   '@tarojs/cli': 3.6.4_vue@3.2.47
   '@tarojs/webpack5-runner': 3.6.4_lgicdjjcfuqde27dzy3rlhovjy
   '@types/webpack-env': 1.18.0
@@ -77,6 +83,8 @@ devDependencies:
   eslint-config-airbnb-base: 15.0.0_cshkc2qhcu55b7r3t6b6lfgcxm
   eslint-plugin-import: 2.27.5_jxoc3dvo7nghy7jji4tzdzgpey
   eslint-plugin-vue: 9.10.0_eslint@8.38.0
+  husky: registry.npmmirror.com/husky/8.0.3
+  lint-staged: registry.npmmirror.com/lint-staged/13.2.1
   postcss-loader: 7.1.0_webpack@5.69.0
   style-loader: 1.3.0_webpack@5.69.0
   stylelint: registry.npmmirror.com/stylelint/9.3.0
@@ -6682,12 +6690,6 @@ packages:
     engines: {node: '>= 0.6'}
     dependencies:
       mime-db: 1.52.0
-    dev: true
-
-  /mime/1.6.0:
-    resolution: {integrity: sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==}
-    engines: {node: '>=4'}
-    hasBin: true
     dev: true
 
   /mime/2.5.2:
