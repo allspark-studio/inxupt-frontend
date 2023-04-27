@@ -1,5 +1,5 @@
 <template>
-  <view>notice page</view>
+  <view>post page</view>
 </template>
 
 <script setup></script>
