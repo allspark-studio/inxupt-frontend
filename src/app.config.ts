@@ -15,7 +15,7 @@ export default defineAppConfig({
     list:[
       {
         "pagePath": "pages/index/index",
-        "text": "主页"
+        "text": "主页",
       },
       {
         "pagePath": "pages/MyInformation/index",

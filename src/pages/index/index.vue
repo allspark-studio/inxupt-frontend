@@ -6,7 +6,12 @@
         >点我</nut-button
       >
     </view>
-    <view class="iconfont icon-geren"></view>
+    <view
+      class="iconfont icon-huati"
+      style="color: red; width: 30px; height: 30px"
+    ></view>
+    <view class="iconfont icon-huati"></view>
+    <view class="iconfont icon-huati"></view>
     <span>111</span>
   </view>
 </template>
