@@ -2,7 +2,6 @@
   <view class="index">
     <view>
       <img src="" alt="" />
-      <EllipseText />
     </view>
     {{ msg }} <Dongdong />
     <view class="btn">
