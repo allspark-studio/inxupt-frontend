@@ -1,8 +1,6 @@
 @font-face {
-  font-family: "iconfont"; /* Project id 4037753 */
-  src: url('iconfont.woff2?t=1682593939442') format('woff2'),
-       url('iconfont.woff?t=1682593939442') format('woff'),
-       url('iconfont.ttf?t=1682593939442') format('truetype');
+  font-family: "iconfont"; /* Project id 4047402 */
+  src: url('iconfont.woff2?t=1683111539553') format('woff2'),
 }
 
 .iconfont {
@@ -13,43 +11,31 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-jia:before {
+.icon-user_filled:before {
+  content: "\e605";
+}
+
+.icon-user:before {
+  content: "\e606";
+}
+
+.icon-home_filled:before {
   content: "\e600";
 }
 
-.icon-jiahao:before {
-  content: "\e726";
+.icon-topic_filled:before {
+  content: "\e601";
 }
 
-.icon-geren:before {
+.icon-topic:before {
+  content: "\e602";
+}
+
+.icon-bell_filled:before {
   content: "\e603";
 }
 
-.icon-huati:before {
-  content: "\e8b1";
-}
-
-.icon-xiaoxizhongxin:before {
-  content: "\e8be";
-}
-
-.icon-xiaoxizhongxin-copy:before {
-  content: "\e8e9";
-}
-
-.icon-huati-copy:before {
-  content: "\e8ea";
-}
-
-.icon-geren-copy:before {
-  content: "\e8eb";
-}
-
-.icon-xingqiu:before {
-  content: "\e8e7";
-}
-
-.icon-xingqiu-copy:before {
-  content: "\e8e8";
+.icon-bell:before {
+  content: "\e604";
 }
 
