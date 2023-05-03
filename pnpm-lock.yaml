@@ -85,6 +85,8 @@ devDependencies:
   vue-eslint-parser: 9.1.1_eslint@8.38.0
   vue-loader: 17.0.1_gom4zylp5jlosu5acwfafukwoq
   webpack: 5.69.0
+  dayjs: ^1.11.7
+    
 
 packages:
 
