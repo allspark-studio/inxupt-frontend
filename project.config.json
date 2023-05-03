@@ -2,7 +2,7 @@
   "miniprogramRoot": "dist/",
   "projectname": "inxupt-frontend",
   "description": "在西邮前端项目",
-  "appid": "touristappid",
+  "appid": "wx4bc35451a216d428",
   "setting": {
     "urlCheck": true,
     "es6": false,
