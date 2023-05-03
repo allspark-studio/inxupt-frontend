@@ -1,5 +1,6 @@
 import ComponentsPlugin from 'unplugin-vue-components/webpack'
 import NutUIResolver from '@nutui/nutui-taro/dist/resolver'
+
 const config = {
   projectName: 'inxupt-frontend',
   date: '2023-4-13',
@@ -40,7 +41,7 @@ const config = {
   mini: {
     webpackChain (chain) {
       chain.plugin('unplugin-vue-components').use(ComponentsPlugin({
-        resolvers: [NutUIResolver({ taro: true })]
+        resolvers: [NutUIResolver({ taro: true })],
       }))
     },
     postcss: {
