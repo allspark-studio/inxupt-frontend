@@ -3,10 +3,12 @@
     <view>
       <img src="" alt="">
     </view>
-    {{ msg }} <Dongdong />
+    {{ msg }}
+    <Dongdong />
     <view class="btn">
       <nut-button type="primary" @click="handleClick('text', msg2, true)">点我</nut-button>
     </view>
+   
   </view>
 </template>
 
