@@ -1,7 +1,7 @@
 <template>
   <view class="index">
     <view>
-      <img src="" alt="" />
+      <img src="" alt="" >
     </view>
     {{ msg }} <Dongdong />
     <view class="btn">
