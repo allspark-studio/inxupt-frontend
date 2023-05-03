@@ -1,20 +1,19 @@
 <template>
   <view class="index">
     <view>
-      <img src="" alt="" />
+      <img src="" alt="">
     </view>
     {{ msg }} <Dongdong />
     <view class="btn">
-      <nut-button type="primary" @click="handleClick('text', msg2, true)"
-        >点我</nut-button
-      >
+      <nut-button type="primary" @click="handleClick('text', msg2, true)">点我</nut-button>
     </view>
   </view>
 </template>
 
 <script setup>
-import { reactive } from 'vue'
-import { Dongdong } from '@nutui/icons-vue-taro'
+import { reactive } from 'vue';
+import { Dongdong } from '@nutui/icons-vue-taro';
+import { Button as NutButton } from '@nutui/nutui-taro';
 
 const state = reactive({
   msg: '欢迎使用 NutUI4.0 开发小程序',
@@ -22,14 +21,14 @@ const state = reactive({
   type: 'text',
   show: false,
   cover: true,
-})
+});
 
 const handleClick = (type, msg, cover = false) => {
-  console.log(123)
-  state.show = true
-  state.msg2 = msg
-  state.type = type
-  state.cover = cover
+  console.log(123);
+  state.show = true;
+  state.msg2 = msg;
+  state.type = type;
+  state.cover = cover;
 };
 </script>
 
