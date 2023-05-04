@@ -14,5 +14,8 @@ declare module '@vue/runtime-core' {
     NutTag: typeof import('@nutui/nutui-taro')['Tag']
     Time: typeof import('./src/components/time.vue')['default']
     UserInfo: typeof import('./src/components/UserInfo.vue')['default']
+    EllipseText: typeof import('./src/components/EllipseText.vue')['default']
+    NutButton: typeof import('@nutui/nutui-taro')['Button']
+    NutEllipsis: typeof import('@nutui/nutui-taro')['Ellipsis']
   }
 }

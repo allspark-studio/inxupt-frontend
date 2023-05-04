@@ -2,20 +2,31 @@
   "miniprogramRoot": "dist/",
   "projectname": "inxupt-frontend",
   "description": "在西邮前端项目",
-  "appid": "wx4bc35451a216d428",
+  "appid": "wx41157022e04c27bb",
   "setting": {
     "urlCheck": true,
     "es6": false,
     "enhance": false,
     "compileHotReLoad": false,
     "postcss": false,
-    "minified": false,
+    "minified": true,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
       "outputPath": ""
     },
-    "condition": false
+    "compileType": "miniprogram",
+    "libVersion": "2.25.3",
+    "srcMiniprogramRoot": "dist/",
+    "packOptions": {
+      "ignore": [],
+      "include": []
+    },
+    "condition": false,
+    "editorSetting": {
+      "tabIndent": "insertSpaces",
+      "tabSize": 2
+    }
   },
   "compileType": "miniprogram",
   "libVersion": "2.25.3",
@@ -24,7 +35,6 @@
     "ignore": [],
     "include": []
   },
-  "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
