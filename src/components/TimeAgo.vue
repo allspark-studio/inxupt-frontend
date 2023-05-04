@@ -2,16 +2,13 @@
   <span>{{ Ago }}</span>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue';
 import dayjs from '../day/dayjs.config';
 
-const props = defineProps({
-  time: {
-    type: [String, Date, Number],
-    required: true,
-  },
-});
+const props = defineProps<{
+  time: string | Date | number;
+}>();
 const time = dayjs(props.time);
 const now = dayjs();
 const standardTimeDay = time.format('YYYY-MM-DD');
@@ -39,7 +36,7 @@ dayjs.updateLocale('zh-cn', {
     },
     M: time.format('MM.DD'),
     MM() {
-      if (now.diff(standardTimeYear, 'Year') < 1) return time.format('MM.DD');
+      if (now.diff(standardTimeYear, 'years') < 1) return time.format('MM.DD');
       return time.format('YYYY.MM.DD');
     },
     y: time.format('YYYY.MM.DD'),
