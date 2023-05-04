@@ -1,32 +1,42 @@
 {
-    "miniprogramRoot": "dist/",
-    "projectname": "inxupt-frontend",
-    "description": "在西邮前端项目",
-    "appid": "touristappid",
-    "setting": {
-        "urlCheck": true,
-        "es6": false,
-        "enhance": false,
-        "compileHotReLoad": false,
-        "postcss": false,
-        "minified": false,
-        "babelSetting": {
-            "ignore": [],
-            "disablePlugins": [],
-            "outputPath": ""
-        },
-        "condition": false
+  "miniprogramRoot": "dist/",
+  "projectname": "inxupt-frontend",
+  "description": "在西邮前端项目",
+  "appid": "wx41157022e04c27bb",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "enhance": false,
+    "compileHotReLoad": false,
+    "postcss": false,
+    "minified": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
     },
     "compileType": "miniprogram",
     "libVersion": "2.25.3",
     "srcMiniprogramRoot": "dist/",
     "packOptions": {
-        "ignore": [],
-        "include": []
+      "ignore": [],
+      "include": []
     },
-    "condition": {},
+    "condition": false,
     "editorSetting": {
-        "tabIndent": "insertSpaces",
-        "tabSize": 2
+      "tabIndent": "insertSpaces",
+      "tabSize": 2
     }
+  },
+  "compileType": "miniprogram",
+  "libVersion": "2.25.3",
+  "srcMiniprogramRoot": "dist/",
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "editorSetting": {
+    "tabIndent": "insertSpaces",
+    "tabSize": 2
+  }
 }
