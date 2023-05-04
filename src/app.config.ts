@@ -1,11 +1,7 @@
+import { PAGES_LIST, TAB_BAR_LIST } from './constants/config_constants';
+
 export default defineAppConfig({
-  pages: [
-    'pages/home/index',
-    'pages/profile/index',
-    'pages/notice/index',
-    'pages/topic/index',
-    'pages/post/index',
-  ],
+  pages: PAGES_LIST,
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',
@@ -16,26 +12,7 @@ export default defineAppConfig({
     custom: true,
     selectedColor: '#DC143C',
     backgroundColor: '#ffffff',
-    list: [
-      {
-        pagePath: 'pages/home/index',
-        text: '主页',
-      },
-      {
-        pagePath: 'pages/profile/index',
-        text: '我的',
-      },
-      {
-        pagePath: 'pages/notice/index',
-        text: '通知',
-      }, {
-        pagePath: 'pages/topic/index',
-        text: '话题',
-      },
-      {
-        pagePath: 'pages/post/index',
-        text: '发布',
-      },
-    ],
+    list: TAB_BAR_LIST,
   },
+  lazyCodeLoading: 'requiredComponents',
 });

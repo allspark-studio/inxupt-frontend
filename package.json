@@ -6,7 +6,7 @@
   "templateInfo": {
     "name": "vue3-NutUI4",
     "typescript": true,
-    "css": "less"
+    "css": "scss"
   },
   "scripts": {
     "build:weapp": "taro build --type weapp",

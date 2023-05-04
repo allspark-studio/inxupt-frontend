@@ -2,14 +2,14 @@
   "miniprogramRoot": "dist/",
   "projectname": "inxupt-frontend",
   "description": "在西邮前端项目",
-  "appid": "touristappid",
+  "appid": "wx41157022e04c27bb",
   "setting": {
     "urlCheck": true,
     "es6": false,
     "enhance": false,
     "compileHotReLoad": false,
     "postcss": false,
-    "minified": false,
+    "minified": true,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
