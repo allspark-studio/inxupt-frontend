@@ -5,10 +5,9 @@ export const useTabBarStore = defineStore('tabbar', {
     selectIndex: 0,
   }),
   actions: {
-    // state中的selectindex属性
+    // state中的 selectindex 属性
     incrementSelectIndex(index) {
       this.selectIndex = index;
-      console.log('state：selectindex=》', this.selectIndex);
     },
   },
 });

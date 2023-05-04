@@ -3,8 +3,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
-
 defineProps<{
   size: number;
   name: string;
