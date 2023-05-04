@@ -1,11 +1,9 @@
 <template>
-  <view>topic page</view>
+  <basic-layout>
+    <view>topic page</view>
+  </basic-layout>
 </template>
 
-<script lang='ts'>
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-  name: 'topicConversation',
-});
+<script setup lang='ts'>
+import BasicLayout from '~/layout/BasicLayout.vue';
 </script>

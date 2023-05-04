@@ -1,5 +1,9 @@
 <template>
-  <view>post page</view>
+  <basic-layout>
+    <view>post page</view>
+  </basic-layout>
 </template>
 
-<script setup></script>
+<script setup>
+import BasicLayout from '~/layout/BasicLayout.vue';
+</script>
