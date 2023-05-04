@@ -15,7 +15,18 @@
       "disablePlugins": [],
       "outputPath": ""
     },
-    "condition": false
+    "compileType": "miniprogram",
+    "libVersion": "2.25.3",
+    "srcMiniprogramRoot": "dist/",
+    "packOptions": {
+      "ignore": [],
+      "include": []
+    },
+    "condition": false,
+    "editorSetting": {
+      "tabIndent": "insertSpaces",
+      "tabSize": 2
+    }
   },
   "compileType": "miniprogram",
   "libVersion": "2.25.3",
@@ -24,7 +35,6 @@
     "ignore": [],
     "include": []
   },
-  "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
