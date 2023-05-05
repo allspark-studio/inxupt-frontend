@@ -2,14 +2,14 @@
   <div class="main">
     <div class="left">
       <span class="ava">
-        <nut-avatar size="large">
-          <img :src=img />
+        <nut-avatar v-bind="avatarProps">
+          <img :src=url />
         </nut-avatar>
       </span>
       <div class="detail">
         <div class="text">
           {{ name }}
-          <nut-tag round type="primary" color="#FFD7A1">{{ level }}</nut-tag>
+          <nut-tag round type="primary" color="#FFD7A1">{{ levelStr }}</nut-tag>
         </div>
         <div class="extra">
           <slot name="extra"></slot>
@@ -21,24 +21,23 @@
     </div>
   </div>
 </template>
-<script>
-export default {
-  name: 'UserInfo',
-  props: {
-    name: {
-      type: String,
-      default: '何梦影',
-    },
-    img: {
-      type: String,
-      default: '',
-    },
-    level: {
-      type: String,
-      default: 'LV1',
-    },
-  },
-};
+<script setup lang="ts">
+import { Tag as NutTag, Avatar as NutAvatar } from '@nutui/nutui-taro';
+import { computed } from 'vue';
+
+const props = defineProps<{
+  name: string;
+  url: string;
+  avatarProps?: {
+    size?: string;
+    shape?: string;
+    color?: string;
+    bgColor?: string;
+  }
+  level: Number;
+}>();
+
+const levelStr = computed(() => `lv${props.level}`);
 </script>
 
 <style lang="less">

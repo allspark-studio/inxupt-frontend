@@ -3,6 +3,7 @@
     <view class="btn">
       <nut-button type="primary" @click="handleClick('text', msg2, true)">点我</nut-button>
     </view>
+    <userInfo></userInfo>
   </basic-layout>
 </template>
 
