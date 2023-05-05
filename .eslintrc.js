@@ -3,7 +3,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: ['airbnb-base', 'plugin:vue/vue3-essential'],
+  extends: ['airbnb-base', 'plugin:vue/vue3-essential', 'plugin:prettier/recommended'],
   parser: 'vue-eslint-parser',
   parserOptions: {
     parser: '@typescript-eslint/parser',
