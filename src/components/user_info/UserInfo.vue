@@ -42,7 +42,7 @@ export interface UserInfoProps {
   name: string;
   url: string;
   level: number;
-  userNameStyle?: string | CSSProperties;
+  userNameStyle?: CSSProperties;
   avatarProps?: AvatarProps;
 }
 
