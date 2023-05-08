@@ -1,9 +1,13 @@
 <template>
-  <basic-layout>
-    <view>post page</view>
-  </basic-layout>
+  <view>
+
+  </view>
 </template>
 
 <script setup>
-import BasicLayout from '~/layout/BasicLayout.vue';
 </script>
+<style lang="scss">
+page{
+  background-color: red;
+}
+</style>
