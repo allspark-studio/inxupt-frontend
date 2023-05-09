@@ -8,9 +8,9 @@ const config = {
   },
   designWidth(input) {
     if (input?.file?.replace(/\\+/g, '/').indexOf('@nutui') > -1) {
-      return 375;
+      return 375
     }
-    return 750;
+    return 750
   },
   deviceRatio: {
     640: 2.34 / 2,
@@ -39,7 +39,7 @@ const config = {
     enable: false, // Webpack 持久化缓存配置，建议开启。默认配置请参考：https://docs.taro.zone/docs/config-detail#cache
   },
   sass: {
-    resource: path.resolve(__dirname, '..', 'src/assets/styles/variable.scss'),
+    resource: path.resolve(__dirname, '..', 'src/assets/styles/global.scss'),
     data: '@import "@nutui/nutui-taro/dist/styles/variables.scss";',
   },
   mini: {
@@ -85,11 +85,11 @@ const config = {
       },
     },
   },
-};
+}
 
 module.exports = function (merge) {
   if (process.env.NODE_ENV === 'development') {
-    return merge({}, config, require('./dev'));
+    return merge({}, config, require('./dev'))
   }
   return merge({}, config, require('./prod'));
 };
