@@ -30,6 +30,7 @@
 </template>
 
 <script setup lang="ts">
+import Taro, { useDidHide, useLoad } from '@tarojs/taro';
 import { reactive, ref } from 'vue';
 // import { TopicEnum } from './constants';
 const TopicEnum = {
@@ -56,18 +57,65 @@ const textareaSize = ref({ minHeight: 400 });
 const textareaValue = ref('');
 // 文本域提示信息
 const textareaPlaceHolder = ref('tip content');
-const selectedTopics = reactive([{ value: TopicEnum.LIFE, label: '#生活' }]);
-
+let selectedTopics = reactive([{ value: TopicEnum.LIFE, label: '#生活' }]);
+// 是否提交退出页面，控制是否清楚storage
+let checkCommit = false;
 function ifTopicSelected(value) {
   return selectedTopics.findIndex((item) => {
     return item.value === value.value;
   });
 }
 const checkTopicHandler = (value: topicModel) => {
-  selectedTopics.push(value);
+  // selectedTopics.push(value);
+  const index = selectedTopics.findIndex((item) => {
+    return item.value === value.value;
+  });
+  // 已有值,剔除
+  if (index >= 0) {
+    selectedTopics.splice(index, 1);
+  } else {
+    // 未有值，新增
+    selectedTopics.push(value);
+  }
 };
 // 点击提交摁钮处理函数
-const commitHandler = () => {};
+const commitHandler = () => {
+  checkCommit = true;
+  // 恢复话题选中列表
+  selectedTopics = [{ value: TopicEnum.LIFE, label: '#生活' }];
+  // 清空文本信息
+  textareaValue.value = '';
+  // 清空storage中的文本域信息
+  Taro.setStorage({
+    data: '',
+    key: 'textareaValue',
+  });
+  Taro.switchTab({
+    url: '../home/index',
+  });
+  Taro.showToast({
+    title: '发送成功',
+    icon: 'success',
+  });
+};
+// 用户进入编辑页面默认读取storage中的文本框数据
+useLoad(() => {
+  Taro.getStorage({
+    key: 'textareaValue',
+    success({ data }) {
+      textareaValue.value = data.value;
+    },
+  });
+});
+// 离开页面时的钩子函数，储存文本域中的文字
+useDidHide(() => {
+  if (checkCommit === false) {
+    Taro.setStorage({
+      data: textareaValue,
+      key: 'textareaValue',
+    });
+  }
+});
 </script>
 <style lang="scss">
 page {
