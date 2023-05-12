@@ -1,17 +1,12 @@
-// 由于 taro 的 app.config.ts 不经过webpack编译，因此无法支持路径别名。
-// 所以将配置相关的常量统一定义在此处，供业务和配置文件使用。
-
-// ！！！注意：业务中请使用 '~/xxx' 形式引入，不要使用相对路径
-
+/**
+ * 注意：
+ * 由于 taro 的 app.config.ts 不经过webpack编译，因此无法支持路径别名。
+ * 所以将配置相关的常量统一定义在此处，供业务和配置文件使用。
+ * 业务中请使用 '~/xxx' 形式引入，不要使用相对路径
+ */
 import { TabBarItem } from '@tarojs/taro';
 import { getPagesPath } from '../utils/path_utils';
-import {
-  HOME,
-  PROFILE,
-  NOTICE,
-  TOPIC,
-  POST,
-} from './route';
+import { HOME, PROFILE, NOTICE, TOPIC, POST } from './route';
 
 export const PAGES_PATH_MAP: Record<string, string> = {
   home: getPagesPath(HOME),
