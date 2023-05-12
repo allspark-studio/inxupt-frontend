@@ -18,10 +18,11 @@
     "jsx": "preserve",
     "allowJs": true,
     "resolveJsonModule": true,
-    "typeRoots": [
-      "node_modules/@types"
-    ]
+    "paths": {
+      "~/*": ["src/*"],
+    }
   },
-  "include": ["./src", "./types", "components.d.ts"],
+  "exclude": ["./node_modules"],
+  "include": ["./src", "./types"],
   "compileOnSave": false
 }
