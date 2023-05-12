@@ -17,7 +17,6 @@ const themeVars = reactive({
   primaryColorEnd: '#FDE8B8',
   buttonPrimaryColor: '#000000',
 });
-
 </script>
 
 <style lang="scss">

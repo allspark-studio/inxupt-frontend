@@ -20,5 +20,11 @@ module.exports = {
     'import/extensions': 'off',
     'import/prefer-default-export': 'off',
     'class-methods-use-this': 'off',
+    // 解决 enum 定义时报错：XXX is already declared in the upper scope......
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': 'error',
+    // 解决 enum 定义时报错：XXX is defined but never used
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': ['error'],
   },
 };

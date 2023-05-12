@@ -11,7 +11,7 @@
         <img v-if="index === store.selectIndex" :src="item.selectedIconPath" />
         <img v-else :src="item.iconPath" />
       </view>
-      <view :class="{ active: store.selectIndex === index }" v-if="index!==2">
+      <view :class="{ active: store.selectIndex === index }" v-if="index !== 2">
         {{ item.text }}
       </view>
     </view>

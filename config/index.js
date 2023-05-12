@@ -20,7 +20,7 @@ const config = {
   },
   sourceRoot: 'src',
   outputRoot: 'dist',
-  plugins: ['@tarojs/plugin-html'],
+  plugins: ['@tarojs/plugin-html', '@tarojs/plugin-http'],
   defineConstants: {
   },
   copy: {
