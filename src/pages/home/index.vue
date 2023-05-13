@@ -11,7 +11,7 @@
   </nut-searchbar>
   <basic-layout class="home">
     <div class="main">
-      <swiper class="test-h" :vertical="false" :circular="true" :autoplay="true" interval="3000">
+      <swiper class="test-h" :vertical="false" :circular="true" :autoplay="true" :interval="3000">
         <swiper-item>
           <view class="demo-text-1"><img src="/assets/swiper_images/test.png" alt="" /></view>
         </swiper-item>

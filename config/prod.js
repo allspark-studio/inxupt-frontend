@@ -2,7 +2,9 @@ module.exports = {
   env: {
     NODE_ENV: '"production"',
   },
-  defineConstants: {},
+  defineConstants: {
+    API_BASE_URL: '"https://inxupt.alkaidchen.com"',
+  },
   mini: {},
   h5: {
     /**

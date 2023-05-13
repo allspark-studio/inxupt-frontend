@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import dayjs from '../day/dayjs.config';
+import dayjs from '~/day/dayjs.config';
 
 const props = defineProps<{
   time: string | Date | number;
