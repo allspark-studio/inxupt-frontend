@@ -41,7 +41,7 @@ import { ref } from 'vue';
 import { Ellipsis as NutEllipsis } from '@nutui/nutui-taro';
 import { MoreS, Fabulous, Star, Message, ShareN } from '@nutui/icons-vue-taro';
 import Taro from '@tarojs/taro';
-import UserInfo from '~/components/UserInfo/UserInfo.vue';
+import UserInfo from '~/components/user_info/UserInfo.vue';
 import TimeAgo from '~/components/TimeAgo.vue';
 
 const FabulousColor = ref('');
