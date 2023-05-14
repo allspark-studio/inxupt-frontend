@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import dayjs from '../day/dayjs.config';
+import dayjs from '~/day/dayjs.config';
 
 const props = defineProps<{
   time: string | Date | number;
@@ -26,7 +26,9 @@ dayjs.updateLocale('zh-cn', {
     },
     h: time.format('今天 HH:mm'),
     hh() {
-      if (now.diff(standardTimeDay, 'hour') < 24) { return time.format('今天 HH:mm'); }
+      if (now.diff(standardTimeDay, 'hour') < 24) {
+        return time.format('今天 HH:mm');
+      }
       return time.format('昨天 HH:mm');
     },
     d: time.format('昨天 HH:mm'),
