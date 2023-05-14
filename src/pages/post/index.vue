@@ -57,7 +57,8 @@ const textareaSize = ref({ minHeight: 400 });
 const textareaValue = ref('');
 // 文本域提示信息
 const textareaPlaceHolder = ref('tip content');
-let selectedTopics = reactive([{ value: TopicEnum.LIFE, label: '#生活' }]);
+// 所选择的话题信息，默认选择第一个
+let selectedTopics = reactive([topicOptions[0]]);
 // 是否提交退出页面，控制是否清楚storage
 let checkCommit = false;
 function ifTopicSelected(value) {
@@ -161,66 +162,7 @@ page {
 
   .btnCom {
     margin-top: 20px;
-  }
-}
-
-.popup {
-  overflow: visible;
-  background: #ffffff;
-  height: 30%;
-  width: 80%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border-radius: 20px;
-
-  .text {
-    font-weight: bold;
-    margin-top: 150px;
-
-    view {
-      text-align: center;
-      margin: 20px 0;
-    }
-  }
-
-  .btnGp {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 50px;
-
-    .continueBtn {
-      background-color: #feda48;
-    }
-  }
-
-  .iconBg {
-    position: absolute;
-    top: -60px;
-    left: 50%;
-    transform: translateX(-100px);
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background-color: rgb(255, 255, 255);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    .icon {
-      background-color: #feda48;
-      width: 170px;
-      height: 170px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      image {
-        width: 150px;
-        height: 150px;
-      }
-    }
+    background-color: #feda48;
   }
 }
 </style>
