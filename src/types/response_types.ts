@@ -21,3 +21,6 @@ export interface CustomResponseData<T> {
   msg: string;
   data: T;
 }
+export interface ArticleInfoList {
+  body: string;
+}

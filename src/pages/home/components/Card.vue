@@ -1,65 +1,70 @@
 <template>
   <div>
-    <UserInfo name="星野猫" url="/assets/swiper_images/head.png" :level="3">
+    <UserInfo
+      :name="articleInfo.authorName"
+      :url="articleInfo.authorAvatar"
+      :level="articleInfo.authorLevel"
+    >
       <template v-slot:extra>
-        <TimeAgo time="202305071200" />
+        <TimeAgo :time="articleInfo.createTime" />
       </template>
       <template v-slot:suffix>
         <MoreS class="more" @click="showMenu" />
       </template>
     </UserInfo>
-    <nut-ellipsis
-      class="content"
-      content="NutUI3.0上线后我们研发团队也在不断的优化、测试、使用、迭代 Vue3 的相关组件，但是在跨端小程序的开发过程中，发现没有合适的组件库可以支持多端开发。为了填补这一空白，同时为了优化开发者体验，让 NutUI 能够为更多的开发者带来便利，我们决定在 NutUI 中增加小程序多端适配的能力。"
-      direction="end"
-      rows="3"
-      expandText="全文"
-      collapseText="收起"
-    ></nut-ellipsis>
+    <div class="content">
+      {{ articleInfo.pureText }}
+    </div>
     <ul class="interactive">
-      <li @click="switchFabulousColor">
+      <li @click="switchFabulousColor(articleInfo.postId)">
         <Fabulous :color="FabulousColor" />
-        <span>666</span>
+        <span>{{ articleInfo.likeNum }}</span>
       </li>
-      <li @click="switchStarColor">
+      <li @click="switchStarColor(articleInfo.postId)">
         <Star :color="StarColor" />
-        <span>666</span>
+        <span>{{ articleInfo.favoriteNum }}</span>
       </li>
       <li>
         <Message />
-        <span>666</span>
+        <span>{{ articleInfo.commentNum }}</span>
       </li>
       <li>
         <ShareN />
-        <span>666</span>
+        <span>0</span>
       </li>
     </ul>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
-import { Ellipsis as NutEllipsis } from '@nutui/nutui-taro';
 import { MoreS, Fabulous, Star, Message, ShareN } from '@nutui/icons-vue-taro';
 import Taro from '@tarojs/taro';
 import UserInfo from '~/components/user_info/UserInfo.vue';
 import TimeAgo from '~/components/TimeAgo.vue';
+import ArticleService from '~/service/article_service';
+
+const props = defineProps(['articleInfo']);
 
 const FabulousColor = ref('');
 const StarColor = ref('');
 const item = ['关注', '举报'];
 let care = false;
-const showMenu = () => {
+const articleService = new ArticleService();
+const showMenu = async () => {
   Taro.showActionSheet({
     itemList: item,
-    success(res) {
+    async success(res) {
       if (res.tapIndex === 0) {
         if (!care) {
-          item[res.tapIndex] = '已关注';
-          Taro.showToast({
-            title: '关注成功',
-            icon: 'success',
-            duration: 1000,
-          });
+          const data = await articleService.careUser(props.articleInfo.authorId);
+          if (data.code === 200) {
+            item[res.tapIndex] = '已关注';
+            Taro.showToast({
+              title: '关注成功',
+              icon: 'success',
+              duration: 1000,
+            });
+          }
         } else {
           item[res.tapIndex] = '关注';
           Taro.showToast({
@@ -82,18 +87,63 @@ const showMenu = () => {
     },
   });
 };
-const switchFabulousColor = () => {
-  if (!FabulousColor.value) {
+const initState = () => {
+  if (props.articleInfo.liked) {
     FabulousColor.value = '#FEDA48';
-  } else {
-    FabulousColor.value = '';
+  }
+  if (props.articleInfo.favorited) {
+    StarColor.value = '#FEDA48';
   }
 };
-const switchStarColor = () => {
-  if (!StarColor.value) {
+initState();
+const switchFabulousColor = async (id) => {
+  if (!props.articleInfo.liked) {
+    FabulousColor.value = '#FEDA48';
+    try {
+      await articleService.likeArticle(id);
+    } catch (e) {
+      FabulousColor.value = '';
+      Taro.showToast({
+        icon: 'none',
+        title: e.msg,
+      });
+    }
+  } else {
+    FabulousColor.value = '';
+    try {
+      await articleService.cancelLikeArticle(id);
+    } catch (e) {
+      FabulousColor.value = '#FEDA48';
+      Taro.showToast({
+        icon: 'none',
+        title: e.msg,
+      });
+    }
+  }
+};
+const switchStarColor = async (id) => {
+  if (!props.articleInfo.favorited) {
     StarColor.value = '#FEDA48';
+    try {
+      await articleService.favoriteArticle(id);
+    } catch (e) {
+      StarColor.value = '';
+      Taro.showToast({
+        icon: 'none',
+        title: e.msg,
+      });
+    }
   } else {
     StarColor.value = '';
+    try {
+      await articleService.cancelFavoriteArticle(id);
+    } catch (e) {
+      StarColor.value = '#FEDA48';
+      Taro.showToast({
+        icon: 'none',
+        title: e.msg,
+      });
+    }
   }
 };
 </script>
