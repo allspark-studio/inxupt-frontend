@@ -1,13 +1,13 @@
 import axios from '~/request';
 
 export default class ArticleService {
-  async getArticleCategoryList(paneKey: string | number) {
-    const { data } = await axios.get(`category/${paneKey}/posts`);
+  async getArticleCategoryList(paneKey: string | number, pageNum = 1) {
+    const { data } = await axios.get(`category/${paneKey}/posts?pageNum=${pageNum}`);
     return data;
   }
 
-  async getArticleList() {
-    const { data } = await axios.get('posts');
+  async getArticleList(pageNum = 1) {
+    const { data } = await axios.get(`posts?pageNum=${pageNum}`);
     return data;
   }
 

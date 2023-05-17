@@ -101,6 +101,7 @@ const isshow = ref(false);
 const state = reactive({
   hotSearchCurrentIndex: 0,
   hotSearchList: [],
+  pageNum: 1,
   articleList: [
     { postId: 'a' },
     { postId: 'b' },
@@ -163,11 +164,38 @@ const getHotSearch = async () => {
   }
 };
 getHotSearch();
-const whole = async () => {
+const whole = async (pageNum = 1) => {
   try {
-    const { data } = await articleService.getArticleList();
+    const { data } = await articleService.getArticleList(pageNum);
     isshow.value = true;
-    state.articleList = data.list;
+    if (state.articleList[0].postId === 'a') {
+      state.articleList = data.list;
+    } else {
+      state.articleList.push(...data.list);
+    }
+    state.pageNum = data.pageNum;
+    setTimeout(() => {
+      Taro.hideLoading();
+    }, 0);
+  } catch (e) {
+    Taro.showToast({
+      icon: 'none',
+      title: e.msg,
+    });
+  }
+};
+const getMorePage = async (paneKey, pageNum = 1) => {
+  try {
+    const { data } = await articleService.getArticleCategoryList(paneKey, pageNum);
+    if (state.articleList[0].postId === 'a') {
+      state.articleList = data.list;
+    } else {
+      state.articleList.push(...data.list);
+    }
+    state.pageNum = data.pageNum;
+    setTimeout(() => {
+      Taro.hideLoading();
+    }, 0);
   } catch (e) {
     Taro.showToast({
       icon: 'none',
@@ -176,17 +204,34 @@ const whole = async () => {
   }
 };
 const switchTab = async (paneKey) => {
+  state.tabvalue = paneKey;
+  state.pageNum = 1;
   isshow.value = false;
+  state.articleList = [
+    { postId: 'a' },
+    { postId: 'b' },
+    { postId: 'c' },
+    { postId: 'd' },
+    { postId: 'e' },
+    { postId: 'f' },
+    { postId: 'g' },
+    { postId: 'h' },
+    { postId: 'i' },
+    { postId: 'g' },
+  ];
+  // await Taro.pageScrollTo({
+  //   scrollTop: 0,
+  //   duration: 300,
+  // });
+  if (paneKey === '1') {
+    whole();
+    return;
+  }
   try {
-    if (paneKey === '1') {
-      state.tabvalue = paneKey;
-      whole();
-      return;
-    }
-    state.tabvalue = paneKey;
     const { data } = await articleService.getArticleCategoryList(paneKey);
     isshow.value = true;
     state.articleList = data.list;
+    state.pageNum = data.pageNum;
   } catch (e) {
     Taro.showToast({
       icon: 'none',
@@ -199,7 +244,17 @@ usePullDownRefresh(() => {
   switchTab(state.tabvalue);
 });
 useReachBottom(() => {
-  console.log('触底刷新');
+  Taro.showLoading({
+    title: '加载中',
+    mask: true,
+  });
+  if (state.tabvalue === '1') {
+    state.pageNum += 1;
+    whole(state.pageNum);
+  } else {
+    state.pageNum += 1;
+    getMorePage(state.tabvalue, state.pageNum);
+  }
 });
 const switchItem = async (index: number) => {
   currentIndex.value = index;
@@ -232,12 +287,10 @@ const switchItem = async (index: number) => {
 }
 .home {
   width: 750px;
-  min-height: 1000px;
   background: #e6eaed;
   position: relative;
   .main {
     width: 750px;
-    position: absolute;
   }
   .test-h {
     width: 750px;

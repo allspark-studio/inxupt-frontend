@@ -18,11 +18,11 @@
     <ul class="interactive">
       <li @click="switchFabulousColor(articleInfo.postId)">
         <Fabulous :color="FabulousColor" />
-        <span>{{ articleInfo.likeNum }}</span>
+        <span>{{ likeCount }}</span>
       </li>
       <li @click="switchStarColor(articleInfo.postId)">
         <Star :color="StarColor" />
-        <span>{{ articleInfo.favoriteNum }}</span>
+        <span>{{ favoriteCount }}</span>
       </li>
       <li>
         <Message />
@@ -44,6 +44,8 @@ import TimeAgo from '~/components/TimeAgo.vue';
 import ArticleService from '~/service/article_service';
 
 const props = defineProps(['articleInfo']);
+const likeCount = ref(props.articleInfo.likeNum);
+const favoriteCount = ref(props.articleInfo.favoriteNum);
 
 const FabulousColor = ref('');
 const StarColor = ref('');
@@ -97,8 +99,9 @@ const initState = () => {
 };
 initState();
 const switchFabulousColor = async (id) => {
-  if (!props.articleInfo.liked) {
+  if (!props.articleInfo.liked && FabulousColor.value === '') {
     FabulousColor.value = '#FEDA48';
+    likeCount.value += 1;
     try {
       await articleService.likeArticle(id);
     } catch (e) {
@@ -110,6 +113,7 @@ const switchFabulousColor = async (id) => {
     }
   } else {
     FabulousColor.value = '';
+    likeCount.value -= 1;
     try {
       await articleService.cancelLikeArticle(id);
     } catch (e) {
@@ -122,8 +126,9 @@ const switchFabulousColor = async (id) => {
   }
 };
 const switchStarColor = async (id) => {
-  if (!props.articleInfo.favorited) {
+  if (!props.articleInfo.favorited && StarColor.value === '') {
     StarColor.value = '#FEDA48';
+    favoriteCount.value += 1;
     try {
       await articleService.favoriteArticle(id);
     } catch (e) {
@@ -135,6 +140,7 @@ const switchStarColor = async (id) => {
     }
   } else {
     StarColor.value = '';
+    favoriteCount.value -= 1;
     try {
       await articleService.cancelFavoriteArticle(id);
     } catch (e) {
