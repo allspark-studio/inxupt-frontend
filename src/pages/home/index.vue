@@ -2,7 +2,7 @@
   <nut-searchbar
     :style="{ height: navBarHeight + 'px' }"
     v-model="state.searchValue"
-    :placeholder="state.hotSearchList[state.hotSearchCurrentIndex]"
+    :placeholder="state.hotSearchList[hotSearchCurrentIndex]"
     class="search-bar"
   >
     <template v-slot:leftin>
@@ -10,16 +10,16 @@
     </template>
   </nut-searchbar>
   <basic-layout class="home">
-    <div class="main">
+    <view class="main">
       <swiper class="test-h" :vertical="false" :circular="true" :autoplay="true" :interval="3000">
         <swiper-item>
-          <view class="demo-text-1"><img src="/assets/swiper_images/test.png" alt="" /></view>
+          <view><img src="https://img1.imgtp.com/2023/05/22/Li0MNY0n.png" alt="" /></view>
         </swiper-item>
         <swiper-item>
-          <view class="demo-text-2"><img src="/assets/swiper_images/test.png" alt="" /></view>
+          <view><img src="https://img1.imgtp.com/2023/05/22/Li0MNY0n.png" alt="" /></view>
         </swiper-item>
         <swiper-item>
-          <view class="demo-text-3"><img src="/assets/swiper_images/test.png" alt="" /></view>
+          <view><img src="https://img1.imgtp.com/2023/05/22/Li0MNY0n.png" alt="" /></view>
         </swiper-item>
       </swiper>
       <nut-tabs
@@ -27,156 +27,131 @@
         color="#1a1a1a "
         size="normal"
         background="#E6EAED"
-        v-model="state.tabvalue"
-        swipeable
-        @change="switchTab(state.tabvalue)"
+        v-model="state.activeCategory"
       >
         <template v-slot:titles>
-          <div class="nut-tabs">
-            <div
+          <view class="nut-tabs">
+            <view
               class="nut-tabs__titles-item"
-              :class="{ active: state.tabvalue == item.paneKey }"
+              :class="{ active: state.activeCategory == item.paneKey }"
               :key="item.paneKey"
-              @click="switchTab(item.paneKey)"
-              v-for="item in state.list6"
+              @click="handleCategoryChange(item.paneKey)"
+              v-for="item in state.paneList"
             >
               <span class="nut-tabs__titles-item__text">
                 {{ item.title }}
               </span>
-            </div>
-            <div class="sort-category">
-              <Switches
-                @switch="switchItem"
-                :currentIndex="currentIndex"
-                :switches="switches"
-              ></Switches>
-            </div>
-          </div>
+            </view>
+            <view class="sort-category">
+              <switches
+                @change="handleSortChange"
+                active-text="最新"
+                inactive-text="最热"
+              ></switches>
+            </view>
+          </view>
         </template>
         <nut-tab-pane
           class="pane"
-          v-for="item in state.list6"
+          v-for="item in state.paneList"
           :key="item.paneKey"
           :pane-key="item.paneKey"
         >
-          <div class="card" v-for="i in state.articleList" :key="i.postId">
-            <card :articleInfo="i" v-show="isshow" />
-            <nut-skeleton
-              class="skeleton"
-              width="340px"
-              height="15px"
-              animated
-              row="3"
-              :round="true"
-              v-show="!isshow"
-            ></nut-skeleton>
-          </div>
+          <template v-if="state.articleList.length > 0">
+            <article-item
+              v-for="article in state.articleList"
+              :key="article.postId"
+              :article-info="article"
+            ></article-item>
+            <load-more :finished="finished"></load-more>
+          </template>
+          <article-loader v-else></article-loader>
         </nut-tab-pane>
       </nut-tabs>
-    </div>
+    </view>
   </basic-layout>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import {
   Tabs as NutTabs,
   TabPane as NutTabPane,
   Searchbar as NutSearchbar,
-  Skeleton as NutSkeleton,
 } from '@nutui/nutui-taro';
 import { Search2 } from '@nutui/icons-vue-taro';
 import Taro, { usePullDownRefresh, useReachBottom } from '@tarojs/taro';
 import BasicLayout from '~/layout/BasicLayout.vue';
 import Switches from '~/components/Switches.vue';
-import Card from './components/Card.vue';
+import ArticleItem from '~/pages/home/components/ArticleItem.vue';
 import ArticleService from '~/service/article_service';
+import ArticleLoader from '~/pages/home/components/ArticleLoader.vue';
+import { ArticleFacade, CategoryEnum } from '~/types/article_types';
+import { PaneItem, PANE_LIST } from '~/pages/home/constants';
+import LoadMore from '~/pages/home/components/LoadMore.vue';
+import { SortType } from '~/types/common_types';
 
-const currentIndex = ref(0);
-const switches = [{ title: '最新' }, { title: '最热' }];
+type StateType = {
+  hotSearchList: any[];
+  articleList: ArticleFacade[];
+  pageNum: number;
+  activeCategory: CategoryEnum;
+  searchValue: string;
+  paneList: PaneItem[];
+  finished: boolean;
+};
+
+const articleService = new ArticleService();
+const sortType = ref(SortType.LATEST);
+const hotSearchCurrentIndex = ref(0);
 const { statusBarHeight = 20 } = Taro.getSystemInfoSync();
 const menu = Taro.getMenuButtonBoundingClientRect();
 const navBarHeight = (menu.top - statusBarHeight) * 2 + menu.height + statusBarHeight;
-const isshow = ref(false);
-const state = reactive({
-  hotSearchCurrentIndex: 0,
+const state = reactive<StateType>({
   hotSearchList: [],
   pageNum: 1,
-  articleList: [
-    { postId: 'a' },
-    { postId: 'b' },
-    { postId: 'c' },
-    { postId: 'd' },
-    { postId: 'e' },
-    { postId: 'f' },
-    { postId: 'g' },
-    { postId: 'h' },
-    { postId: 'i' },
-    { postId: 'g' },
-  ],
-  tabvalue: '1',
+  articleList: [],
+  activeCategory: CategoryEnum.ALL,
   searchValue: '',
-  list6: [
-    {
-      title: '全部',
-      paneKey: '1',
-    },
-    {
-      title: '生活',
-      paneKey: '2',
-    },
-    {
-      title: '学术',
-      paneKey: '3',
-    },
-    {
-      title: '情感',
-      paneKey: '4',
-    },
-    {
-      title: '其他',
-      paneKey: '5',
-    },
-  ],
+  paneList: PANE_LIST,
+  finished: false,
 });
-const hotSearchDisplay = () => {
-  setInterval(() => {
-    if (state.hotSearchCurrentIndex < state.hotSearchList.length - 1) {
-      state.hotSearchCurrentIndex += 1;
-    } else {
-      state.hotSearchCurrentIndex = 0;
-    }
-  }, 5000);
-};
-hotSearchDisplay();
 
-const articleService = new ArticleService();
+/** 定时切换热搜词 */
+const hotSearchInterval = setInterval(() => {
+  if (hotSearchCurrentIndex.value < state.hotSearchList.length - 1) {
+    hotSearchCurrentIndex.value += 1;
+  } else {
+    hotSearchCurrentIndex.value = 0;
+  }
+}, 5000);
 
-const getHotSearch = async () => {
+/** 请求热搜列表 */
+const fetchHotSearch = async () => {
   try {
     const { data } = await articleService.getHotSearchList();
     state.hotSearchList = data;
   } catch (e) {
-    Taro.showToast({
-      icon: 'none',
-      title: e.msg,
-    });
+    // 热搜列表为次要请求，报错无需进行全局提示
+    console.error(e);
   }
 };
-getHotSearch();
-const whole = async (pageNum = 1) => {
+
+/** 请求文章列表 */
+const fetchArticles = async () => {
   try {
-    const { data } = await articleService.getArticleList(pageNum);
-    isshow.value = true;
-    if (state.articleList[0].postId === 'a') {
+    const { pageNum, activeCategory } = state;
+    const { data } = await articleService.getArticleList({
+      category: activeCategory !== CategoryEnum.ALL ? activeCategory : undefined,
+      pageNum,
+      sortedBy: sortType.value,
+    });
+    state.finished = !data.hasNextPage;
+    if (pageNum === 1) {
       state.articleList = data.list;
     } else {
       state.articleList.push(...data.list);
     }
-    state.pageNum = data.pageNum;
-    setTimeout(() => {
-      Taro.hideLoading();
-    }, 0);
   } catch (e) {
     Taro.showToast({
       icon: 'none',
@@ -184,86 +159,49 @@ const whole = async (pageNum = 1) => {
     });
   }
 };
-const getMorePage = async (paneKey, pageNum = 1) => {
-  try {
-    const { data } = await articleService.getArticleCategoryList(paneKey, pageNum);
-    if (state.articleList[0].postId === 'a') {
-      state.articleList = data.list;
-    } else {
-      state.articleList.push(...data.list);
-    }
-    state.pageNum = data.pageNum;
-    setTimeout(() => {
-      Taro.hideLoading();
-    }, 0);
-  } catch (e) {
-    Taro.showToast({
-      icon: 'none',
-      title: e.msg,
-    });
-  }
-};
-const switchTab = async (paneKey) => {
-  state.tabvalue = paneKey;
+
+/**
+ * 处理分类改变
+ * @param paneKey 当前选中分类
+ */
+const handleCategoryChange = async (paneKey: CategoryEnum) => {
+  state.activeCategory = paneKey;
   state.pageNum = 1;
-  isshow.value = false;
-  state.articleList = [
-    { postId: 'a' },
-    { postId: 'b' },
-    { postId: 'c' },
-    { postId: 'd' },
-    { postId: 'e' },
-    { postId: 'f' },
-    { postId: 'g' },
-    { postId: 'h' },
-    { postId: 'i' },
-    { postId: 'g' },
-  ];
-  // await Taro.pageScrollTo({
-  //   scrollTop: 0,
-  //   duration: 300,
-  // });
-  if (paneKey === '1') {
-    whole();
-    return;
-  }
-  try {
-    const { data } = await articleService.getArticleCategoryList(paneKey);
-    isshow.value = true;
-    state.articleList = data.list;
-    state.pageNum = data.pageNum;
-  } catch (e) {
-    Taro.showToast({
-      icon: 'none',
-      title: e.msg,
-    });
-  }
-};
-whole();
-usePullDownRefresh(() => {
-  switchTab(state.tabvalue);
-});
-useReachBottom(() => {
-  Taro.showLoading({
-    title: '加载中',
-    mask: true,
+  state.articleList = [];
+  await Taro.pageScrollTo({
+    scrollTop: 0,
+    duration: 300,
   });
-  if (state.tabvalue === '1') {
-    state.pageNum += 1;
-    whole(state.pageNum);
-  } else {
-    state.pageNum += 1;
-    getMorePage(state.tabvalue, state.pageNum);
-  }
-});
-const switchItem = async (index: number) => {
-  currentIndex.value = index;
-  if (index === 1) {
-    await articleService.hotIndexSort();
-  } else {
-    switchTab(state.tabvalue);
-  }
+  fetchArticles();
 };
+
+/** 处理排序变化 */
+const handleSortChange = (switchState: boolean) => {
+  sortType.value = switchState ? SortType.LATEST : SortType.HEAT;
+  fetchArticles();
+};
+
+/** 下拉刷新 */
+usePullDownRefresh(() => {
+  fetchArticles();
+});
+
+/** 触底加载更多 */
+useReachBottom(() => {
+  if (state.finished) return;
+  state.pageNum += 1;
+  fetchArticles();
+});
+
+onMounted(() => {
+  // 并行请求热搜列表和文章列表
+  fetchArticles();
+  fetchHotSearch();
+});
+
+onUnmounted(() => {
+  clearInterval(hotSearchInterval);
+});
 </script>
 
 <style lang="scss">
@@ -272,7 +210,7 @@ const switchItem = async (index: number) => {
   position: sticky;
   width: 750px;
   top: 0px;
-  background: white;
+  background: #fff;
   box-sizing: border-box;
   padding-left: 20px;
   padding-bottom: 8px;
@@ -307,7 +245,7 @@ const switchItem = async (index: number) => {
     }
   }
   .tabs {
-    margin-bottom: 120px;
+    margin-bottom: 20px;
     .nut-tabs {
       justify-content: start;
       .sort-category {
@@ -319,38 +257,6 @@ const switchItem = async (index: number) => {
     .pane {
       background: #e6eaed;
       padding: 10px 20px;
-      .card {
-        background: #feffff;
-        border-radius: 20px;
-        margin-bottom: 25px;
-        padding-bottom: 10px;
-        .skeleton {
-          margin: 10px 10px;
-        }
-        .content {
-          margin: 0px 20px;
-          font-size: 30px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          word-break: break-all;
-          -webkit-box-orient: vertical;
-        }
-        .interactive {
-          display: flex;
-          justify-content: space-around;
-          margin-top: 20px;
-          margin-bottom: 10px;
-          li {
-            display: flex;
-            span {
-              margin-left: 5px;
-              margin-top: 3px;
-            }
-          }
-        }
-      }
     }
   }
 }

@@ -1,20 +1,31 @@
 <template>
-  <ul class="switch">
-    <li
-      :class="{ active: index === currentIndex }"
-      v-for="(item, index) in switches"
-      :key="index"
-      @click="selectItem(index)"
-    >
-      {{ item.title }}
+  <ul class="switch" @click="handleStateChange">
+    <li :class="{ active: switchState }">
+      {{ activeText }}
+    </li>
+    <li :class="{ active: !switchState }">
+      {{ inactiveText }}
     </li>
   </ul>
 </template>
 <script setup lang="ts">
-defineProps(['switches', 'currentIndex']);
-const emit = defineEmits(['switch']);
-const selectItem = (index) => {
-  emit('switch', index);
+import { ref } from 'vue';
+
+defineProps({
+  activeText: {
+    type: String,
+    default: '开',
+  },
+  inactiveText: {
+    type: String,
+    default: '关',
+  },
+});
+const emit = defineEmits(['change']);
+const switchState = ref(true);
+const handleStateChange = () => {
+  switchState.value = !switchState.value;
+  emit('change', switchState.value);
 };
 </script>
 <style lang="scss">

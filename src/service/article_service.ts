@@ -1,32 +1,47 @@
 import axios from '~/request';
+import { SortType } from '~/types/common_types';
+import { ArticleFacade, CategoryEnum } from '~/types/article_types';
+import { PagedResponseData } from '~/types/response_types';
+
+export type ArticleForm = {
+  category?: CategoryEnum;
+  pageNum?: number;
+  sortedBy?: SortType;
+};
 
 export default class ArticleService {
   async getArticleCategoryList(paneKey: string | number, pageNum = 1) {
-    const { data } = await axios.get(`category/${paneKey}/posts?pageNum=${pageNum}`);
+    const url = `category/${paneKey}/posts`;
+    const { data } = await axios.get<PagedResponseData<ArticleFacade>>(url, {
+      params: { pageNum },
+    });
     return data;
   }
 
-  async getArticleList(pageNum = 1) {
-    const { data } = await axios.get(`posts?pageNum=${pageNum}`);
+  async getArticleList(form: ArticleForm) {
+    const { data } = await axios.get<PagedResponseData<ArticleFacade>>('posts', {
+      params: form,
+    });
     return data;
   }
 
-  async likeArticle(postId) {
-    const { data } = await axios.post(`post/${postId}/like`);
+  async likeArticle(postId: number) {
+    const url = `post/${postId}/like`;
+    const { data } = await axios.post(url);
     return data;
   }
 
-  async cancelLikeArticle(postId) {
+  async cancelLikeArticle(postId: number) {
     const { data } = await axios.delete(`post/${postId}/like`);
     return data;
   }
 
-  async favoriteArticle(postId) {
+  async favoriteArticle(postId: number) {
     const { data } = await axios.post(`post/${postId}/favorite`);
     return data;
   }
 
-  async cancelFavoriteArticle(postId) {
+  async cancelFavoriteArticle(postId: number) {
     const { data } = await axios.delete(`post/${postId}/favorite`);
     return data;
   }
@@ -36,8 +51,8 @@ export default class ArticleService {
     return data;
   }
 
-  async careUser(id) {
-    const { data } = await axios.post(`user/follow/${id}`);
+  async careUser(userId: number) {
+    const { data } = await axios.post(`user/follow/${userId}`);
     return data;
   }
 

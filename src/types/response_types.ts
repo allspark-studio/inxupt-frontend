@@ -24,3 +24,18 @@ export interface CustomResponseData<T> {
 export interface ArticleInfoList {
   body: string;
 }
+
+export type PagedResponseData<T> = CustomResponseData<{
+  /** 本页数据列表 */
+  list: T[];
+  /** 是否有下一页 */
+  hasNextPage: boolean;
+  /** 当前页码 */
+  pageNum: number;
+  /** 单页数据量 */
+  pageSize: number;
+  /** 总页数 */
+  pages: number;
+  /** 总数据量 */
+  total: number;
+}>;

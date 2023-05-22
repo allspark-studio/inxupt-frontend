@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="article-item">
     <UserInfo
       :name="articleInfo.authorName"
       :url="articleInfo.authorAvatar"
@@ -36,7 +36,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { MoreS, Fabulous, Star, Message, ShareN } from '@nutui/icons-vue-taro';
 import Taro from '@tarojs/taro';
 import UserInfo from '~/components/user_info/UserInfo.vue';
@@ -97,8 +97,7 @@ const initState = () => {
     StarColor.value = '#FEDA48';
   }
 };
-initState();
-const switchFabulousColor = async (id) => {
+const switchFabulousColor = async (id: number) => {
   if (!props.articleInfo.liked && FabulousColor.value === '') {
     FabulousColor.value = '#FEDA48';
     likeCount.value += 1;
@@ -125,7 +124,7 @@ const switchFabulousColor = async (id) => {
     }
   }
 };
-const switchStarColor = async (id) => {
+const switchStarColor = async (id: number) => {
   if (!props.articleInfo.favorited && StarColor.value === '') {
     StarColor.value = '#FEDA48';
     favoriteCount.value += 1;
@@ -152,4 +151,40 @@ const switchStarColor = async (id) => {
     }
   }
 };
+
+onMounted(() => {
+  initState();
+});
 </script>
+
+<style lang="scss">
+.article-item {
+  background: #ffffff;
+  border-radius: 20px;
+  margin-bottom: 25px;
+  padding-bottom: 10px;
+  .content {
+    margin: 0px 20px;
+    font-size: 30px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    word-break: break-all;
+    -webkit-box-orient: vertical;
+  }
+  .interactive {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    li {
+      display: flex;
+      span {
+        margin-left: 5px;
+        margin-top: 3px;
+      }
+    }
+  }
+}
+</style>
