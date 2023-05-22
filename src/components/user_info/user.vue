@@ -2,14 +2,14 @@
   <view class="ix-user-info">
     <view class="ix-user-info__content">
       <nut-avatar v-bind="avatarProps" class="ix-user-info__avatar" size="large">
-        <img :src="url" />
+        <img :src="avatarUrl" />
       </nut-avatar>
       <view class="ix-user-info__detail">
         <view class="ix-user-info__detail__basic">
-          <view :style="userNameStyle">{{ name }}</view>
+          <view>{{ nickname }}</view>
           <image src="../icon/sex.png" class="ix-user-info__detail__basic_image"></image>
         </view>
-        <view class="ix-user-info__detail__sign">{{ signature }}</view>
+        <view class="ix-user-info__detail__sign">{{ description }}</view>
         <view class="ix-user-info__detail__experience">
           <nut-tag
             round
@@ -22,13 +22,9 @@
           </nut-tag>
           <view class="ix-user-info__detail__experience__exp">{{ experience }}/500</view>
         </view>
-        <nut-progress
-          percentage="50"
-          :show-text="false"
-          stroke-height="24"
-          class="ix-user-info__detail__progress"
-          size="small"
-        />
+        <view class="ix-user-info__detail__progress">
+          <nut-progress percentage="50" :show-text="false" stroke-height="24" size="small" />
+        </view>
       </view>
     </view>
     <view class="suffix">
@@ -49,11 +45,12 @@ export interface AvatarProps {
 }
 
 export interface UserInfoProps {
-  name: string;
+  nickname: string;
   url: string;
-  signature: string;
+  description: string;
   level: number;
   sex: string;
+  avatarUrl: string;
   experience: number;
   userNameStyle?: string | CSSProperties;
   avatarProps?: AvatarProps;
@@ -62,6 +59,9 @@ export interface UserInfoProps {
 const props = defineProps<UserInfoProps>();
 const levelStr = computed(() => `LV${props.level}`);
 const levelColor = computed(() => {
+  if (!props.level) {
+    return LEVEL_COLOR_LIST[0];
+  }
   if (props.level > 6) {
     return LEVEL_COLOR_LIST[5];
   }
@@ -120,6 +120,7 @@ const levelColor = computed(() => {
     }
     &__progress {
       margin-top: 5px;
+      width: 280px;
     }
   }
 }
