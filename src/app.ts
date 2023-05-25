@@ -8,7 +8,7 @@ import { useUserStore } from '~/store/user_store';
 
 // 入口组件不需要实现 render 方法，即使实现了也会被 taro 所覆盖
 const App = createApp({
-  onLaunch: async () => {
+  mounted: async () => {
     // 初始化 jwt 和用户 userInfo
     const userStore = useUserStore();
     await userStore.initUserTokenId();

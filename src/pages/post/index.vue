@@ -32,6 +32,7 @@
 <script setup lang="ts">
 import Taro, { useDidHide, useLoad } from '@tarojs/taro';
 import { reactive, ref } from 'vue';
+import PostService from '~/service/post_service';
 // import { TopicEnum } from './constants';
 const TopicEnum = {
   LIFE: 'life',
@@ -43,12 +44,13 @@ const TopicEnum = {
 interface topicModel {
   value: string;
   label: string;
+  id: number;
 }
 const topicOptions: topicModel[] = [
-  { value: TopicEnum.LIFE, label: '#生活' },
-  { value: TopicEnum.LEARN, label: '#学术' },
-  { value: TopicEnum.EMOTION, label: '#情感' },
-  { value: TopicEnum.OTHER, label: '#其他' },
+  { value: TopicEnum.LIFE, label: '#生活', id: 0 },
+  { value: TopicEnum.LEARN, label: '#学术', id: 1 },
+  { value: TopicEnum.EMOTION, label: '#情感', id: 2 },
+  { value: TopicEnum.OTHER, label: '#其他', id: 3 },
 ];
 
 // 控制文本域高度变量
@@ -61,13 +63,33 @@ const textareaPlaceHolder = ref('tip content');
 let selectedTopics = reactive([topicOptions[0]]);
 // 是否提交退出页面，控制是否清楚storage
 let checkCommit = false;
+interface postDataFormat {
+  atIds: number[];
+  body: string;
+  customTags: string[];
+  mainTagIds: number[];
+  mediaUrls: string[];
+}
+const postData: postDataFormat = {
+  // 用户at功能传输的id
+  atIds: [],
+  // 帖子正文
+  body: textareaValue.value,
+  // 帖子自定义标签，暂时置空
+  customTags: [],
+  // 帖子分类id
+  mainTagIds: [],
+  // 帖子的图片/视频 url（需要先通过上传接口上传，获取图片/视频 url）
+  mediaUrls: [],
+};
+const postService = new PostService();
+// 渲染class
 function ifTopicSelected(value) {
   return selectedTopics.findIndex((item) => {
     return item.value === value.value;
   });
 }
 const checkTopicHandler = (value: topicModel) => {
-  // selectedTopics.push(value);
   const index = selectedTopics.findIndex((item) => {
     return item.value === value.value;
   });
@@ -79,18 +101,32 @@ const checkTopicHandler = (value: topicModel) => {
     selectedTopics.push(value);
   }
 };
+const filterId = () => {
+  const idArr: number[] = [];
+  selectedTopics.forEach((item) => idArr.push(item.id));
+  return idArr;
+};
 // 点击提交摁钮处理函数
-const commitHandler = () => {
+const commitHandler = async () => {
+  postData.body = textareaValue.value;
+  postData.mainTagIds = filterId();
+  try {
+    await postService.SubmitPost(postData);
+  } catch (e) {
+    Taro.showToast({
+      title: '发布失败',
+    });
+  }
+  // 使销毁页面为提交后销毁
   checkCommit = true;
   // 恢复话题选中列表
-  selectedTopics = [{ value: TopicEnum.LIFE, label: '#生活' }];
-  // 清空文本信息
-  textareaValue.value = '';
+  selectedTopics = [{ value: TopicEnum.LIFE, label: '#生活', id: 0 }];
   // 清空storage中的文本域信息
   Taro.setStorage({
     data: '',
     key: 'textareaValue',
   });
+  // 跳转返回主页;
   Taro.switchTab({
     url: '../home/index',
   });
@@ -98,6 +134,8 @@ const commitHandler = () => {
     title: '发送成功',
     icon: 'success',
   });
+  // 清空文字
+  textareaValue.value = '';
 };
 // 用户进入编辑页面默认读取storage中的文本框数据
 useLoad(() => {
