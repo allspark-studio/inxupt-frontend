@@ -19,13 +19,13 @@
           @tap="checkTopicHandler(value)"
           :class="ifTopicSelected(value) === index ? 'active' : ''"
         >
-          {{ value.label }}
+          #{{ value.label }}
         </view>
       </view>
     </view>
-  </view>
-  <view class="btnCom">
-    <nut-button block @tap="commitHandler">提交</nut-button>
+    <view class="btnCom">
+      <nut-button block @tap="commitHandler">提交</nut-button>
+    </view>
   </view>
 </template>
 
@@ -33,43 +33,25 @@
 import Taro, { useDidHide, useLoad } from '@tarojs/taro';
 import { reactive, ref } from 'vue';
 import PostService from '~/service/post_service';
-// import { TopicEnum } from './constants';
-const TopicEnum = {
-  LIFE: 'life',
-  LEARN: 'learn',
-  EMOTION: 'emotion',
-  OTHER: 'other',
-};
-
-interface topicModel {
-  value: string;
-  label: string;
-  id: number;
-}
+import { TopicEnum } from '~/pages/post/constant';
+import { topicModel, postDataFormat } from '~/pages/post/type';
+// 话题List
 const topicOptions: topicModel[] = [
-  { value: TopicEnum.LIFE, label: '#生活', id: 0 },
-  { value: TopicEnum.LEARN, label: '#学术', id: 1 },
-  { value: TopicEnum.EMOTION, label: '#情感', id: 2 },
-  { value: TopicEnum.OTHER, label: '#其他', id: 3 },
+  { value: TopicEnum.LIFE, label: '生活', id: 0 },
+  { value: TopicEnum.LEARN, label: '学术', id: 1 },
+  { value: TopicEnum.EMOTION, label: '情感', id: 2 },
+  { value: TopicEnum.OTHER, label: '其他', id: 3 },
 ];
-
 // 控制文本域高度变量
 const textareaSize = ref({ minHeight: 400 });
 // 文本域输入文字
 const textareaValue = ref('');
 // 文本域提示信息
-const textareaPlaceHolder = ref('tip content');
+const textareaPlaceHolder = ref('请输入~');
 // 所选择的话题信息，默认选择第一个
 let selectedTopics = reactive([topicOptions[0]]);
-// 是否提交退出页面，控制是否清楚storage
+// 是否提交退出页面，控制是否清空storage中的帖子草稿
 let checkCommit = false;
-interface postDataFormat {
-  atIds: number[];
-  body: string;
-  customTags: string[];
-  mainTagIds: number[];
-  mediaUrls: string[];
-}
 const postData: postDataFormat = {
   // 用户at功能传输的id
   atIds: [],
@@ -93,14 +75,15 @@ const checkTopicHandler = (value: topicModel) => {
   const index = selectedTopics.findIndex((item) => {
     return item.value === value.value;
   });
-  // 已有值,剔除
+  // 已有值,剔除该数据
   if (index >= 0) {
     selectedTopics.splice(index, 1);
   } else {
-    // 未有值，新增
+    // 未有值，新增该数据
     selectedTopics.push(value);
   }
 };
+// 过滤出选中的话题id，返回一个number类型数组
 const filterId = () => {
   const idArr: number[] = [];
   selectedTopics.forEach((item) => idArr.push(item.id));
@@ -115,6 +98,7 @@ const commitHandler = async () => {
   } catch (e) {
     Taro.showToast({
       title: '发布失败',
+      icon: 'error',
     });
   }
   // 使销毁页面为提交后销毁
@@ -200,7 +184,10 @@ page {
 
   .btnCom {
     margin-top: 20px;
-    background-color: #feda48;
+    button {
+      background-color: #feda48;
+      color: black;
+    }
   }
 }
 </style>
