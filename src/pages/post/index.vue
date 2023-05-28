@@ -47,16 +47,16 @@ const textareaSize = ref({ minHeight: 400 });
 // 文本域输入文字
 const textareaValue = ref('');
 // 文本域提示信息
-const textareaPlaceHolder = ref('请输入~');
+const textareaPlaceHolder = ref('最近还好吗？快来和大家说说！');
 // 所选择的话题信息，默认选择第一个
 let selectedTopics = reactive([topicOptions[0]]);
 // 是否提交退出页面，控制是否清空storage中的帖子草稿
 let checkCommit = false;
 const postData: postDataFormat = {
-  // 用户at功能传输的id
+  // 用户艾特功能传输的id
   atIds: [],
   // 帖子正文
-  body: textareaValue.value,
+  body: '',
   // 帖子自定义标签，暂时置空
   customTags: [],
   // 帖子分类id
@@ -104,7 +104,7 @@ const commitHandler = async () => {
   // 使销毁页面为提交后销毁
   checkCommit = true;
   // 恢复话题选中列表
-  selectedTopics = [{ value: TopicEnum.LIFE, label: '#生活', id: 0 }];
+  selectedTopics = [topicOptions[0]];
   // 清空storage中的文本域信息
   Taro.setStorage({
     data: '',
@@ -149,14 +149,14 @@ page {
   padding: 30px 20px;
 
   .inputCom {
-    background-color: rgb(255, 255, 255);
+    background-color: #ffffff;
     padding: 10px 20px 20px 20px;
     margin-bottom: 30px;
     border-radius: 20px;
   }
 
   .topicCom {
-    background-color: rgb(255, 255, 255);
+    background-color: #ffffff;
     display: flex;
     flex-direction: column;
     padding: 20px 20px;
@@ -164,7 +164,6 @@ page {
     .topicTip {
       margin: 20px 0;
       color: gray;
-      font-size: 30px;
     }
 
     .topicGroup {
@@ -172,11 +171,11 @@ page {
       justify-content: space-between;
       .topicItem {
         padding: 15px 30px;
-        background-color: #f4f5f9;
+        background-color: #ffffff;
         border-radius: 15px;
       }
       .active {
-        color: gray;
+        color: rgb(83, 83, 83);
         background-color: #feda48;
       }
     }
