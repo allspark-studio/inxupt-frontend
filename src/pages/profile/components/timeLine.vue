@@ -48,6 +48,7 @@
 import { defineProps, reactive } from 'vue';
 import { Ellipsis as NutEllipsis } from '@nutui/nutui-taro';
 import { Fabulous, Message, ShareN, Star } from '@nutui/icons-vue-taro';
+import Taro from '@tarojs/taro';
 import PostTime from './PostTime.vue';
 import OthersViewService from '~/service/othersView_service';
 
@@ -123,6 +124,13 @@ const state = reactive({
   FabulousColor: '',
   likeNum: 0,
   favoriteNum: 0,
+  msg: 'toast',
+  type: 'text',
+  show: false,
+  cover: false,
+  title: '',
+  bottom: '',
+  center: true,
 });
 
 const getData = () => {
@@ -140,13 +148,23 @@ const getData = () => {
 };
 
 getData();
+
 const switchFabulousColor = () => {
   if (!state.FabulousColor) {
     try {
-      othersViewService.like(props.item.postId).then(() => {
-        state.FabulousColor = '#FEDA48';
-        state.likeNum += 1;
-      });
+      othersViewService.like(props.item.postId).then(
+        () => {
+          state.FabulousColor = '#FEDA48';
+          state.likeNum += 1;
+        },
+        (error) => {
+          Taro.showToast({
+            title: error.msg,
+            icon: 'none',
+            duration: 2000,
+          });
+        }
+      );
     } catch (error) {
       console.error(error);
     }
@@ -165,10 +183,19 @@ const switchFabulousColor = () => {
 const switchStarColor = () => {
   if (!state.StarColor) {
     try {
-      othersViewService.favorite(props.item.postId).then(() => {
-        state.StarColor = '#FEDA48';
-        state.favoriteNum += 1;
-      });
+      othersViewService.favorite(props.item.postId).then(
+        () => {
+          state.StarColor = '#FEDA48';
+          state.favoriteNum += 1;
+        },
+        (error) => {
+          Taro.showToast({
+            title: error.msg,
+            icon: 'none',
+            duration: 2000,
+          });
+        }
+      );
     } catch (error) {
       console.error(error);
     }

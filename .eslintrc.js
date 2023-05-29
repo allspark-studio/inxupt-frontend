@@ -26,5 +26,6 @@ module.exports = {
     // 解决 enum 定义时报错：XXX is defined but never used
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': ['error'],
+    'global-require': 0,
   },
 };

@@ -73,10 +73,10 @@ const levelColor = computed(() => {
 });
 const sexUrl = computed(() => {
   if (props.gender === 1) {
-    return '../icon/male.png';
+    return require('../icon/male.png');
   }
   if (props.gender === 0) {
-    return '../icon/female.png';
+    return require('../icon/female.png');
   }
   return '';
 });

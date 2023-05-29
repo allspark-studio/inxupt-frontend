@@ -40,7 +40,7 @@
           @change="changeTab"
         >
           <nut-tab-pane
-            :title="'动态' + userData.data.newsNum"
+            :title="`动态(${userData.data.newsNum})`"
             class="othersView_tabPane"
             style="padding-left: 0rpx"
           >
@@ -49,6 +49,7 @@
               scroll-y="true"
               @scrolltolower="nextPostDataPage()"
               @scroll="handleScroll"
+              :scroll-top="state.scroll_top"
             >
               <time-line
                 v-for="(item, index) in postData.data.list"
@@ -56,15 +57,21 @@
                 :item="item"
               ></time-line>
               <view class="data-loading">{{ state.postIsLoading }}</view>
-              <view class="toTop" v-if="state.goTop_show" style="left: 648rpx"></view>
+              <view
+                class="toTop"
+                v-if="state.goTop_show"
+                style="left: 648rpx"
+                @click="toTop"
+              ></view>
             </scroll-view>
           </nut-tab-pane>
-          <nut-tab-pane :title="'收藏' + userData.data.articleNum" class="othersView_tabPane">
+          <nut-tab-pane :title="`收藏(${userData.data.articleNum})`" class="othersView_tabPane">
             <scroll-view
               scroll-y="true"
               class="scroll_block"
               @scroll="handleScroll"
               @scrolltolower="nextFavoriteDataPage()"
+              :scroll-top="state.scroll_top"
             >
               <view class="card">
                 <card
@@ -74,16 +81,22 @@
                 ></card>
               </view>
               <view class="data-loading">{{ state.favoriteIsLoading }}</view>
-              <view class="toTop" v-if="state.goTop_show" style="left: 1400rpx"></view>
+              <view
+                class="toTop"
+                v-if="state.goTop_show"
+                style="left: 1400rpx"
+                @click="toTop"
+              ></view>
             </scroll-view>
           </nut-tab-pane>
-          <nut-tab-pane :title="'粉丝' + userData.data.fansNum" class="othersView_tabPane">
+          <nut-tab-pane :title="`粉丝(${userData.data.fansNum})`" class="othersView_tabPane">
             <scroll-view
               ref="scrollContainer"
               class="scroll_block"
               @scrolltolower="nextFansDataPage()"
               scroll-y="true"
               @scroll="handleScroll"
+              :scroll-top="state.scroll_top"
             >
               <view>
                 <fans-list-item
@@ -94,15 +107,16 @@
                 ></fans-list-item>
               </view>
               <view class="data-loading">{{ state.fansIsLoading }}</view>
-              <view class="toTop" v-if="state.goTop_show"></view>
+              <view class="toTop" v-if="state.goTop_show" @click="toTop"></view>
             </scroll-view>
           </nut-tab-pane>
-          <nut-tab-pane :title="'关注' + userData.data.followNum" class="othersView_tabPane">
+          <nut-tab-pane :title="`关注(${userData.data.followNum})`" class="othersView_tabPane">
             <scroll-view
               class="scroll_block"
               scroll-y="true"
               @scrolltolower="nextFollowDataPage()"
               @scroll="handleScroll"
+              :scroll-top="state.scroll_top"
             >
               <fans-list-item
                 v-for="(item, index) in followsData.data.list"
@@ -110,7 +124,12 @@
                 :item="item"
               ></fans-list-item>
               <view class="data-loading">{{ state.followsIsLoading }}</view>
-              <view class="toTop" v-if="state.goTop_show" style="left: 2890rpx"></view>
+              <view
+                class="toTop"
+                v-if="state.goTop_show"
+                style="left: 2890rpx"
+                @click="toTop"
+              ></view>
             </scroll-view>
           </nut-tab-pane>
         </nut-tabs>
@@ -122,6 +141,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import { Tag as NutTag, Tabs as NutTabs, TabPane as NutTabPane } from '@nutui/nutui-taro';
+import { usePullDownRefresh } from '@tarojs/taro';
 import BasicLayout from '~/layout/BasicLayout.vue';
 import card from './components/card.vue';
 import FansListItem from './components/FansListItem.vue';
@@ -142,7 +162,7 @@ const state = reactive({
   followsIsLoading: '',
   postIsLoading: '',
   favoriteIsLoading: '',
-  scroll_top: 0,
+  scroll_top: -1,
   goTop_show: false,
   showPreview: false,
   imgData: ['https://shijuepi.com/uploads/allimg/201222/1-2012221T114.jpg'],
@@ -336,6 +356,7 @@ const postData = reactive({
     total: 0,
   },
 });
+
 const othersViewService = new OthersViewService();
 const getData = () => {
   try {
@@ -387,6 +408,13 @@ const getData = () => {
 };
 getData();
 
+usePullDownRefresh(() => {
+  state.fansPage = 0;
+  state.favoritePage = 0;
+  state.followsPage = 0;
+  state.followsPage = 0;
+  getData();
+});
 const nextFansDataPage = () => {
   if (state.fansPage <= FansData.data.navigateLastPage) {
     state.fansIsLoading = '数据加载中...';
@@ -461,18 +489,15 @@ const handleScroll = (e) => {
     state.goTop_show = true;
   } else {
     state.goTop_show = false;
+    if (e.detail.scrollTop === 0) {
+      state.scroll_top = -1;
+    }
   }
 };
 
-// const goTop = function () {
-//   state.scroll_top = 0;
-//   scrollContainer.value.scrollTo({
-//     scrolltop: 0,
-//     behavior: 'smooth',
-//   });
-//   console.log('----');
-//   console.log(state.scroll_top);
-// };
+const toTop = () => {
+  state.scroll_top = 0;
+};
 
 const previewImage = (e) => {
   const current = e.target.dataset.src;
@@ -490,7 +515,6 @@ const changeTab = () => {
 <style lang="scss">
 .scroll_box {
   height: 1200rpx;
-  // height: 120vh;
 }
 .backImg {
   width: 100%;
