@@ -48,7 +48,7 @@ function switchTab(index: number, path: string) {
   box-sizing: border-box;
   width: 100%;
   height: $tab-bar-height;
-  background-color: white;
+  background-color: --nut-white;
   display: flex;
   justify-content: space-between;
   .tab-bar-item {
