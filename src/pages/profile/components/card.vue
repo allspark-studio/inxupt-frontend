@@ -1,49 +1,71 @@
 <template>
   <div>
-    <UserInfo name="星野猫" url="/assets/swiper_images/head.png" :level="3">
+    <UserInfo
+      :name="props.item.authorName"
+      :url="props.item.authorAvatar"
+      :level="props.item.authorLevel"
+    >
       <template v-slot:extra>
-        <TimeAgo time="202305071200" />
+        <time-ago :time="props.item.createTime"></time-ago>
       </template>
       <template v-slot:suffix>
         <MoreS class="more" />
       </template>
     </UserInfo>
-    <nut-ellipsis
-      class="content"
-      content="NutUI3.0上线后我们研发团队也在不断的优化、测试、使用、迭代 Vue3 的相关组件，
-      但是在跨端小程序的开发过程中，发现没有合适的组件库可以支持多端开发。为了填补这一空白，
-      同时为了优化开发者体验，让 NutUI 能够为更多的开发者带来便利，我们决定在 NutUI 中增加小程序多端适配的能力。"
-      direction="end"
-      rows="3"
-      expandText="全文"
-      collapseText="收起"
-    ></nut-ellipsis>
+    <div class="content" v-html="props.item.body"></div>
     <ul class="interactive">
       <li @click="switchFabulousColor">
         <Fabulous :color="FabulousColor" />
-        <span>666</span>
+        <span>{{ props.item.likeNum }}</span>
       </li>
       <li @click="switchStarColor">
         <Star :color="StarColor" />
-        <span>666</span>
+        <span>{{ props.item.favoriteNum }}</span>
       </li>
       <li>
         <Message />
-        <span>666</span>
+        <span>{{ props.item.commentNum }}</span>
       </li>
       <li>
         <ShareN />
-        <span>666</span>
+        <span>{{ props.item.coinsNum }}</span>
       </li>
     </ul>
   </div>
 </template>
 <script setup>
 import { ref } from 'vue';
-import { Ellipsis as NutEllipsis } from '@nutui/nutui-taro';
 import { MoreS, Fabulous, Star, Message, ShareN } from '@nutui/icons-vue-taro';
 import UserInfo from '~/components/user_info/UserInfo.vue';
 import TimeAgo from '~/components/TimeAgo.vue';
+
+const props = defineProps({
+  item: {
+    postId: Number,
+    type: Number,
+    top: Boolean,
+    title: String,
+    pureText: String,
+    body: String,
+    mediaUrls: null,
+    ats: null,
+    authorId: 8,
+    authorName: String,
+    authorAvatar: String,
+    authorLevel: Number,
+    accountAuth: ['1'],
+    authorDescription: String,
+    createTime: String,
+    tags: null,
+    likeNum: Number,
+    commentNum: Number,
+    favoriteNum: Number,
+    coinsNum: Number,
+    liked: Boolean,
+    favorited: Boolean,
+    coined: Boolean,
+  },
+});
 
 const FabulousColor = ref('');
 const StarColor = ref('');

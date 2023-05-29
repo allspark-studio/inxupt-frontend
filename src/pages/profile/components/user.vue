@@ -1,13 +1,18 @@
 <template>
   <view class="ix-user-info">
     <view class="ix-user-info__content">
-      <nut-avatar v-bind="avatarProps" class="ix-user-info__avatar" size="large">
-        <img :src="avatarUrl" />
+      <nut-avatar
+        v-bind="avatarProps"
+        class="ix-user-info__avatar"
+        size="large"
+        @click="previewImage"
+      >
+        <cover-image :src="avatarUrl"></cover-image>
       </nut-avatar>
       <view class="ix-user-info__detail">
         <view class="ix-user-info__detail__basic">
           <view>{{ nickname }}</view>
-          <image src="../icon/sex.png" class="ix-user-info__detail__basic_image"></image>
+          <image :src="sexUrl" class="ix-user-info__detail__basic_image"></image>
         </view>
         <view class="ix-user-info__detail__sign">{{ description }}</view>
         <view class="ix-user-info__detail__experience">
@@ -49,13 +54,12 @@ export interface UserInfoProps {
   url: string;
   description: string;
   level: number;
-  sex: string;
+  gender: number;
   avatarUrl: string;
   experience: number;
   userNameStyle?: string | CSSProperties;
   avatarProps?: AvatarProps;
 }
-
 const props = defineProps<UserInfoProps>();
 const levelStr = computed(() => `LV${props.level}`);
 const levelColor = computed(() => {
@@ -67,6 +71,27 @@ const levelColor = computed(() => {
   }
   return LEVEL_COLOR_LIST[props.level - 1];
 });
+const sexUrl = computed(() => {
+  if (props.gender === 1) {
+    return '../icon/male.png';
+  }
+  if (props.gender === 0) {
+    return '../icon/female.png';
+  }
+  return '';
+});
+const data = {
+  imgalist: [props.avatarUrl],
+};
+
+const previewImage = (e) => {
+  console.log(e);
+  const current = e.target.dataset.src;
+  wx.previewImage({
+    current,
+    urls: data.imgalist,
+  });
+};
 </script>
 
 <style lang="scss">

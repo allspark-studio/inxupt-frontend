@@ -3,7 +3,7 @@
     <div class="timeline">
       <div class="timeline-left">
         <div class="timeline-card-title">
-          <time-ago :time="props.item.createTime"></time-ago>
+          <PostTime :time="props.item.createTime"></PostTime>
         </div>
         <div class="timeline-left-line"></div>
       </div>
@@ -22,16 +22,20 @@
       <div class="timeline-data">
         <ul class="timeline-data-interactive">
           <li @click="switchFabulousColor">
-            <Fabulous :color="FabulousColor" />
-            <span>{{ props.item.likeNum }}</span>
+            <Fabulous :color="state.FabulousColor" />
+            <span>{{ state.likeNum }}</span>
+          </li>
+          <li @click="switchStarColor">
+            <Star :color="state.StarColor" />
+            <span>{{ state.favoriteNum }}</span>
           </li>
           <li>
             <Message />
-            <span>{{ props.item.commentNum }}</span>
+            <span>{{ postData.data.commentNum }}</span>
           </li>
           <li>
             <ShareN />
-            <span>{{ props.item.favoriteNum }}</span>
+            <span>{{ postData.data.coinsNum }}</span>
           </li>
         </ul>
       </div>
@@ -41,11 +45,13 @@
 </template>
 
 <script setup>
-import { ref, defineProps } from 'vue';
+import { defineProps, reactive } from 'vue';
 import { Ellipsis as NutEllipsis } from '@nutui/nutui-taro';
-import { Fabulous, Message, ShareN } from '@nutui/icons-vue-taro';
-import TimeAgo from '~/components/TimeAgo.vue';
+import { Fabulous, Message, ShareN, Star } from '@nutui/icons-vue-taro';
+import PostTime from './PostTime.vue';
+import OthersViewService from '~/service/othersView_service';
 
+const othersViewService = new OthersViewService();
 const props = defineProps({
   item: {
     postId: Number,
@@ -74,12 +80,107 @@ const props = defineProps({
     coined: Boolean,
   },
 });
-const FabulousColor = ref('');
+
+const postData = {
+  data: {
+    accountAuth: ['string'],
+    ats: [
+      {
+        additionalProp1: {},
+      },
+    ],
+    authorAvatar: 'string',
+    authorDescription: 'string',
+    authorId: 0,
+    authorLevel: 0,
+    authorName: 'string',
+    body: 'string',
+    coined: true,
+    coinsNum: 0,
+    commentNum: 0,
+    cover: 'string',
+    createTime: 'string',
+    favoriteNum: 0,
+    favorited: true,
+    likeNum: 0,
+    liked: true,
+    mediaUrls: ['string'],
+    postId: 0,
+    pureText: 'string',
+    tags: [
+      {
+        additionalProp1: 'string',
+      },
+    ],
+    title: 'string',
+    top: true,
+    type: 0,
+  },
+};
+
+const state = reactive({
+  StarColor: '',
+  FabulousColor: '',
+  likeNum: 0,
+  favoriteNum: 0,
+});
+
+const getData = () => {
+  try {
+    othersViewService.getPost(props.item.postId).then((res) => {
+      postData.data = res.data.data;
+      state.FabulousColor = postData.data.liked ? '#FEDA48' : '';
+      state.StarColor = postData.data.favorited ? '#FEDA48' : '';
+      state.likeNum = postData.data.likeNum;
+      state.favoriteNum = postData.data.favoriteNum;
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+getData();
 const switchFabulousColor = () => {
-  if (!FabulousColor.value) {
-    FabulousColor.value = '#FEDA48';
+  if (!state.FabulousColor) {
+    try {
+      othersViewService.like(props.item.postId).then(() => {
+        state.FabulousColor = '#FEDA48';
+        state.likeNum += 1;
+      });
+    } catch (error) {
+      console.error(error);
+    }
   } else {
-    FabulousColor.value = '';
+    try {
+      othersViewService.unlike(props.item.postId).then(() => {
+        state.FabulousColor = '';
+        state.likeNum -= 1;
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+};
+
+const switchStarColor = () => {
+  if (!state.StarColor) {
+    try {
+      othersViewService.favorite(props.item.postId).then(() => {
+        state.StarColor = '#FEDA48';
+        state.favoriteNum += 1;
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  } else {
+    try {
+      othersViewService.unfavorite(props.item.postId).then(() => {
+        state.StarColor = '';
+        state.favoriteNum -= 1;
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 };
 </script>
@@ -98,7 +199,7 @@ const switchFabulousColor = () => {
       width: 10px;
       position: absolute;
       top: 35px;
-      left: 64px;
+      left: 75px;
       height: 100%;
       padding: 3px;
       border-left: 1px solid rgb(182, 182, 186);
@@ -107,7 +208,7 @@ const switchFabulousColor = () => {
   &-card {
     height: 100%;
     &-title {
-      width: 150px;
+      width: 160px;
       text-align: center;
       font-size: 6px;
       position: absolute;
@@ -128,7 +229,7 @@ const switchFabulousColor = () => {
     display: block;
     width: 100%;
     &-interactive {
-      padding-left: 65px;
+      padding-left: 103px;
       display: flex;
       justify-content: space-around;
     }
@@ -144,6 +245,6 @@ const switchFabulousColor = () => {
 
 .content {
   line-height: 46px;
-  padding-left: 22px;
+  padding-left: 50px;
 }
 </style>
