@@ -3,9 +3,9 @@ export interface ArticleFacade {
 }
 
 export enum CategoryEnum {
-  ALL = 'all',
-  LIFE = 'life',
-  ACADEMIC = 'academic',
-  EMOTION = 'emotion',
-  OTHERS = 'others',
+  ALL = '1',
+  LIFE = '2',
+  ACADEMIC = '3',
+  EMOTION = '4',
+  OTHERS = '5',
 }

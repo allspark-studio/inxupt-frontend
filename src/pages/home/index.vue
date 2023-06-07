@@ -4,72 +4,66 @@
     v-model="state.searchValue"
     :placeholder="state.hotSearchList[hotSearchCurrentIndex]"
     class="search-bar"
+    @search="searchArticleList"
   >
     <template v-slot:leftin>
       <Search2 />
     </template>
   </nut-searchbar>
-  <basic-layout class="home">
-    <view class="main">
-      <swiper class="test-h" :vertical="false" :circular="true" :autoplay="true" :interval="3000">
-        <swiper-item>
-          <view><img src="https://img1.imgtp.com/2023/05/22/Li0MNY0n.png" alt="" /></view>
-        </swiper-item>
-        <swiper-item>
-          <view><img src="https://img1.imgtp.com/2023/05/22/Li0MNY0n.png" alt="" /></view>
-        </swiper-item>
-        <swiper-item>
-          <view><img src="https://img1.imgtp.com/2023/05/22/Li0MNY0n.png" alt="" /></view>
-        </swiper-item>
-      </swiper>
-      <nut-tabs
-        class="tabs"
-        color="#1a1a1a "
-        size="normal"
-        background="#E6EAED"
-        v-model="state.activeCategory"
-      >
-        <template v-slot:titles>
-          <view class="nut-tabs">
-            <view
-              class="nut-tabs__titles-item"
-              :class="{ active: state.activeCategory == item.paneKey }"
-              :key="item.paneKey"
-              @click="handleCategoryChange(item.paneKey)"
-              v-for="item in state.paneList"
-            >
-              <span class="nut-tabs__titles-item__text">
-                {{ item.title }}
-              </span>
-            </view>
-            <view class="sort-category">
-              <switches
-                @change="handleSortChange"
-                active-text="最新"
-                inactive-text="最热"
-              ></switches>
-            </view>
-          </view>
-        </template>
-        <nut-tab-pane
-          class="pane"
-          v-for="item in state.paneList"
+  <swiper class="test-h" :vertical="false" :circular="true" :autoplay="true" :interval="3000">
+    <swiper-item>
+      <view><img src="https://img1.imgtp.com/2023/05/22/Li0MNY0n.png" alt="" /></view>
+    </swiper-item>
+    <swiper-item>
+      <view><img src="https://img1.imgtp.com/2023/05/22/Li0MNY0n.png" alt="" /></view>
+    </swiper-item>
+    <swiper-item>
+      <view><img src="https://img1.imgtp.com/2023/05/22/Li0MNY0n.png" alt="" /></view>
+    </swiper-item>
+  </swiper>
+  <nut-tabs
+    class="tabs"
+    color="#1a1a1a "
+    size="normal"
+    background="#E6EAED"
+    v-model="state.activeCategory"
+  >
+    <template v-slot:titles>
+      <view class="nut-tabs">
+        <view
+          class="nut-tabs__titles-item"
+          :class="{ active: state.activeCategory == item.paneKey }"
           :key="item.paneKey"
-          :pane-key="item.paneKey"
+          @click="handleCategoryChange(item.paneKey)"
+          v-for="item in state.paneList"
         >
-          <template v-if="state.articleList.length > 0">
-            <article-item
-              v-for="article in state.articleList"
-              :key="article.postId"
-              :article-info="article"
-            ></article-item>
-            <load-more :finished="finished"></load-more>
-          </template>
-          <article-loader v-else></article-loader>
-        </nut-tab-pane>
-      </nut-tabs>
-    </view>
-  </basic-layout>
+          <span class="nut-tabs__titles-item__text">
+            {{ item.title }}
+          </span>
+        </view>
+        <view class="sort-category">
+          <switches @change="handleSortChange" active-text="最新" inactive-text="最热"></switches>
+        </view>
+      </view>
+    </template>
+    <nut-tab-pane
+      class="pane"
+      v-for="item in state.paneList"
+      :key="item.paneKey"
+      :pane-key="item.paneKey"
+    >
+      <template v-if="state.articleList.length > 0">
+        <article-item
+          v-for="article in state.articleList"
+          :key="article.postId"
+          :article-info="article"
+        ></article-item>
+        <load-more :finished="state.finished"></load-more>
+      </template>
+      <article-loader v-else></article-loader>
+    </nut-tab-pane>
+  </nut-tabs>
+  <basic-layout class="home"></basic-layout>
 </template>
 
 <script setup lang="ts">
@@ -136,16 +130,30 @@ const fetchHotSearch = async () => {
     console.error(e);
   }
 };
+/** 根据搜索关键字请求文章列表 */
 
+const searchArticleList = async () => {
+  try {
+    const { searchValue } = state;
+    const { data } = await articleService.searchArticle(searchValue);
+    console.log(data);
+  } catch (e) {
+    Taro.showToast({
+      icon: 'none',
+      title: e.msg,
+    });
+  }
+};
 /** 请求文章列表 */
 const fetchArticles = async () => {
   try {
     const { pageNum, activeCategory } = state;
     const { data } = await articleService.getArticleList({
-      category: activeCategory !== CategoryEnum.ALL ? activeCategory : undefined,
+      categoryId: activeCategory !== CategoryEnum.ALL ? activeCategory : undefined,
       pageNum,
       sortedBy: sortType.value,
     });
+
     state.finished = !data.hasNextPage;
     if (pageNum === 1) {
       state.articleList = data.list;
@@ -206,7 +214,7 @@ onUnmounted(() => {
 
 <style lang="scss">
 .search-bar {
-  opacity: 1;
+  opacity: 0.5;
   position: sticky;
   width: 750px;
   top: 0px;
@@ -223,41 +231,33 @@ onUnmounted(() => {
     bottom: 0;
   }
 }
-.home {
+
+.test-h {
   width: 750px;
+  height: 280px;
+  box-sizing: border-box;
   background: #e6eaed;
-  position: relative;
-  .main {
-    width: 750px;
+  padding: 20px 20px 0px 20px;
+  swiper-item {
+    img {
+      width: 710px;
+      height: 260px;
+      border-radius: 30px;
+    }
   }
-  .test-h {
-    width: 750px;
-    height: 280px;
-    box-sizing: border-box;
+}
+.tabs {
+  margin-bottom: 5px;
+  .nut-tabs {
+    justify-content: start;
+    .sort-category {
+      margin-top: 20px;
+      margin-left: 50px;
+    }
+  }
+  .pane {
     background: #e6eaed;
-    padding: 20px 20px 0px 20px;
-    swiper-item {
-      img {
-        width: 710px;
-        height: 260px;
-        border-radius: 30px;
-      }
-    }
-  }
-  .tabs {
-    margin-bottom: 20px;
-    .nut-tabs {
-      justify-content: start;
-      .sort-category {
-        position: absolute;
-        right: 20px;
-        top: 22px;
-      }
-    }
-    .pane {
-      background: #e6eaed;
-      padding: 10px 20px;
-    }
+    padding: 10px 20px;
   }
 }
 </style>

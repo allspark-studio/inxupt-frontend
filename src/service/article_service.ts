@@ -4,7 +4,7 @@ import { ArticleFacade, CategoryEnum } from '~/types/article_types';
 import { PagedResponseData } from '~/types/response_types';
 
 export type ArticleForm = {
-  category?: CategoryEnum;
+  categoryId?: CategoryEnum;
   pageNum?: number;
   sortedBy?: SortType;
 };
@@ -56,8 +56,26 @@ export default class ArticleService {
     return data;
   }
 
+  async cancelCareUser(userId: number) {
+    const { data } = await axios.delete(`user/follow/${userId}`);
+    return data;
+  }
+
+  async getUserCare(userId: number) {
+    const { data } = await axios.get(`user/${userId}/info`);
+    return data;
+  }
+
   async hotIndexSort() {
     const { data } = await axios.post('api/post/heat');
+    return data;
+  }
+
+  async searchArticle(keyWord: string) {
+    const url = 'search/posts';
+    const { data } = await axios.get(url, {
+      params: { keyWord },
+    });
     return data;
   }
 }
