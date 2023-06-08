@@ -21,14 +21,7 @@
           >
             <template v-slot:suffix>
               <div class="user_attention">
-                <nut-tag
-                  :color="state.bgColor"
-                  style="width: 50px"
-                  @click="switchState"
-                  class="tag"
-                >
-                  {{ state.attention }}
-                </nut-tag>
+                <span>编辑资料></span>
               </div>
             </template>
           </user>
@@ -36,11 +29,11 @@
         <nut-tabs
           class="othersView_tabs"
           v-model="state.tab1value"
-          swipeable="true"
+          :swipeable="true"
           @change="changeTab"
         >
           <nut-tab-pane
-            :title="'动态' + userData.data.newsNum"
+            :title="'动态' + '(' + userData.data.newsNum + ')'"
             class="othersView_tabPane"
             style="padding-left: 0rpx"
           >
@@ -59,7 +52,10 @@
               <view class="toTop" v-if="state.goTop_show" style="left: 648rpx"></view>
             </scroll-view>
           </nut-tab-pane>
-          <nut-tab-pane :title="'收藏' + userData.data.articleNum" class="othersView_tabPane">
+          <nut-tab-pane
+            :title="'收藏' + '(' + userData.data.favoriteNum + ')'"
+            class="othersView_tabPane"
+          >
             <scroll-view
               scroll-y="true"
               class="scroll_block"
@@ -77,7 +73,10 @@
               <view class="toTop" v-if="state.goTop_show" style="left: 1400rpx"></view>
             </scroll-view>
           </nut-tab-pane>
-          <nut-tab-pane :title="'粉丝' + userData.data.fansNum" class="othersView_tabPane">
+          <nut-tab-pane
+            :title="'粉丝' + '(' + userData.data.fansNum + ')'"
+            class="othersView_tabPane"
+          >
             <scroll-view
               ref="scrollContainer"
               class="scroll_block"
@@ -97,7 +96,10 @@
               <view class="toTop" v-if="state.goTop_show"></view>
             </scroll-view>
           </nut-tab-pane>
-          <nut-tab-pane :title="'关注' + userData.data.followNum" class="othersView_tabPane">
+          <nut-tab-pane
+            :title="'关注' + '(' + userData.data.followNum + ')'"
+            class="othersView_tabPane"
+          >
             <scroll-view
               class="scroll_block"
               scroll-y="true"
@@ -121,7 +123,7 @@
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
-import { Tag as NutTag, Tabs as NutTabs, TabPane as NutTabPane } from '@nutui/nutui-taro';
+import { Tabs as NutTabs, TabPane as NutTabPane } from '@nutui/nutui-taro';
 import BasicLayout from '~/layout/BasicLayout.vue';
 import card from './components/card.vue';
 import FansListItem from './components/FansListItem.vue';
@@ -132,8 +134,6 @@ import OthersViewService from '~/service/othersView_service';
 const state = reactive({
   tab1value: '0',
   bgHeight: '30%',
-  bgColor: '#FEDA48',
-  attention: '关注',
   fansPage: 1,
   followsPage: 1,
   postPage: 1,
@@ -150,7 +150,7 @@ const state = reactive({
 const userData = reactive({
   data: {
     accountAuth: ['string'],
-    articleNum: 0,
+    favoriteNum: 0,
     avatarUrl: 'string',
     backgroundUrl: 'string',
     description: 'string',
@@ -339,11 +339,8 @@ const postData = reactive({
 const othersViewService = new OthersViewService();
 const getData = () => {
   try {
-    othersViewService.getUserInfo(1).then((res) => {
+    othersViewService.getUserInfo().then((res) => {
       userData.data = res.data.data;
-      state.attention = userData.data.followed ? '已关注' : '关注';
-      state.bgColor = userData.data.followed ? 'gainsboro' : '#FEDA48';
-      state.imgData[0] = userData.data.backgroundUrl;
     });
   } catch (error) {
     console.error(error);
@@ -377,7 +374,7 @@ const getData = () => {
   }
 
   try {
-    othersViewService.getFavoriteArticles(1, state.favoritePage).then((res) => {
+    othersViewService.getFavoriteArticles(1, 10).then((res) => {
       favoriteData.data = res.data.data;
       state.favoritePage += 1;
     });
@@ -439,22 +436,6 @@ const nextFavoriteDataPage = () => {
   }
 };
 
-const switchState = () => {
-  if (userData.data.followed) {
-    othersViewService.unFollow(1).then(() => {
-      state.attention = '关注';
-      state.bgColor = '#FEDA48';
-      userData.data.followed = false;
-    });
-  } else {
-    othersViewService.follow(1).then(() => {
-      state.attention = '已关注';
-      state.bgColor = 'gainsboro';
-      userData.data.followed = true;
-    });
-  }
-};
-
 const scrollContainer = ref(null);
 const handleScroll = (e) => {
   if (e.detail.scrollTop > 150) {
@@ -491,6 +472,18 @@ const changeTab = () => {
 .scroll_box {
   height: 1200rpx;
   // height: 120vh;
+  .othersView {
+    .user {
+      .user_attention {
+        margin-top: 76px;
+        margin-right: 17px;
+        font-family: 'Yuanti SC';
+        font-style: normal;
+        font-family: 400;
+        color: #ccc;
+      }
+    }
+  }
 }
 .backImg {
   width: 100%;

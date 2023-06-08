@@ -25,10 +25,6 @@
             <Fabulous :color="state.FabulousColor" />
             <span>{{ state.likeNum }}</span>
           </li>
-          <li @click="switchStarColor">
-            <Star :color="state.StarColor" />
-            <span>{{ state.favoriteNum }}</span>
-          </li>
           <li>
             <Message />
             <span>{{ postData.data.commentNum }}</span>
@@ -47,7 +43,7 @@
 <script setup>
 import { defineProps, reactive } from 'vue';
 import { Ellipsis as NutEllipsis } from '@nutui/nutui-taro';
-import { Fabulous, Message, ShareN, Star } from '@nutui/icons-vue-taro';
+import { Fabulous, Message, ShareN } from '@nutui/icons-vue-taro';
 import PostTime from './PostTime.vue';
 import OthersViewService from '~/service/othersView_service';
 
@@ -100,8 +96,6 @@ const postData = {
     commentNum: 0,
     cover: 'string',
     createTime: 'string',
-    favoriteNum: 0,
-    favorited: true,
     likeNum: 0,
     liked: true,
     mediaUrls: ['string'],
@@ -135,7 +129,7 @@ const getData = () => {
       state.favoriteNum = postData.data.favoriteNum;
     });
   } catch (error) {
-    console.error(error);
+    // console.error(error);
   }
 };
 
@@ -148,7 +142,7 @@ const switchFabulousColor = () => {
         state.likeNum += 1;
       });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   } else {
     try {
@@ -157,29 +151,7 @@ const switchFabulousColor = () => {
         state.likeNum -= 1;
       });
     } catch (error) {
-      console.error(error);
-    }
-  }
-};
-
-const switchStarColor = () => {
-  if (!state.StarColor) {
-    try {
-      othersViewService.favorite(props.item.postId).then(() => {
-        state.StarColor = '#FEDA48';
-        state.favoriteNum += 1;
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  } else {
-    try {
-      othersViewService.unfavorite(props.item.postId).then(() => {
-        state.StarColor = '';
-        state.favoriteNum -= 1;
-      });
-    } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }
 };

@@ -11,7 +11,7 @@
       </div>
     </template>
     <template v-slot:suffix>
-      <nut-tag :color="state.bgColor" style="width: 50px" @click="switchState" class="suffix_tag">
+      <nut-tag :color="state.bgColor" style="width: 50px" class="suffix_tag">
         {{ state.attention }}
       </nut-tag>
     </template>
@@ -24,17 +24,17 @@ import { Tag as NutTag } from '@nutui/nutui-taro';
 import UserInfo from '~/components/user_info/UserInfo.vue';
 import OthersViewService from '~/service/othersView_service';
 
-const props = defineProps<{
-  item: {
-    id: Number;
-    nickName: string;
-    avatarUrl: string;
-    accountAuth: string[];
-    description: string;
-    followed: boolean;
-    level: Number | null;
-  };
-}>();
+// const props = defineProps<{
+//   item: {
+//     id: Number;
+//     nickName: string;
+//     avatarUrl: string;
+//     accountAuth: string[];
+//     description: string;
+//     followed: boolean;
+//     level: Number | null;
+//   };
+// }>();
 
 const state = reactive({
   bgColor: '#FEDA48',
@@ -65,31 +65,16 @@ const userData = reactive({
 const othersViewService = new OthersViewService();
 const getData = () => {
   try {
-    othersViewService.getUserInfo(props.item.id).then((res) => {
+    othersViewService.getUserInfo().then((res) => {
       userData.data = res.data.data;
       state.attention = userData.data.followed ? '已关注' : '关注';
       state.bgColor = userData.data.followed ? 'gainsboro' : '#FEDA48';
     });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 };
 getData();
-const switchState = () => {
-  if (userData.data.followed) {
-    othersViewService.unFollow(props.item.id).then(() => {
-      state.attention = '关注';
-      state.bgColor = '#FEDA48';
-      userData.data.followed = false;
-    });
-  } else {
-    othersViewService.follow(props.item.id).then(() => {
-      state.attention = '已关注';
-      state.bgColor = 'gainsboro';
-      userData.data.followed = true;
-    });
-  }
-};
 </script>
 
 <style lang="scss">
