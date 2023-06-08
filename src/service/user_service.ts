@@ -3,6 +3,7 @@ import { UserFacade, UserTokenId } from '~/types/user_types';
 import axios from '~/request/index';
 import { CustomResponseData, ResponseStatusCode } from '~/types/response_types';
 import { CustomResponseError } from '~/request/global_error_handler';
+import { USER_ID_KEY, USER_TOKEN_KEY } from '~/constants/storage';
 
 export const USER_SERVICE_BASE = 'user';
 
@@ -14,6 +15,8 @@ export default class UserService {
     }
     const url = `${USER_SERVICE_BASE}/loginByWechat`;
     const { data } = await axios.post<CustomResponseData<UserTokenId>>(url, { code });
+    Taro.setStorageSync(USER_TOKEN_KEY, data.data.token);
+    Taro.setStorageSync(USER_ID_KEY, data.data.userId);
     return data;
   }
 
@@ -21,5 +24,10 @@ export default class UserService {
     const url = `${USER_SERVICE_BASE}/${userId}/info`;
     const { data } = await axios.get<CustomResponseData<UserFacade>>(url);
     return data;
+  }
+
+  coinPost(postId: number) {
+    const url = `post/${postId}/coin`;
+    return axios.post(url);
   }
 }
