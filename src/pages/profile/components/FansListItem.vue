@@ -22,7 +22,7 @@
 import { reactive } from 'vue';
 import { Tag as NutTag } from '@nutui/nutui-taro';
 import UserInfo from '~/components/user_info/UserInfo.vue';
-import OthersViewService from '~/service/othersView_service';
+import PersonViewService from '~/service/personView_service';
 
 // const props = defineProps<{
 //   item: {
@@ -62,10 +62,10 @@ const userData = reactive({
   },
 });
 
-const othersViewService = new OthersViewService();
+const personViewService = new PersonViewService();
 const getData = () => {
   try {
-    othersViewService.getUserInfo().then((res) => {
+    personViewService.getUserInfo().then((res) => {
       userData.data = res.data.data;
       state.attention = userData.data.followed ? '已关注' : '关注';
       state.bgColor = userData.data.followed ? 'gainsboro' : '#FEDA48';

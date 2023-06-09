@@ -45,9 +45,9 @@ import { defineProps, reactive } from 'vue';
 import { Ellipsis as NutEllipsis } from '@nutui/nutui-taro';
 import { Fabulous, Message, ShareN } from '@nutui/icons-vue-taro';
 import PostTime from './PostTime.vue';
-import OthersViewService from '~/service/othersView_service';
+import PersonViewService from '~/service/personView_service';
 
-const othersViewService = new OthersViewService();
+const personViewService = new PersonViewService();
 const props = defineProps({
   item: {
     postId: Number,
@@ -121,7 +121,7 @@ const state = reactive({
 
 const getData = () => {
   try {
-    othersViewService.getPost(props.item.postId).then((res) => {
+    personViewService.getPost(props.item.postId).then((res) => {
       postData.data = res.data.data;
       state.FabulousColor = postData.data.liked ? '#FEDA48' : '';
       state.StarColor = postData.data.favorited ? '#FEDA48' : '';
@@ -137,7 +137,7 @@ getData();
 const switchFabulousColor = () => {
   if (!state.FabulousColor) {
     try {
-      othersViewService.like(props.item.postId).then(() => {
+      personViewService.like(props.item.postId).then(() => {
         state.FabulousColor = '#FEDA48';
         state.likeNum += 1;
       });
@@ -146,7 +146,7 @@ const switchFabulousColor = () => {
     }
   } else {
     try {
-      othersViewService.unlike(props.item.postId).then(() => {
+      personViewService.unlike(props.item.postId).then(() => {
         state.FabulousColor = '';
         state.likeNum -= 1;
       });

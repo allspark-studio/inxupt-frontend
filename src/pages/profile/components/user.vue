@@ -31,8 +31,13 @@
         </view>
       </view>
     </view>
-    <view class="suffix">
-      <slot name="suffix"></slot>
+    <view>
+      <view class="setting">
+        <slot name="setting"></slot>
+      </view>
+      <view class="suffix">
+        <slot name="suffix"></slot>
+      </view>
     </view>
   </view>
 </template>

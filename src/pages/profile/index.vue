@@ -24,6 +24,11 @@
                 <span>编辑资料></span>
               </div>
             </template>
+            <template v-slot:setting>
+              <div class="user_setting">
+                <Setting />
+              </div>
+            </template>
           </user>
         </div>
         <nut-tabs
@@ -124,12 +129,13 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import { Tabs as NutTabs, TabPane as NutTabPane } from '@nutui/nutui-taro';
+import { Setting } from '@nutui/icons-vue-taro';
 import BasicLayout from '~/layout/BasicLayout.vue';
 import card from './components/card.vue';
 import FansListItem from './components/FansListItem.vue';
 import timeLine from './components/timeLine.vue';
 import user from './components/user.vue';
-import OthersViewService from '~/service/othersView_service';
+import PersonViewService from '~/service/personView_service';
 
 const state = reactive({
   tab1value: '0',
@@ -336,10 +342,10 @@ const postData = reactive({
     total: 0,
   },
 });
-const othersViewService = new OthersViewService();
+const personViewService = new PersonViewService();
 const getData = () => {
   try {
-    othersViewService.getUserInfo().then((res) => {
+    personViewService.getUserInfo().then((res) => {
       userData.data = res.data.data;
     });
   } catch (error) {
@@ -347,7 +353,7 @@ const getData = () => {
   }
 
   try {
-    othersViewService.getFansInfo(1, state.fansPage).then((res) => {
+    personViewService.getFansInfo(1, state.fansPage).then((res) => {
       FansData.data = res.data.data;
       state.fansPage += 1;
     });
@@ -356,7 +362,7 @@ const getData = () => {
   }
 
   try {
-    othersViewService.getfollowsInfo(1, state.followsPage).then((res) => {
+    personViewService.getfollowsInfo(1, state.followsPage).then((res) => {
       followsData.data = res.data.data;
       state.followsPage += 1;
     });
@@ -365,7 +371,7 @@ const getData = () => {
   }
 
   try {
-    othersViewService.getPosts(1, state.postPage).then((res) => {
+    personViewService.getPosts(1, state.postPage).then((res) => {
       postData.data = res.data.data;
       state.postPage += 1;
     });
@@ -374,7 +380,7 @@ const getData = () => {
   }
 
   try {
-    othersViewService.getFavoriteArticles(1, 10).then((res) => {
+    personViewService.getFavoriteArticles(1, 10).then((res) => {
       favoriteData.data = res.data.data;
       state.favoritePage += 1;
     });
@@ -387,7 +393,7 @@ getData();
 const nextFansDataPage = () => {
   if (state.fansPage <= FansData.data.navigateLastPage) {
     state.fansIsLoading = '数据加载中...';
-    othersViewService.getFansInfo(1, state.fansPage).then((res) => {
+    personViewService.getFansInfo(1, state.fansPage).then((res) => {
       FansData.data.list.push(...res.data.data.list);
       state.fansPage += 1;
       if (state.fansPage > FansData.data.navigateLastPage) {
@@ -400,7 +406,7 @@ const nextFansDataPage = () => {
 const nextFollowDataPage = () => {
   if (state.followsPage <= followsData.data.navigateLastPage) {
     state.followsIsLoading = '数据加载中...';
-    othersViewService.getfollowsInfo(1, state.followsPage).then((res) => {
+    personViewService.getfollowsInfo(1, state.followsPage).then((res) => {
       followsData.data.list.push(...res.data.data.list);
       state.followsPage += 1;
       if (state.followsPage > followsData.data.navigateLastPage) {
@@ -413,7 +419,7 @@ const nextFollowDataPage = () => {
 const nextPostDataPage = () => {
   if (state.postPage <= postData.data.navigateLastPage) {
     state.postIsLoading = '数据加载中...';
-    othersViewService.getPosts(1, state.postPage).then((res) => {
+    personViewService.getPosts(1, state.postPage).then((res) => {
       postData.data.list.push(...res.data.data.list);
       state.postPage += 1;
       if (state.postPage > postData.data.navigateLastPage) {
@@ -426,7 +432,7 @@ const nextPostDataPage = () => {
 const nextFavoriteDataPage = () => {
   if (state.favoritePage <= favoriteData.data.navigateLastPage) {
     state.favoriteIsLoading = '数据加载中';
-    othersViewService.getFavoriteArticles(1, state.favoritePage).then((res) => {
+    personViewService.getFavoriteArticles(1, state.favoritePage).then((res) => {
       favoriteData.data.list.push(...res.data.data.list);
       state.favoritePage += 1;
       if (state.favoritePage > favoriteData.data.navigateLastPage) {
@@ -475,7 +481,7 @@ const changeTab = () => {
   .othersView {
     .user {
       .user_attention {
-        margin-top: 76px;
+        margin-top: 35px;
         margin-right: 17px;
         font-family: 'Yuanti SC';
         font-style: normal;
@@ -484,6 +490,9 @@ const changeTab = () => {
       }
     }
   }
+}
+.user_setting {
+  margin-left: 75px;
 }
 .backImg {
   width: 100%;

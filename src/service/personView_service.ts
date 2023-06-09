@@ -1,6 +1,6 @@
 import axios from '~/request/index';
 
-export default class OthersViewService {
+export default class PersonViewService {
   // 获取用户信息列表
   async getUserInfo() {
     const data = await axios.get('https://inxupt.alkaidchen.com:443/user/page');
