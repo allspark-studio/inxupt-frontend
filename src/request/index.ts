@@ -14,11 +14,10 @@ instance.interceptors.request.use((config) => {
 });
 
 instance.interceptors.response.use(
-  (response: AxiosResponse<CustomResponseData<any>>) => {
+  async (response: AxiosResponse<CustomResponseData<any>>) => {
     // 如果 status 不是 0，则说明是后端自定义的错误。
     if (response.data.status !== ResponseStatusCode.SUCCESS) {
-      handleError(response.data);
-      throw response;
+      throw await handleError(response.data);
     }
     return response;
   },
