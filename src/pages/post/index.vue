@@ -32,6 +32,7 @@
 <script setup lang="ts">
 import Taro, { useDidHide, useLoad } from '@tarojs/taro';
 import { reactive, ref } from 'vue';
+import { Textarea as NutTextarea, Button as NutButton } from '@tarojs/components';
 import PostService from '~/service/post_service';
 import { TopicEnum } from '~/pages/post/constant';
 import { TopicModel, PostDataFormat } from '~/types/post_types';
@@ -43,7 +44,7 @@ const topicOptions: TopicModel[] = [
   { value: TopicEnum.OTHER, label: '其他', id: 3 },
 ];
 // 控制文本域高度变量
-const textareaSize = ref({ minHeight: 400 });
+const textareaSize = reactive({ minHeight: 500 });
 // 文本域输入文字
 const textareaValue = ref('');
 // 文本域提示信息
