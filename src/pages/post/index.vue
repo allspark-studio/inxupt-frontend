@@ -34,9 +34,9 @@ import Taro, { useDidHide, useLoad } from '@tarojs/taro';
 import { reactive, ref } from 'vue';
 import PostService from '~/service/post_service';
 import { TopicEnum } from '~/pages/post/constant';
-import { topicModel, postDataFormat } from '~/pages/post/type';
+import { TopicModel, PostDataFormat } from '~/types/post_types';
 // 话题List
-const topicOptions: topicModel[] = [
+const topicOptions: TopicModel[] = [
   { value: TopicEnum.LIFE, label: '生活', id: 0 },
   { value: TopicEnum.LEARN, label: '学术', id: 1 },
   { value: TopicEnum.EMOTION, label: '情感', id: 2 },
@@ -52,7 +52,7 @@ const textareaPlaceHolder = ref('最近还好吗？快来和大家说说！');
 let selectedTopics = reactive([topicOptions[0]]);
 // 是否提交退出页面，控制是否清空storage中的帖子草稿
 let checkCommit = false;
-const postData: postDataFormat = {
+const postData: PostDataFormat = {
   // 用户艾特功能传输的id
   atIds: [],
   // 帖子正文
@@ -71,7 +71,7 @@ function ifTopicSelected(value) {
     return item.value === value.value;
   });
 }
-const checkTopicHandler = (value: topicModel) => {
+const checkTopicHandler = (value: TopicModel) => {
   const index = selectedTopics.findIndex((item) => {
     return item.value === value.value;
   });
