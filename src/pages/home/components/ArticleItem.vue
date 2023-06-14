@@ -113,7 +113,7 @@ const postLike = async (id: number) => {
   try {
     await articleService.likeArticle(id);
   } catch (e) {
-    FabulousColor.value = '';
+    state.FabulousColor = '';
     Taro.showToast({
       icon: 'none',
       title: e.msg,
@@ -125,7 +125,7 @@ const postCancelLike = async (id: number) => {
   try {
     await articleService.cancelLikeArticle(id);
   } catch (e) {
-    FabulousColor.value = '#FEDA48';
+    state.FabulousColor = '#FEDA48';
     Taro.showToast({
       icon: 'none',
       title: e.msg,
