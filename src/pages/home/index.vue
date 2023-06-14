@@ -4,7 +4,6 @@
     v-model="state.searchValue"
     :placeholder="state.hotSearchList[hotSearchCurrentIndex]"
     class="search-bar"
-    @search="searchArticleList"
   >
     <template v-slot:leftin>
       <Search2 />
@@ -106,7 +105,11 @@ const state = reactive<StateType>({
   paneList: PANE_LIST,
   finished: false,
   sortType: SortType.LATEST,
-  swiper: [],
+  swiper: [
+    'https://img1.imgtp.com/2023/05/22/Li0MNY0n.png',
+    'https://img1.imgtp.com/2023/05/22/Li0MNY0n.png',
+    'https://img1.imgtp.com/2023/05/22/Li0MNY0n.png',
+  ],
 });
 
 /** 定时切换热搜词 */
@@ -129,17 +132,6 @@ const fetchHotSearch = async () => {
 };
 /** 根据搜索关键字请求文章列表 */
 
-const searchArticleList = async () => {
-  try {
-    const { searchValue } = state;
-    await articleService.searchArticle(searchValue);
-  } catch (e) {
-    Taro.showToast({
-      icon: 'none',
-      title: e.msg,
-    });
-  }
-};
 /** 请求文章列表 */
 const fetchArticles = async () => {
   try {

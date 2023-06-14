@@ -66,8 +66,7 @@ const showMenu = () => {
     async success(res) {
       if (res.tapIndex === 0) {
         if (state.item[0] === '关注') {
-          const data = await articleService.careUser(props.articleInfo.authorId);
-
+          const { data } = await articleService.followUser(props.articleInfo.authorId);
           if (data.status === 0) {
             state.item[res.tapIndex] = '已关注';
             Taro.showToast({
@@ -77,7 +76,7 @@ const showMenu = () => {
             });
           }
         } else {
-          const data = await articleService.unfollow(props.articleInfo.authorId);
+          const { data } = await articleService.unfollow(props.articleInfo.authorId);
           if (data.status === 0) {
             state.item[res.tapIndex] = '关注';
             Taro.showToast({
@@ -134,7 +133,7 @@ const postCancelLike = async (id: number) => {
 };
 // 点赞或取消点赞
 const switchFabulousColor = (id: number) => {
-  if (!props.articleInfo.liked && state.FabulousColor === '') {
+  if (state.FabulousColor === '') {
     state.FabulousColor = '#FEDA48';
     state.likeCount += 1;
     postLike(id);
@@ -170,7 +169,7 @@ const postCancelFavorite = async (id: number) => {
 };
 // 收藏或取消收藏
 const switchStarColor = (id: number) => {
-  if (!props.articleInfo.favorited && state.StarColor === '') {
+  if (state.StarColor === '') {
     state.StarColor = '#FEDA48';
     state.favoriteCount += 1;
     postFavorite(id);

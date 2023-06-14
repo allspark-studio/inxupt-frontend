@@ -1,7 +1,7 @@
 import axios from '~/request';
 import { SortType } from '~/types/common_types';
 import { ArticleFacade, CategoryEnum } from '~/types/article_types';
-import { PagedResponseData } from '~/types/response_types';
+import { PagedResponseData, CustomResponseData, FollowResponseData } from '~/types/response_types';
 
 export type ArticleForm = {
   categoryId?: CategoryEnum;
@@ -38,28 +38,23 @@ export default class ArticleService {
   }
 
   async getHotSearchList() {
-    const { data } = await axios.get('search/hotWords');
+    const url = 'search/hotWords';
+    const { data } = await axios.get<CustomResponseData<string[]>>(url);
     return data;
   }
 
-  async careUser(userId: number) {
-    const { data } = await axios.post(`user/follow/${userId}`);
-    return data;
+  async followUser(userId: number) {
+    const url = `user/follow/${userId}`;
+    return axios.post<FollowResponseData>(url);
   }
 
   async unfollow(userId: number) {
-    const { data } = await axios.delete(`user/follow/${userId}`);
-    return data;
+    const url = `user/follow/${userId}`;
+    return axios.delete<FollowResponseData>(url);
   }
 
   async reportArticle(postId: number) {
-    const { data } = await axios.post(`post/${postId}/report`);
-    return data;
-  }
-
-  async hotIndexSort() {
-    const { data } = await axios.post('api/post/heat');
-    return data;
+    return axios.post<void>(`post/${postId}/report`);
   }
 
   async searchArticle(keyWord: string) {

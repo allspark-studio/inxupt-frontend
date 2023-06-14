@@ -21,6 +21,10 @@ export interface CustomResponseData<T> {
   msg: string;
   data: T;
 }
+export interface FollowResponseData {
+  status: ResponseStatusCode;
+  msg: string;
+}
 export interface ArticleInfoList {
   body: string;
 }
