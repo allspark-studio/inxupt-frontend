@@ -32,7 +32,7 @@
 <script setup lang="ts">
 import Taro, { useDidHide, useLoad } from '@tarojs/taro';
 import { reactive, ref } from 'vue';
-import { Textarea as NutTextarea, Button as NutButton } from '@tarojs/components';
+import { Textarea as NutTextarea, Button as NutButton } from '@nutui/nutui-taro';
 import PostService from '~/service/post_service';
 import { TopicEnum } from '~/pages/post/constant';
 import { TopicModel, PostDataFormat } from '~/types/post_types';
@@ -185,8 +185,8 @@ page {
   .btnCom {
     margin-top: 20px;
     button {
-      background-color: #feda48;
       color: black;
+      background-color: #feda48;
     }
   }
 }
