@@ -10,14 +10,6 @@ export type ArticleForm = {
 };
 
 export default class ArticleService {
-  async getArticleCategoryList(paneKey: string | number, pageNum = 1) {
-    const url = `category/${paneKey}/posts`;
-    const { data } = await axios.get<PagedResponseData<ArticleFacade>>(url, {
-      params: { pageNum },
-    });
-    return data;
-  }
-
   async getArticleList(form: ArticleForm) {
     const { data } = await axios.get<PagedResponseData<ArticleFacade>>('posts', {
       params: form,
@@ -27,23 +19,22 @@ export default class ArticleService {
 
   async likeArticle(postId: number) {
     const url = `post/${postId}/like`;
-    const { data } = await axios.post(url);
-    return data;
+    return axios.post<void>(url);
   }
 
   async cancelLikeArticle(postId: number) {
-    const { data } = await axios.delete(`post/${postId}/like`);
-    return data;
+    const url = `post/${postId}/like`;
+    return axios.delete<void>(url);
   }
 
   async favoriteArticle(postId: number) {
-    const { data } = await axios.post(`post/${postId}/favorite`);
-    return data;
+    const url = `post/${postId}/favorite`;
+    return axios.post<void>(url);
   }
 
   async cancelFavoriteArticle(postId: number) {
-    const { data } = await axios.delete(`post/${postId}/favorite`);
-    return data;
+    const url = `post/${postId}/favorite`;
+    return axios.delete<void>(url);
   }
 
   async getHotSearchList() {
@@ -56,13 +47,13 @@ export default class ArticleService {
     return data;
   }
 
-  async cancelCareUser(userId: number) {
+  async unfollow(userId: number) {
     const { data } = await axios.delete(`user/follow/${userId}`);
     return data;
   }
 
-  async getUserCare(userId: number) {
-    const { data } = await axios.get(`user/${userId}/info`);
+  async reportArticle(postId: number) {
+    const { data } = await axios.post(`post/${postId}/report`);
     return data;
   }
 

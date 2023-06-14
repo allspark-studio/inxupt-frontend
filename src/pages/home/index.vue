@@ -11,14 +11,8 @@
     </template>
   </nut-searchbar>
   <swiper class="test-h" :vertical="false" :circular="true" :autoplay="true" :interval="3000">
-    <swiper-item>
-      <view><img src="https://img1.imgtp.com/2023/05/22/Li0MNY0n.png" alt="" /></view>
-    </swiper-item>
-    <swiper-item>
-      <view><img src="https://img1.imgtp.com/2023/05/22/Li0MNY0n.png" alt="" /></view>
-    </swiper-item>
-    <swiper-item>
-      <view><img src="https://img1.imgtp.com/2023/05/22/Li0MNY0n.png" alt="" /></view>
+    <swiper-item v-for="(item, index) in state.swiper" :key="index">
+      <view><img :src="item" alt="" /></view>
     </swiper-item>
   </swiper>
   <nut-tabs
@@ -67,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted } from 'vue';
+import { ref, reactive, onUnmounted } from 'vue';
 import {
   Tabs as NutTabs,
   TabPane as NutTabPane,
@@ -75,6 +69,7 @@ import {
 } from '@nutui/nutui-taro';
 import { Search2 } from '@nutui/icons-vue-taro';
 import Taro, { usePullDownRefresh, useReachBottom } from '@tarojs/taro';
+import { onLoginMounted } from '~/mixins/login_mounted';
 import BasicLayout from '~/layout/BasicLayout.vue';
 import Switches from '~/components/Switches.vue';
 import ArticleItem from '~/pages/home/components/ArticleItem.vue';
@@ -93,10 +88,11 @@ type StateType = {
   searchValue: string;
   paneList: PaneItem[];
   finished: boolean;
+  sortType: SortType;
+  swiper: string[];
 };
 
 const articleService = new ArticleService();
-const sortType = ref(SortType.LATEST);
 const hotSearchCurrentIndex = ref(0);
 const { statusBarHeight = 20 } = Taro.getSystemInfoSync();
 const menu = Taro.getMenuButtonBoundingClientRect();
@@ -109,6 +105,8 @@ const state = reactive<StateType>({
   searchValue: '',
   paneList: PANE_LIST,
   finished: false,
+  sortType: SortType.LATEST,
+  swiper: [],
 });
 
 /** 定时切换热搜词 */
@@ -127,7 +125,6 @@ const fetchHotSearch = async () => {
     state.hotSearchList = data;
   } catch (e) {
     // 热搜列表为次要请求，报错无需进行全局提示
-    console.error(e);
   }
 };
 /** 根据搜索关键字请求文章列表 */
@@ -135,8 +132,7 @@ const fetchHotSearch = async () => {
 const searchArticleList = async () => {
   try {
     const { searchValue } = state;
-    const { data } = await articleService.searchArticle(searchValue);
-    console.log(data);
+    await articleService.searchArticle(searchValue);
   } catch (e) {
     Taro.showToast({
       icon: 'none',
@@ -151,7 +147,7 @@ const fetchArticles = async () => {
     const { data } = await articleService.getArticleList({
       categoryId: activeCategory !== CategoryEnum.ALL ? activeCategory : undefined,
       pageNum,
-      sortedBy: sortType.value,
+      sortedBy: state.sortType,
     });
 
     state.finished = !data.hasNextPage;
@@ -185,13 +181,13 @@ const handleCategoryChange = async (paneKey: CategoryEnum) => {
 
 /** 处理排序变化 */
 const handleSortChange = (switchState: boolean) => {
-  sortType.value = switchState ? SortType.LATEST : SortType.HEAT;
-  fetchArticles();
+  state.sortType = switchState ? SortType.LATEST : SortType.HEAT;
+  handleCategoryChange(state.activeCategory);
 };
 
 /** 下拉刷新 */
 usePullDownRefresh(() => {
-  fetchArticles();
+  handleCategoryChange(state.activeCategory);
 });
 
 /** 触底加载更多 */
@@ -201,7 +197,7 @@ useReachBottom(() => {
   fetchArticles();
 });
 
-onMounted(() => {
+onLoginMounted(async () => {
   // 并行请求热搜列表和文章列表
   fetchArticles();
   fetchHotSearch();

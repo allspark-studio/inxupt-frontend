@@ -1,28 +1,28 @@
 <template>
   <div class="article-item">
-    <UserInfo
+    <user-info
       :name="articleInfo.authorName"
       :url="articleInfo.authorAvatar"
       :level="articleInfo.authorLevel"
     >
       <template v-slot:extra>
-        <TimeAgo :time="articleInfo.createTime" />
+        <time-ago :time="articleInfo.createTime" />
       </template>
       <template v-slot:suffix>
         <MoreS class="more" @click="showMenu" />
       </template>
-    </UserInfo>
+    </user-info>
     <div class="content">
       {{ articleInfo.pureText }}
     </div>
     <ul class="interactive">
       <li @click="switchFabulousColor(articleInfo.postId)">
-        <Fabulous :color="FabulousColor" />
-        <span>{{ likeCount }}</span>
+        <Fabulous :color="state.FabulousColor" />
+        <span>{{ state.likeCount }}</span>
       </li>
       <li @click="switchStarColor(articleInfo.postId)">
-        <Star :color="StarColor" />
-        <span>{{ favoriteCount }}</span>
+        <Star :color="state.StarColor" />
+        <span>{{ state.favoriteCount }}</span>
       </li>
       <li>
         <Message />
@@ -36,7 +36,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, reactive } from 'vue';
+import { onMounted, reactive } from 'vue';
 import { MoreS, Fabulous, Star, Message, ShareN } from '@nutui/icons-vue-taro';
 import Taro from '@tarojs/taro';
 import UserInfo from '~/components/user_info/UserInfo.vue';
@@ -44,24 +44,32 @@ import TimeAgo from '~/components/TimeAgo.vue';
 import ArticleService from '~/service/article_service';
 
 const props = defineProps(['articleInfo']);
-const likeCount = ref(props.articleInfo.likeNum);
-const favoriteCount = ref(props.articleInfo.favoriteNum);
-
-const FabulousColor = ref('');
-const StarColor = ref('');
-const item = reactive(['关注', '举报']);
-let care: boolean = false;
+type StateType = {
+  likeCount: number;
+  favoriteCount: number;
+  FabulousColor: string;
+  StarColor: string;
+  item: string[];
+};
+const state = reactive<StateType>({
+  likeCount: props.articleInfo.likeNum,
+  favoriteCount: props.articleInfo.favoriteNum,
+  FabulousColor: '',
+  StarColor: '',
+  item: ['关注', '举报'],
+});
 const articleService = new ArticleService();
 // 点击更多按钮展示关注和举报菜单栏
 const showMenu = () => {
   Taro.showActionSheet({
-    itemList: item,
+    itemList: state.item,
     async success(res) {
       if (res.tapIndex === 0) {
-        if (!care) {
+        if (state.item[0] === '关注') {
           const data = await articleService.careUser(props.articleInfo.authorId);
+
           if (data.status === 0) {
-            item[res.tapIndex] = '已关注';
+            state.item[res.tapIndex] = '已关注';
             Taro.showToast({
               title: '关注成功',
               icon: 'success',
@@ -69,9 +77,9 @@ const showMenu = () => {
             });
           }
         } else {
-          const data = await articleService.cancelCareUser(props.articleInfo.authorId);
+          const data = await articleService.unfollow(props.articleInfo.authorId);
           if (data.status === 0) {
-            item[res.tapIndex] = '关注';
+            state.item[res.tapIndex] = '关注';
             Taro.showToast({
               title: '取消关注',
               icon: 'none',
@@ -79,8 +87,9 @@ const showMenu = () => {
             });
           }
         }
-        care = !care;
       } else {
+        await articleService.reportArticle(props.articleInfo.postId);
+
         Taro.showToast({
           title: '举报成功',
           icon: 'success',
@@ -93,11 +102,11 @@ const showMenu = () => {
 };
 // 加载时初次判断是否点赞和收藏以及是否关注
 const initState = () => {
-  FabulousColor.value = props.articleInfo.liked ? '#FEDA48' : '';
+  state.FabulousColor = props.articleInfo.liked ? '#FEDA48' : '';
 
-  StarColor.value = props.articleInfo.liked ? '#FEDA48' : '';
+  state.StarColor = props.articleInfo.favorited ? '#FEDA48' : '';
 
-  item[0] = props.articleInfo.followed ? '已关注' : '关注';
+  state.item[0] = props.articleInfo.followed ? '已关注' : '关注';
 };
 // 发送点赞请求
 const postLike = async (id: number) => {
@@ -125,13 +134,13 @@ const postCancelLike = async (id: number) => {
 };
 // 点赞或取消点赞
 const switchFabulousColor = (id: number) => {
-  if (!props.articleInfo.liked && FabulousColor.value === '') {
-    FabulousColor.value = '#FEDA48';
-    likeCount.value += 1;
+  if (!props.articleInfo.liked && state.FabulousColor === '') {
+    state.FabulousColor = '#FEDA48';
+    state.likeCount += 1;
     postLike(id);
   } else {
-    FabulousColor.value = '';
-    likeCount.value -= 1;
+    state.FabulousColor = '';
+    state.likeCount -= 1;
     postCancelLike(id);
   }
 };
@@ -140,7 +149,7 @@ const postFavorite = async (id: number) => {
   try {
     await articleService.favoriteArticle(id);
   } catch (e) {
-    StarColor.value = '';
+    state.StarColor = '';
     Taro.showToast({
       icon: 'none',
       title: e.msg,
@@ -152,7 +161,7 @@ const postCancelFavorite = async (id: number) => {
   try {
     await articleService.cancelFavoriteArticle(id);
   } catch (e) {
-    StarColor.value = '#FEDA48';
+    state.StarColor = '#FEDA48';
     Taro.showToast({
       icon: 'none',
       title: e.msg,
@@ -161,13 +170,13 @@ const postCancelFavorite = async (id: number) => {
 };
 // 收藏或取消收藏
 const switchStarColor = (id: number) => {
-  if (!props.articleInfo.favorited && StarColor.value === '') {
-    StarColor.value = '#FEDA48';
-    favoriteCount.value += 1;
+  if (!props.articleInfo.favorited && state.StarColor === '') {
+    state.StarColor = '#FEDA48';
+    state.favoriteCount += 1;
     postFavorite(id);
   } else {
-    StarColor.value = '';
-    favoriteCount.value -= 1;
+    state.StarColor = '';
+    state.favoriteCount -= 1;
     postCancelFavorite(id);
   }
 };
@@ -200,9 +209,11 @@ onMounted(() => {
     margin-bottom: 10px;
     li {
       display: flex;
+      box-sizing: border-box;
       span {
         margin-left: 5px;
         margin-top: 3px;
+        box-sizing: border-box;
       }
     }
   }

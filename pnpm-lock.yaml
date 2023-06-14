@@ -1,8 +1,4 @@
-lockfileVersion: '6.1'
-
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
+lockfileVersion: '6.0'
 
 dependencies:
   '@babel/runtime':
@@ -16149,7 +16145,7 @@ packages:
     dependencies:
       htmlparser2: registry.npmmirror.com/htmlparser2@3.10.1
       postcss: registry.npmmirror.com/postcss@6.0.23
-      postcss-syntax: registry.npmmirror.com/postcss-syntax@0.28.0(postcss@8.4.21)
+      postcss-syntax: registry.npmmirror.com/postcss-syntax@0.28.0(postcss-html@0.28.0)(postcss-less@2.0.0)(postcss-markdown@0.28.0)(postcss-scss@1.0.6)(postcss@6.0.23)
     dev: true
 
   registry.npmmirror.com/postcss-less@2.0.0:
@@ -16171,7 +16167,7 @@ packages:
       postcss-syntax: '>=0.28.0'
     dependencies:
       postcss: registry.npmmirror.com/postcss@6.0.23
-      postcss-syntax: registry.npmmirror.com/postcss-syntax@0.28.0(postcss@8.4.21)
+      postcss-syntax: registry.npmmirror.com/postcss-syntax@0.28.0(postcss-html@0.28.0)(postcss-less@2.0.0)(postcss-markdown@0.28.0)(postcss-scss@1.0.6)(postcss@6.0.23)
       remark: registry.npmmirror.com/remark@9.0.0
       unist-util-find-all-after: registry.npmmirror.com/unist-util-find-all-after@1.0.5
     dev: true
@@ -16246,7 +16242,7 @@ packages:
       util-deprecate: registry.npmmirror.com/util-deprecate@1.0.2
     dev: true
 
-  registry.npmmirror.com/postcss-syntax@0.28.0(postcss@8.4.21):
+  registry.npmmirror.com/postcss-syntax@0.28.0(postcss-html@0.28.0)(postcss-less@2.0.0)(postcss-markdown@0.28.0)(postcss-scss@1.0.6)(postcss@6.0.23):
     resolution: {integrity: sha512-9W3T1fSE9QWKyW6s84kZapv0BP5uvj7mNBp34kwI93uGWULzZjaKv4xR4phubBD53cRgaM/qnvquVK1KLsl+Kg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/postcss-syntax/-/postcss-syntax-0.28.0.tgz}
     id: registry.npmmirror.com/postcss-syntax/0.28.0
     name: postcss-syntax
@@ -16270,7 +16266,11 @@ packages:
       postcss-scss:
         optional: true
     dependencies:
-      postcss: registry.npmmirror.com/postcss@8.4.21
+      postcss: registry.npmmirror.com/postcss@6.0.23
+      postcss-html: registry.npmmirror.com/postcss-html@0.28.0(postcss-syntax@0.28.0)(postcss@6.0.23)
+      postcss-less: registry.npmmirror.com/postcss-less@2.0.0
+      postcss-markdown: registry.npmmirror.com/postcss-markdown@0.28.0(postcss-syntax@0.28.0)(postcss@6.0.23)
+      postcss-scss: registry.npmmirror.com/postcss-scss@1.0.6
     dev: true
 
   registry.npmmirror.com/postcss-value-parser@3.3.1:
@@ -17371,7 +17371,7 @@ packages:
       postcss-sass: registry.npmmirror.com/postcss-sass@0.3.5
       postcss-scss: registry.npmmirror.com/postcss-scss@1.0.6
       postcss-selector-parser: registry.npmmirror.com/postcss-selector-parser@3.1.2
-      postcss-syntax: registry.npmmirror.com/postcss-syntax@0.28.0(postcss@8.4.21)
+      postcss-syntax: registry.npmmirror.com/postcss-syntax@0.28.0(postcss-html@0.28.0)(postcss-less@2.0.0)(postcss-markdown@0.28.0)(postcss-scss@1.0.6)(postcss@6.0.23)
       postcss-value-parser: registry.npmmirror.com/postcss-value-parser@3.3.1
       resolve-from: registry.npmmirror.com/resolve-from@4.0.0
       signal-exit: registry.npmmirror.com/signal-exit@3.0.7
