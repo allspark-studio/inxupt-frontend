@@ -1,6 +1,6 @@
 <template>
   <basic-layout>
-    <othersView v-if="judgeShow" :id="userId"></othersView>
+    <othersView v-if="judgeShow" :id="currentParams"></othersView>
     <personView v-if="!judgeShow" :id="userId"></personView>
   </basic-layout>
 </template>
