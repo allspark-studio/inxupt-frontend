@@ -41,7 +41,6 @@ export const useUserStore = defineStore(USER_STORE_NAME, () => {
 
   async function initUserInfo() {
     if (!state.userId) {
-      console.error('userStore.userId has not init');
       return;
     }
     try {
