@@ -46,5 +46,5 @@ dayjs.updateLocale('zh-cn', {
   },
 });
 
-const Ago = computed(() => time.fromNow());
+const Ago = computed(() => dayjs(props.time).fromNow());
 </script>

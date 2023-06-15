@@ -8,9 +8,9 @@ const config = {
   },
   designWidth(input) {
     if (input?.file?.replace(/\\+/g, '/').indexOf('@nutui') > -1) {
-      return 375
+      return 375;
     }
-    return 750
+    return 750;
   },
   deviceRatio: {
     640: 2.34 / 2,
@@ -21,14 +21,10 @@ const config = {
   sourceRoot: 'src',
   outputRoot: 'dist',
   plugins: ['@tarojs/plugin-html', '@tarojs/plugin-http'],
-  defineConstants: {
-  },
+  defineConstants: {},
   copy: {
-    patterns: [
-      { from: 'src/assets', to: 'dist/assets' }
-    ],
-    options: {
-    },
+    patterns: [{ from: 'src/assets', to: 'dist/assets' }],
+    options: {},
   },
   framework: 'vue3',
   compiler: {
@@ -73,8 +69,7 @@ const config = {
     postcss: {
       autoprefixer: {
         enable: true,
-        config: {
-        },
+        config: {},
       },
       cssModules: {
         enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
@@ -85,11 +80,11 @@ const config = {
       },
     },
   },
-}
+};
 
 module.exports = function (merge) {
   if (process.env.NODE_ENV === 'development') {
-    return merge({}, config, require('./dev'))
+    return merge({}, config, require('./dev'));
   }
   return merge({}, config, require('./prod'));
 };
