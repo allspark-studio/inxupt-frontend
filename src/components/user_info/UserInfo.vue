@@ -50,6 +50,9 @@ const props = defineProps<UserInfoProps>();
 
 const levelStr = computed(() => `LV${props.level}`);
 const levelColor = computed(() => {
+  if (!props.level) {
+    return LEVEL_COLOR_LIST[0];
+  }
   if (props.level > 6) {
     return LEVEL_COLOR_LIST[5];
   }
