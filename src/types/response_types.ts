@@ -21,13 +21,6 @@ export interface CustomResponseData<T> {
   msg: string;
   data: T;
 }
-export interface FollowResponseData {
-  status: ResponseStatusCode;
-  msg: string;
-}
-export interface ArticleInfoList {
-  body: string;
-}
 
 export type PagedResponseData<T> = CustomResponseData<{
   /** 本页数据列表 */

@@ -42,8 +42,11 @@ import Taro from '@tarojs/taro';
 import UserInfo from '~/components/user_info/UserInfo.vue';
 import TimeAgo from '~/components/TimeAgo.vue';
 import ArticleService from '~/service/article_service';
+import { ArticleFacade } from '~/types/article_types';
 
-const props = defineProps(['articleInfo']);
+const props = defineProps<{
+  articleInfo: ArticleFacade;
+}>();
 type StateType = {
   likeCount: number;
   favoriteCount: number;
@@ -59,46 +62,6 @@ const state = reactive<StateType>({
   item: ['关注', '举报'],
 });
 const articleService = new ArticleService();
-// 点击更多按钮展示关注和举报菜单栏
-const showMenu = () => {
-  Taro.showActionSheet({
-    itemList: state.item,
-    async success(res) {
-      if (res.tapIndex === 0) {
-        if (state.item[0] === '关注') {
-          const { data } = await articleService.followUser(props.articleInfo.authorId);
-          if (data.status === 0) {
-            state.item[res.tapIndex] = '已关注';
-            Taro.showToast({
-              title: '关注成功',
-              icon: 'success',
-              duration: 1000,
-            });
-          }
-        } else {
-          const { data } = await articleService.unfollow(props.articleInfo.authorId);
-          if (data.status === 0) {
-            state.item[res.tapIndex] = '关注';
-            Taro.showToast({
-              title: '取消关注',
-              icon: 'none',
-              duration: 1000,
-            });
-          }
-        }
-      } else {
-        await articleService.reportArticle(props.articleInfo.postId);
-
-        Taro.showToast({
-          title: '举报成功',
-          icon: 'success',
-          duration: 1000,
-        });
-      }
-    },
-    fail() {},
-  });
-};
 // 加载时初次判断是否点赞和收藏以及是否关注
 const initState = () => {
   state.FabulousColor = props.articleInfo.liked ? '#FEDA48' : '';
@@ -178,6 +141,68 @@ const switchStarColor = (id: number) => {
     state.favoriteCount -= 1;
     postCancelFavorite(id);
   }
+};
+// 关注用户
+async function followUser(userId: number, tappedItem: { tapIndex: number }) {
+  try {
+    await articleService.followUser(userId);
+    state.item[tappedItem.tapIndex] = '已关注';
+    Taro.showToast({
+      title: '关注成功',
+      icon: 'success',
+      duration: 1000,
+    });
+  } catch (e) {
+    Taro.showToast({
+      title: e.msg,
+      icon: 'error',
+      duration: 1000,
+    });
+  }
+}
+// 取关用户
+async function unFollowUser(userId: number, tappedItem: { tapIndex: number }) {
+  try {
+    await articleService.unFollowUser(userId);
+    state.item[tappedItem.tapIndex] = '已关注';
+    state.item[tappedItem.tapIndex] = '关注';
+    Taro.showToast({
+      title: '取消关注',
+      icon: 'none',
+      duration: 1000,
+    });
+  } catch (e) {
+    Taro.showToast({
+      title: e.msg,
+      icon: 'error',
+      duration: 1000,
+    });
+  }
+}
+
+// 点击更多按钮展示关注和举报菜单栏
+const showMenu = () => {
+  Taro.showActionSheet({
+    itemList: state.item,
+    async success(res) {
+      if (res.tapIndex === 0) {
+        if (state.item[0] === '关注') {
+          await followUser(props.articleInfo.authorId, res);
+        } else {
+          await unFollowUser(props.articleInfo.authorId, res);
+        }
+      } else {
+        await articleService.reportArticle(props.articleInfo.postId);
+
+        Taro.showToast({
+          title: '举报成功',
+          icon: 'success',
+          duration: 1000,
+        });
+      }
+    },
+    fail() {},
+  });
 };
 
 onMounted(() => {

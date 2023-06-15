@@ -1,7 +1,7 @@
 import axios from '~/request';
 import { SortType } from '~/types/common_types';
 import { ArticleFacade, CategoryEnum } from '~/types/article_types';
-import { PagedResponseData, CustomResponseData, FollowResponseData } from '~/types/response_types';
+import { PagedResponseData, CustomResponseData } from '~/types/response_types';
 
 export type ArticleForm = {
   categoryId?: CategoryEnum;
@@ -43,14 +43,14 @@ export default class ArticleService {
     return data;
   }
 
-  async followUser(userId: number) {
+  followUser(userId: number) {
     const url = `user/follow/${userId}`;
-    return axios.post<FollowResponseData>(url);
+    return axios.post<void>(url);
   }
 
-  async unfollow(userId: number) {
+  unFollowUser(userId: number) {
     const url = `user/follow/${userId}`;
-    return axios.delete<FollowResponseData>(url);
+    axios.delete<void>(url);
   }
 
   async reportArticle(postId: number) {
