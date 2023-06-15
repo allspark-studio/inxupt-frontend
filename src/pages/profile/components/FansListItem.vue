@@ -35,24 +35,22 @@ const props = defineProps<{
     level: Number | null;
   };
 }>();
-
 const state = reactive({
   bgColor: '#FEDA48',
   attention: '关注',
 });
-
 const userData = reactive({
   data: {
-    accountAuth: ['string'],
+    accountAuth: [''],
     articleNum: 0,
-    avatarUrl: 'string',
-    backgroundUrl: 'string',
-    description: 'string',
+    avatarUrl: '',
+    backgroundUrl: '',
+    description: '',
     fansNum: 0,
     followNum: 0,
     followed: true,
     gender: 0,
-    grade: 'string',
+    grade: '',
     hisId: 0,
     level: 0,
     likedNum: 0,
@@ -61,7 +59,6 @@ const userData = reactive({
     nickname: 'string',
   },
 });
-
 const othersViewService = new OthersViewService();
 const getData = () => {
   try {

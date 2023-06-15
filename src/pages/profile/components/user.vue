@@ -12,7 +12,9 @@
       <view class="ix-user-info__detail">
         <view class="ix-user-info__detail__basic">
           <view>{{ nickname }}</view>
-          <image :src="sexUrl" class="ix-user-info__detail__basic_image"></image>
+          <view class="ix-user-info__detail__basic_image">
+            <slot name="image"></slot>
+          </view>
         </view>
         <view class="ix-user-info__detail__sign">{{ description }}</view>
         <view class="ix-user-info__detail__experience">
@@ -48,7 +50,6 @@ export interface AvatarProps {
   color?: string;
   bgColor?: string;
 }
-
 export interface UserInfoProps {
   nickname: string;
   url: string;
@@ -71,19 +72,9 @@ const levelColor = computed(() => {
   }
   return LEVEL_COLOR_LIST[props.level - 1];
 });
-const sexUrl = computed(() => {
-  if (props.gender === 1) {
-    return require('../icon/male.png');
-  }
-  if (props.gender === 0) {
-    return require('../icon/female.png');
-  }
-  return '';
-});
 const data = {
   imgalist: [props.avatarUrl],
 };
-
 const previewImage = (e) => {
   console.log(e);
   const current = e.target.dataset.src;

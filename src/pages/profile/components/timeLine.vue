@@ -45,7 +45,7 @@
 </template>
 
 <script setup>
-import { defineProps, reactive } from 'vue';
+import { defineProps, reactive, onMounted } from 'vue';
 import { Ellipsis as NutEllipsis } from '@nutui/nutui-taro';
 import { Fabulous, Message, ShareN, Star } from '@nutui/icons-vue-taro';
 import Taro from '@tarojs/taro';
@@ -81,44 +81,42 @@ const props = defineProps({
     coined: Boolean,
   },
 });
-
 const postData = {
   data: {
-    accountAuth: ['string'],
+    accountAuth: [''],
     ats: [
       {
         additionalProp1: {},
       },
     ],
-    authorAvatar: 'string',
-    authorDescription: 'string',
+    authorAvatar: '',
+    authorDescription: '',
     authorId: 0,
     authorLevel: 0,
-    authorName: 'string',
-    body: 'string',
+    authorName: '',
+    body: '',
     coined: true,
     coinsNum: 0,
     commentNum: 0,
-    cover: 'string',
-    createTime: 'string',
+    cover: '',
+    createTime: '',
     favoriteNum: 0,
     favorited: true,
     likeNum: 0,
     liked: true,
-    mediaUrls: ['string'],
+    mediaUrls: [''],
     postId: 0,
-    pureText: 'string',
+    pureText: '',
     tags: [
       {
-        additionalProp1: 'string',
+        additionalProp1: '',
       },
     ],
-    title: 'string',
+    title: '',
     top: true,
     type: 0,
   },
 };
-
 const state = reactive({
   StarColor: '',
   FabulousColor: '',
@@ -132,7 +130,6 @@ const state = reactive({
   bottom: '',
   center: true,
 });
-
 const getData = () => {
   try {
     othersViewService.getPost(props.item.postId).then((res) => {
@@ -146,9 +143,9 @@ const getData = () => {
     console.error(error);
   }
 };
-
-getData();
-
+onMounted(() => {
+  getData();
+});
 const switchFabulousColor = () => {
   if (!state.FabulousColor) {
     try {
@@ -179,7 +176,6 @@ const switchFabulousColor = () => {
     }
   }
 };
-
 const switchStarColor = () => {
   if (!state.StarColor) {
     try {
@@ -269,7 +265,6 @@ const switchStarColor = () => {
   margin-left: 5px;
   margin-top: 3px;
 }
-
 .content {
   line-height: 46px;
   padding-left: 50px;
