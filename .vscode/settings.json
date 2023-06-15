@@ -1,6 +1,0 @@
-{
-	"editor.defaultFormatter": "dbaeumer.vscode-eslint",
-	"[vue]": {
-		"editor.defaultFormatter": "Vue.volar"
-	}
-}
