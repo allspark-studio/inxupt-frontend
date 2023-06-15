@@ -48,14 +48,14 @@ function switchTab(index: number, path: string) {
   box-sizing: border-box;
   width: 100%;
   height: $tab-bar-height;
-  background-color: --nut-white;
+  background-color: $white;
   display: flex;
   justify-content: space-between;
   .tab-bar-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: --nut-white;
+    background: $white;
     font-size: $tab-bar-font-size;
     .tab-bar-icon {
       display: flex;
@@ -70,6 +70,7 @@ function switchTab(index: number, path: string) {
   }
   :nth-child(3) {
     box-sizing: border-box;
+    justify-content: center;
     height: $tab-bar-center-btn-size;
     width: $tab-bar-center-btn-size;
     border-radius: 50%;
