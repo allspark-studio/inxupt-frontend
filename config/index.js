@@ -39,11 +39,6 @@ const config = {
     data: '@import "@nutui/nutui-taro/dist/styles/variables.scss";',
   },
   mini: {
-    webpackChain (chain) {
-      chain.plugin('unplugin-vue-components').use(ComponentsPlugin({
-        resolvers: [NutUIResolver({ taro: true })]
-      }))
-    },
     postcss: {
       pxtransform: {
         enable: true,
@@ -68,11 +63,6 @@ const config = {
     hot: true,
   },
   h5: {
-    webpackChain (chain) {
-      chain.plugin('unplugin-vue-components').use(ComponentsPlugin({
-        resolvers: [NutUIResolver({ taro: true })]
-      }))
-    },
     publicPath: '/',
     staticDirectory: 'static',
     esnextModules: ['nutui-taro', 'icons-vue-taro'],
