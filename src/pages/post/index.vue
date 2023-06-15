@@ -8,6 +8,18 @@
         max-length="30000"
         :placeholder="textareaPlaceHolder"
       />
+      <div class="checkImageCom">
+        <div v-for="(value, index) in imagesData" :key="index" class="imgPreview">
+          <image :src="value"></image>
+          <div class="delBtn" @tap="denBtnHandler(index)">
+            <image src="../../assets/delbtn.png"></image>
+          </div>
+        </div>
+        <!-- 当选择的图片大于等于9的时候就不渲染 -->
+        <div @tap="uploadImagesHandler" class="trigger" v-show="imagesData.length < 9">
+          <image src="../../assets/add.png"></image>
+        </div>
+      </div>
     </view>
     <view class="topicCom">
       <view class="topicTip">请选择话题（多选）</view>
@@ -44,7 +56,7 @@ const topicOptions: TopicModel[] = [
   { value: TopicEnum.OTHER, label: '其他', id: 3 },
 ];
 // 控制文本域高度变量
-const textareaSize = reactive({ minHeight: 500 });
+const textareaSize = reactive({ minHeight: 300 });
 // 文本域输入文字
 const textareaValue = ref('');
 // 文本域提示信息
@@ -53,6 +65,8 @@ const textareaPlaceHolder = ref('最近还好吗？快来和大家说说！');
 let selectedTopics = reactive([topicOptions[0]]);
 // 是否提交退出页面，控制是否清空storage中的帖子草稿
 let checkCommit = false;
+// 图片地址数据
+const imagesData = ref([]);
 const postData: PostDataFormat = {
   // 用户艾特功能传输的id
   atIds: [],
@@ -92,10 +106,13 @@ const filterId = () => {
 };
 // 点击提交摁钮处理函数
 const commitHandler = async () => {
+  postData.mediaUrls = imagesData.value;
   postData.body = textareaValue.value;
   postData.mainTagIds = filterId();
+  console.log(postData);
   try {
-    await postService.SubmitPost(postData);
+    const msg = await postService.SubmitPost(postData);
+    console.log(msg);
   } catch (e) {
     Taro.showToast({
       title: '发布失败',
@@ -106,6 +123,8 @@ const commitHandler = async () => {
   checkCommit = true;
   // 恢复话题选中列表
   selectedTopics = [topicOptions[0]];
+  // 清空图片的临时地址
+  imagesData.value = [];
   // 清空storage中的文本域信息
   Taro.setStorage({
     data: '',
@@ -121,6 +140,32 @@ const commitHandler = async () => {
   });
   // 清空文字
   textareaValue.value = '';
+};
+// 点击提交图片
+const uploadImagesHandler = () => {
+  console.log('uploadImageHandler');
+  Taro.chooseImage({
+    count: 9, // 默认9
+    sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+    sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+    success(res) {
+      // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+      const { tempFilePaths } = res;
+      if (imagesData.value.length + tempFilePaths.length > 9) {
+        Taro.showToast({
+          title: '只允许选择九张照片哦 ',
+          icon: 'error',
+        });
+        return;
+      }
+      // imagesData.value.push(tempFilePaths);
+      imagesData.value = imagesData.value.concat(tempFilePaths);
+    },
+  });
+};
+// 删除图片处理函数
+const denBtnHandler = (index) => {
+  imagesData.value.splice(index, 1);
 };
 // 用户进入编辑页面默认读取storage中的文本框数据
 useLoad(() => {
@@ -154,6 +199,43 @@ page {
     padding: 10px 20px 20px 20px;
     margin-bottom: 30px;
     border-radius: 20px;
+    .checkImageCom {
+      display: flex;
+      justify-content: left;
+      flex-wrap: wrap;
+      align-content: left;
+      background-color: rgb(255, 255, 255);
+      div {
+        height: 250px;
+        width: 200px;
+        margin-bottom: 15px;
+        image {
+          width: 100%;
+          height: 100%;
+          border-radius: 15px;
+        }
+      }
+      .trigger {
+        background-color: #f4f5f9;
+        border-radius: 15px;
+      }
+      .imgPreview {
+        position: relative;
+        .delBtn {
+          position: absolute;
+          right: 0;
+          top: 0px;
+          background-color: rgba(229, 229, 229, 0.4);
+          height: 50px;
+          width: 50px;
+          border-radius: 50%;
+          image {
+            widows: 100%;
+            height: 100%;
+          }
+        }
+      }
+    }
   }
 
   .topicCom {
