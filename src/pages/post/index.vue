@@ -9,16 +9,13 @@
         :placeholder="textareaPlaceHolder"
       />
       <div class="checkImageCom">
-        <div v-for="(value, index) in imagesData" :key="index" class="imgPreview">
-          <image :src="value"></image>
-          <div class="delBtn" @tap="denBtnHandler(index)">
-            <image src="../../assets/delbtn.png"></image>
-          </div>
-        </div>
-        <!-- 当选择的图片大于等于9的时候就不渲染 -->
-        <div @tap="uploadImagesHandler" class="trigger" v-show="imagesData.length < 9">
-          <image src="../../assets/add.png"></image>
-        </div>
+        <ImageList
+          :images="imagesData"
+          :max-count="9"
+          upload-enable
+          @remove-item="denBtnHandler"
+          @add-item="uploadImagesHandler"
+        ></ImageList>
       </div>
     </view>
     <view class="topicCom">
@@ -36,7 +33,9 @@
       </view>
     </view>
     <view class="btnCom">
-      <nut-button block @tap="commitHandler">提交</nut-button>
+      <nut-button block @tap="commitHandler" :class="ifTextareaContent() ? '' : 'active'">
+        提交
+      </nut-button>
     </view>
   </view>
 </template>
@@ -48,6 +47,8 @@ import { Textarea as NutTextarea, Button as NutButton } from '@nutui/nutui-taro'
 import PostService from '~/service/post_service';
 import { TopicEnum } from '~/pages/post/constant';
 import { TopicModel, PostDataFormat } from '~/types/post_types';
+import ImageList from '~/components/ImageList.vue';
+import { USER_TOKEN_KEY } from '~/constants/storage';
 // 话题List
 const topicOptions: TopicModel[] = [
   { value: TopicEnum.LIFE, label: '生活', id: 0 },
@@ -65,8 +66,9 @@ const textareaPlaceHolder = ref('最近还好吗？快来和大家说说！');
 let selectedTopics = reactive([topicOptions[0]]);
 // 是否提交退出页面，控制是否清空storage中的帖子草稿
 let checkCommit = false;
-// 图片地址数据
-const imagesData = ref([]);
+// 图片临时本地地址数据
+const imagesData = ref<string[]>([]);
+// upload后的图片url
 const postData: PostDataFormat = {
   // 用户艾特功能传输的id
   atIds: [],
@@ -80,6 +82,59 @@ const postData: PostDataFormat = {
   mediaUrls: [],
 };
 const postService = new PostService();
+// 判断文本域是否为空,空返回true
+const ifTextareaContent = () => {
+  if (textareaValue.value === '' || undefined) return true;
+  return false;
+};
+// 批量上传图片
+const uploadImagesPromise = (ImagesList: string[]) => {
+  const arr: any = [];
+  const upload = (imagePath) => {
+    arr.push(
+      new Promise((resolve) => {
+        Taro.uploadFile({
+          url: 'https://inxupt.alkaidchen.com:443/upload',
+          filePath: imagePath,
+          header: {
+            'content-type': 'multipart/form-data',
+            token: Taro.getStorageSync(USER_TOKEN_KEY),
+          },
+          name: 'file',
+          success(res) {
+            const data = JSON.parse(res.data);
+            resolve(data);
+          },
+        });
+      })
+    );
+  };
+  ImagesList.forEach((item) => {
+    upload(item);
+  });
+  return Promise.all(arr);
+};
+// 批量压缩图片，返回压缩后的临时地址List
+const compressImagePromise = (originFileList: string[]) => {
+  const arr: any = [];
+  const cpFun = (filePath) => {
+    arr.push(
+      new Promise((resolve) => {
+        Taro.compressImage({
+          src: filePath,
+          quality: 50,
+          success(tempFilePath) {
+            resolve(tempFilePath.tempFilePath);
+          },
+        });
+      })
+    );
+  };
+  originFileList.forEach((item) => {
+    cpFun(item);
+  });
+  return Promise.all(arr);
+};
 // 渲染class
 function ifTopicSelected(value) {
   return selectedTopics.findIndex((item) => {
@@ -106,13 +161,44 @@ const filterId = () => {
 };
 // 点击提交摁钮处理函数
 const commitHandler = async () => {
-  postData.mediaUrls = imagesData.value;
+  // 文本域为空则不执行提交函数
+  if (ifTextareaContent() === true) {
+    Taro.showToast({
+      title: '请输入文字哦',
+      icon: 'loading',
+    });
+    return;
+  }
   postData.body = textareaValue.value;
   postData.mainTagIds = filterId();
-  console.log(postData);
   try {
-    const msg = await postService.SubmitPost(postData);
-    console.log(msg);
+    // 上传图片
+    if (imagesData.value.length !== 0) {
+      compressImagePromise(imagesData.value)
+        .then((res1) => {
+          console.log('compressImage ok', res1);
+          uploadImagesPromise(res1)
+            .then(async (res2) => {
+              // upload图片以后发起/post请求
+              console.log('upload成功:', res2);
+              const uploadedImageList: string[] = [];
+              // 整理postData
+              res2.forEach((item) => {
+                uploadedImageList.push(item.data);
+              });
+              postData.mediaUrls = res2;
+              console.log(postData);
+              const data = await postService.SubmitPost(postData);
+              console.log(data);
+            })
+            .catch(() => {
+              console.log('upload fail');
+            });
+        })
+        .catch((err) => {
+          console.log('compress fail', err);
+        });
+    }
   } catch (e) {
     Taro.showToast({
       title: '发布失败',
@@ -143,7 +229,6 @@ const commitHandler = async () => {
 };
 // 点击提交图片
 const uploadImagesHandler = () => {
-  console.log('uploadImageHandler');
   Taro.chooseImage({
     count: 9, // 默认9
     sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
@@ -158,7 +243,6 @@ const uploadImagesHandler = () => {
         });
         return;
       }
-      // imagesData.value.push(tempFilePaths);
       imagesData.value = imagesData.value.concat(tempFilePaths);
     },
   });
@@ -172,6 +256,8 @@ useLoad(() => {
   Taro.getStorage({
     key: 'textareaValue',
     success({ data }) {
+      // 没有草稿时不存入textvalue，会污染变量
+      if (data.value === undefined) return;
       textareaValue.value = data.value;
     },
   });
@@ -199,43 +285,6 @@ page {
     padding: 10px 20px 20px 20px;
     margin-bottom: 30px;
     border-radius: 20px;
-    .checkImageCom {
-      display: flex;
-      justify-content: left;
-      flex-wrap: wrap;
-      align-content: left;
-      background-color: rgb(255, 255, 255);
-      div {
-        height: 250px;
-        width: 200px;
-        margin-bottom: 15px;
-        image {
-          width: 100%;
-          height: 100%;
-          border-radius: 15px;
-        }
-      }
-      .trigger {
-        background-color: #f4f5f9;
-        border-radius: 15px;
-      }
-      .imgPreview {
-        position: relative;
-        .delBtn {
-          position: absolute;
-          right: 0;
-          top: 0px;
-          background-color: rgba(229, 229, 229, 0.4);
-          height: 50px;
-          width: 50px;
-          border-radius: 50%;
-          image {
-            widows: 100%;
-            height: 100%;
-          }
-        }
-      }
-    }
   }
 
   .topicCom {
@@ -268,6 +317,9 @@ page {
     margin-top: 20px;
     button {
       color: black;
+      background-color: #d8d8d8;
+    }
+    .active {
       background-color: #feda48;
     }
   }
