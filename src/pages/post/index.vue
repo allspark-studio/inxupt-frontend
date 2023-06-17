@@ -9,13 +9,13 @@
         :placeholder="textareaPlaceHolder"
       />
       <div class="checkImageCom">
-        <ImageList
+        <image-list
           :images="imagesData"
           :max-count="9"
           upload-enable
           @remove-item="denBtnHandler"
           @add-item="uploadImagesHandler"
-        ></ImageList>
+        ></image-list>
       </div>
     </view>
     <view class="topicCom">
@@ -33,7 +33,12 @@
       </view>
     </view>
     <view class="btnCom">
-      <nut-button block @tap="commitHandler" :class="ifTextareaContent() ? '' : 'active'">
+      <nut-button
+        block
+        @tap="commitHandler"
+        :class="ifTextareaContent() ? '' : 'active'"
+        :disabled="ifTextareaContent()"
+      >
         提交
       </nut-button>
     </view>
@@ -188,6 +193,7 @@ const commitHandler = async () => {
               });
               postData.mediaUrls = res2;
               console.log(postData);
+              // 发起/post接口请求创建新帖
               const data = await postService.SubmitPost(postData);
               console.log(data);
             })
