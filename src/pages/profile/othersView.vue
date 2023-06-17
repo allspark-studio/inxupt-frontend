@@ -264,10 +264,10 @@ const postData = reactive({
 });
 const sexUrl = computed(() => {
   if (userData.data.gender === 1) {
-    return require('./icon/male.png');
+    return require('./icon/male.svg');
   }
   if (userData.data.gender === 0) {
-    return require('./icon/female.png');
+    return require('./icon/female.svg');
   }
   return '';
 });

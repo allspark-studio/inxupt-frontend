@@ -112,8 +112,8 @@ const previewImage = (e) => {
         margin-left: 10px;
       }
       &_image {
-        height: 40px;
-        width: 40px;
+        height: 30px;
+        width: 30px;
       }
     }
     &__sign {
