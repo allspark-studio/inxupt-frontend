@@ -152,7 +152,7 @@ const state = reactive({
   scroll_top: -1,
   goTop_show: false,
   showPreview: false,
-  imgData: ['https://shijuepi.com/uploads/allimg/201222/1-2012221T114.jpg'],
+  imgData: [''],
 });
 const userData = reactive({
   data: {
@@ -542,9 +542,11 @@ const changeTab = () => {
   width: 80px;
   height: 80px;
   border-radius: 40px;
-  background-color: rgb(201, 179, 179);
-  background-image: url(./icon/top.png);
-  background-size: cover;
+  background-color: #feda48;
+  background-image: url(./icon/top.svg);
+  background-repeat: no-repeat;
+  background-size: 70%;
+  background-position: center;
   bottom: 13px;
   z-index: 10;
 }

@@ -520,8 +520,8 @@ const changeTab = () => {
   width: 80px;
   height: 80px;
   border-radius: 40px;
-  background-color: rgb(201, 179, 179);
-  background-image: url(./icon/top.png);
+  background-color: #feda48;
+  background-image: url(./icon/top.svg);
   background-size: cover;
   bottom: 13px;
   z-index: 10;
