@@ -181,21 +181,17 @@ const commitHandler = async () => {
     if (imagesData.value.length !== 0) {
       compressImagePromise(imagesData.value)
         .then((res1) => {
-          console.log('compressImage ok', res1);
           uploadImagesPromise(res1)
             .then(async (res2) => {
               // upload图片以后发起/post请求
-              console.log('upload成功:', res2);
               const uploadedImageList: string[] = [];
               // 整理postData
               res2.forEach((item) => {
                 uploadedImageList.push(item.data);
               });
               postData.mediaUrls = res2;
-              console.log(postData);
               // 发起/post接口请求创建新帖
-              const data = await postService.SubmitPost(postData);
-              console.log(data);
+              await postService.submitPost(postData);
             })
             .catch(() => {
               console.log('upload fail');
