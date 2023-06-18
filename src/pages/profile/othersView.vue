@@ -47,7 +47,7 @@
             class="scroll_block"
             scroll-y="true"
             @scroll="handleScroll"
-            :scroll-top="state.scroll_top"
+            :scroll-top="state.scrollTop"
           >
             <time-line
               v-for="(item, index) in state.postsList"
@@ -55,7 +55,7 @@
               :item="item"
             ></time-line>
             <load-more :finished="state.postsFinished"></load-more>
-            <view class="toTop" v-if="state.goTop_show" style="left: 648rpx" @click="toTop"></view>
+            <view class="toTop" v-if="state.goTopShow" style="left: 648rpx" @click="toTop"></view>
           </scroll-view>
         </nut-tab-pane>
         <nut-tab-pane :title="`收藏(${state.userData.articleNum})`" class="othersView_tabPane">
@@ -63,13 +63,13 @@
             scroll-y="true"
             class="scroll_block"
             @scroll="handleScroll"
-            :scroll-top="state.scroll_top"
+            :scroll-top="state.scrollTop"
           >
             <view class="card">
               <card v-for="(item, index) in state.favoriteList" :key="index" :item="item"></card>
             </view>
             <load-more :finished="state.favoriteFinished"></load-more>
-            <view class="toTop" v-if="state.goTop_show" style="left: 1400rpx" @click="toTop"></view>
+            <view class="toTop" v-if="state.goTopShow" style="left: 1400rpx" @click="toTop"></view>
           </scroll-view>
         </nut-tab-pane>
         <nut-tab-pane :title="`粉丝(${state.userData.fansNum})`" class="othersView_tabPane">
@@ -78,7 +78,7 @@
             class="scroll_block"
             scroll-y="true"
             @scroll="handleScroll"
-            :scroll-top="state.scroll_top"
+            :scroll-top="state.scrollTop"
           >
             <view>
               <fans-list-item
@@ -89,7 +89,7 @@
               ></fans-list-item>
             </view>
             <load-more :finished="state.fansFinished"></load-more>
-            <view class="toTop" v-if="state.goTop_show" @click="toTop"></view>
+            <view class="toTop" v-if="state.goTopShow" @click="toTop"></view>
           </scroll-view>
         </nut-tab-pane>
         <nut-tab-pane :title="`关注(${state.userData.followNum})`" class="othersView_tabPane">
@@ -97,7 +97,7 @@
             class="scroll_block"
             scroll-y="true"
             @scroll="handleScroll"
-            :scroll-top="state.scroll_top"
+            :scroll-top="state.scrollTop"
           >
             <fans-list-item
               v-for="(item, index) in state.followList"
@@ -105,7 +105,7 @@
               :item="item"
             ></fans-list-item>
             <load-more :finished="state.followsFinished"></load-more>
-            <view class="toTop" v-if="state.goTop_show" style="left: 2890rpx" @click="toTop"></view>
+            <view class="toTop" v-if="state.goTopShow" style="left: 2890rpx" @click="toTop"></view>
           </scroll-view>
         </nut-tab-pane>
       </nut-tabs>
@@ -151,8 +151,8 @@ type StateType = {
   followsFinished: boolean;
   postsFinished: boolean;
   favoriteFinished: boolean;
-  scroll_top: number;
-  goTop_show: boolean;
+  scrollTop: number;
+  goTopShow: boolean;
   showPreview: boolean;
   imgData: string[];
 };
@@ -192,8 +192,8 @@ const state = reactive<StateType>({
   followsFinished: false,
   postsFinished: false,
   favoriteFinished: false,
-  scroll_top: -1,
-  goTop_show: false,
+  scrollTop: -1,
+  goTopShow: false,
   showPreview: false,
   imgData: [''],
 });
@@ -372,16 +372,16 @@ const switchState = () => {
 const scrollContainer = ref(null);
 const handleScroll = (e) => {
   if (e.detail.scrollTop > 150) {
-    state.goTop_show = true;
+    state.goTopShow = true;
   } else {
-    state.goTop_show = false;
+    state.goTopShow = false;
     if (e.detail.scrollTop === 0) {
-      state.scroll_top = -1;
+      state.scrollTop = -1;
     }
   }
 };
 const toTop = () => {
-  state.scroll_top = 0;
+  state.scrollTop = 0;
 };
 const previewImage = (e) => {
   const current = e.target.dataset.src;
@@ -391,7 +391,7 @@ const previewImage = (e) => {
   });
 };
 const changeTab = () => {
-  state.goTop_show = false;
+  state.goTopShow = false;
 };
 </script>
 
