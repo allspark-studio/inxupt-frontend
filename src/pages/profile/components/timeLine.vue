@@ -31,11 +31,11 @@
           </li>
           <li>
             <Message />
-            <span>{{ postData.data.commentNum }}</span>
+            <span>{{ state.postData.commentNum }}</span>
           </li>
           <li>
             <ShareN />
-            <span>{{ postData.data.coinsNum }}</span>
+            <span>{{ state.postData.coinsNum }}</span>
           </li>
         </ul>
       </div>
@@ -51,7 +51,9 @@ import { Fabulous, Message, ShareN, Star } from '@nutui/icons-vue-taro';
 import Taro from '@tarojs/taro';
 import PostTime from './PostTime.vue';
 import OthersViewService from '~/service/othersView_service';
+import PostService from '~/service/post_service';
 
+const postService = new PostService();
 const othersViewService = new OthersViewService();
 const props = defineProps({
   item: {
@@ -81,8 +83,20 @@ const props = defineProps({
     coined: Boolean,
   },
 });
-const postData = {
-  data: {
+
+const state = reactive({
+  StarColor: '',
+  FabulousColor: '',
+  likeNum: 0,
+  favoriteNum: 0,
+  msg: 'toast',
+  type: 'text',
+  show: false,
+  cover: false,
+  title: '',
+  bottom: '',
+  center: true,
+  postData: {
     accountAuth: [''],
     ats: [
       {
@@ -116,28 +130,15 @@ const postData = {
     top: true,
     type: 0,
   },
-};
-const state = reactive({
-  StarColor: '',
-  FabulousColor: '',
-  likeNum: 0,
-  favoriteNum: 0,
-  msg: 'toast',
-  type: 'text',
-  show: false,
-  cover: false,
-  title: '',
-  bottom: '',
-  center: true,
 });
 const getData = () => {
   try {
     othersViewService.getPost(props.item.postId).then((res) => {
-      postData.data = res.data.data;
-      state.FabulousColor = postData.data.liked ? '#FEDA48' : '';
-      state.StarColor = postData.data.favorited ? '#FEDA48' : '';
-      state.likeNum = postData.data.likeNum;
-      state.favoriteNum = postData.data.favoriteNum;
+      state.postData = res.data.data;
+      state.FabulousColor = state.postData.liked ? '#FEDA48' : '';
+      state.StarColor = state.postData.favorited ? '#FEDA48' : '';
+      state.likeNum = state.postData.likeNum;
+      state.favoriteNum = state.postData.favoriteNum;
     });
   } catch (error) {
     console.error(error);
@@ -146,64 +147,67 @@ const getData = () => {
 onMounted(() => {
   getData();
 });
+const postLike = async () => {
+  try {
+    await postService.likeArticle(props.item.postId);
+    state.FabulousColor = '#FEDA48';
+    state.likeNum += 1;
+  } catch (e) {
+    Taro.showToast({
+      icon: 'none',
+      title: e.msg,
+    });
+  }
+};
+
+const postFavorite = async () => {
+  try {
+    await postService.favoriteArticle(props.item.postId);
+    state.StarColor = '#FEDA48';
+    state.favoriteNum += 1;
+  } catch (e) {
+    Taro.showToast({
+      icon: 'none',
+      title: e.msg,
+    });
+  }
+};
+const postCancelFavorite = async () => {
+  try {
+    await postService.favoriteArticle(props.item.postId);
+    state.StarColor = '';
+    state.favoriteNum -= 1;
+  } catch (e) {
+    Taro.showToast({
+      icon: 'none',
+      title: e.msg,
+    });
+  }
+};
+const postCancelLike = async () => {
+  try {
+    await postService.cancelLikeArticle(props.item.postId);
+    state.FabulousColor = '';
+    state.likeNum -= 1;
+  } catch (e) {
+    Taro.showToast({
+      icon: 'none',
+      title: e.msg,
+    });
+  }
+};
 const switchFabulousColor = () => {
   if (!state.FabulousColor) {
-    try {
-      othersViewService.like(props.item.postId).then(
-        () => {
-          state.FabulousColor = '#FEDA48';
-          state.likeNum += 1;
-        },
-        (error) => {
-          Taro.showToast({
-            title: error.msg,
-            icon: 'none',
-            duration: 2000,
-          });
-        }
-      );
-    } catch (error) {
-      console.error(error);
-    }
+    postLike();
   } else {
-    try {
-      othersViewService.unlike(props.item.postId).then(() => {
-        state.FabulousColor = '';
-        state.likeNum -= 1;
-      });
-    } catch (error) {
-      console.error(error);
-    }
+    postCancelLike();
   }
 };
 const switchStarColor = () => {
   if (!state.StarColor) {
-    try {
-      othersViewService.favorite(props.item.postId).then(
-        () => {
-          state.StarColor = '#FEDA48';
-          state.favoriteNum += 1;
-        },
-        (error) => {
-          Taro.showToast({
-            title: error.msg,
-            icon: 'none',
-            duration: 2000,
-          });
-        }
-      );
-    } catch (error) {
-      console.error(error);
-    }
+    postFavorite();
   } else {
-    try {
-      othersViewService.unfavorite(props.item.postId).then(() => {
-        state.StarColor = '';
-        state.favoriteNum -= 1;
-      });
-    } catch (error) {
-      console.error(error);
-    }
+    postCancelFavorite();
   }
 };
 </script>
@@ -233,10 +237,9 @@ const switchStarColor = () => {
     &-title {
       width: 160px;
       text-align: center;
-      font-size: 6px;
       position: absolute;
       left: 0px;
-      font-size: 15px;
+      font-size: 25px;
       color: rgb(0, 0, 0);
       margin-bottom: 10px;
       color: rgb(172, 172, 172);

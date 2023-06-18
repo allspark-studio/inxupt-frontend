@@ -1,71 +1,48 @@
 import axios from '~/request/index';
+import {
+  FansInfoFacade,
+  FollowsInfoFacade,
+  PostsInfoFacade,
+  UserInfoFacade,
+} from '~/types/person_types';
+import { CustomResponseData } from '~/types/response_types';
 
 export default class OthersViewService {
   async getUserInfo(userId: Number) {
-    const data = await axios.get(`https://inxupt.alkaidchen.com:443/user/${userId}/page`);
+    const { data } = await axios.get<UserInfoFacade>(`user/${userId}/page`);
     return data;
   }
 
   async getFansInfo(userId: Number, pageNum: Number) {
-    const data = await axios.get(
-      `https://inxupt.alkaidchen.com:443/user/${userId}/fans?pageNum=${pageNum}`
-    );
+    const { data } = await axios.get<FansInfoFacade>(`user/${userId}/fans`, {
+      params: { pageNum },
+    });
     return data;
   }
 
   async getfollowsInfo(userId: Number, pageNum: Number) {
-    const data = await axios.get(
-      `https://inxupt.alkaidchen.com:443/user/${userId}/follows?pageNum=${pageNum}`
-    );
+    const { data } = await axios.get<FollowsInfoFacade>(`user/${userId}/follows`, {
+      params: { pageNum },
+    });
     return data;
   }
 
   async getPosts(userId: number, pageNum: Number) {
-    const data = await axios.get(
-      `https://inxupt.alkaidchen.com:443/user/${userId}/posts?pageNum=${pageNum}`
-    );
+    const { data } = await axios.get<PostsInfoFacade>(`user/${userId}/posts`, {
+      params: { pageNum },
+    });
     return data;
   }
 
   async getFavoriteArticles(userId: Number, pageNum: Number) {
-    const data = await axios.get(
-      `https://inxupt.alkaidchen.com:443/user/${userId}/articles?pageNum=${pageNum}`
-    );
-    return data;
-  }
-
-  async follow(userId: Number) {
-    const data = await axios.post(`https://inxupt.alkaidchen.com:443/user/follow/${userId}`);
-    return data;
-  }
-
-  async unFollow(userId: Number) {
-    const data = await axios.delete(`https://inxupt.alkaidchen.com:443/user/follow/${userId}`);
-    return data;
-  }
-
-  async like(postId: Number) {
-    const data = await axios.post(`https://inxupt.alkaidchen.com:443/post/${postId}/like`);
-    return data;
-  }
-
-  async unlike(postId: Number) {
-    const data = await axios.delete(`https://inxupt.alkaidchen.com:443/post/${postId}/like`);
-    return data;
-  }
-
-  async favorite(postId: Number) {
-    const data = await axios.post(`https://inxupt.alkaidchen.com:443/post/${postId}/favorite`);
-    return data;
-  }
-
-  async unfavorite(postId: Number) {
-    const data = await axios.delete(`https://inxupt.alkaidchen.com:443/post/${postId}/favorite`);
+    const { data } = await axios.get<CustomResponseData<string[]>>(`user/${userId}/articles`, {
+      params: { pageNum },
+    });
     return data;
   }
 
   async getPost(postId: Number) {
-    const data = await axios.get(`https://inxupt.alkaidchen.com:443/post/${postId}`);
+    const data = await axios.get(`post/${postId}`);
     return data;
   }
 }

@@ -19,7 +19,7 @@
         <span>{{ state.likeNum }}</span>
       </li>
       <li @click="switchStarColor">
-        <Star :color="StarColor" />
+        <Star :color="state.StarColor" />
         <span>{{ state.favoriteNum }}</span>
       </li>
       <li>
@@ -38,35 +38,12 @@ import { reactive, onMounted } from 'vue';
 import { MoreS, Fabulous, Star, Message, ShareN } from '@nutui/icons-vue-taro';
 import UserInfo from '~/components/user_info/UserInfo.vue';
 import TimeAgo from '~/components/TimeAgo.vue';
-import OthersViewService from '~/service/othersView_service';
+import PostService from '~/service/post_service';
+import { PostInfoFacade } from '~/types/person_types';
 
-const othersViewService = new OthersViewService();
+const postService = new PostService();
 const props = defineProps({
-  item: {
-    postId: Number,
-    type: Number,
-    top: Boolean,
-    title: String,
-    pureText: String,
-    body: String,
-    mediaUrls: null,
-    ats: null,
-    authorId: 8,
-    authorName: String,
-    authorAvatar: String,
-    authorLevel: Number,
-    accountAuth: ['1'],
-    authorDescription: String,
-    createTime: String,
-    tags: null,
-    likeNum: Number,
-    commentNum: Number,
-    favoriteNum: Number,
-    coinsNum: Number,
-    liked: Boolean,
-    favorited: Boolean,
-    coined: Boolean,
-  },
+  item: PostInfoFacade,
 });
 const state = reactive({
   StarColor: '',
@@ -84,64 +61,68 @@ const init = () => {
 onMounted(() => {
   init();
 });
+
+const postLike = async () => {
+  try {
+    await postService.likeArticle(props.item.postId);
+    state.FabulousColor = '#FEDA48';
+    state.likeNum += 1;
+  } catch (e) {
+    Taro.showToast({
+      icon: 'none',
+      title: e.msg,
+    });
+  }
+};
+
+const postFavorite = async () => {
+  try {
+    await postService.favoriteArticle(props.item.postId);
+    state.StarColor = '#FEDA48';
+    state.favoriteNum += 1;
+  } catch (e) {
+    Taro.showToast({
+      icon: 'none',
+      title: e.msg,
+    });
+  }
+};
+const postCancelFavorite = async () => {
+  try {
+    await postService.favoriteArticle(props.item.postId);
+    state.StarColor = '';
+    state.favoriteNum -= 1;
+  } catch (e) {
+    Taro.showToast({
+      icon: 'none',
+      title: e.msg,
+    });
+  }
+};
+const postCancelLike = async () => {
+  try {
+    await postService.cancelLikeArticle(props.item.postId);
+    state.FabulousColor = '';
+    state.likeNum -= 1;
+  } catch (e) {
+    Taro.showToast({
+      icon: 'none',
+      title: e.msg,
+    });
+  }
+};
 const switchFabulousColor = () => {
   if (!state.FabulousColor) {
-    try {
-      othersViewService.like(props.item.postId).then(
-        () => {
-          state.FabulousColor = '#FEDA48';
-          state.likeNum += 1;
-        },
-        (error) => {
-          Taro.showToast({
-            title: error.msg,
-            icon: 'none',
-            duration: 2000,
-          });
-        }
-      );
-    } catch (error) {
-      console.error(error);
-    }
+    postLike();
   } else {
-    try {
-      othersViewService.unlike(props.item.postId).then(() => {
-        state.FabulousColor = '';
-        state.likeNum -= 1;
-      });
-    } catch (error) {
-      console.error(error);
-    }
+    postCancelLike();
   }
 };
 const switchStarColor = () => {
   if (!state.StarColor) {
-    try {
-      othersViewService.favorite(props.item.postId).then(
-        () => {
-          state.StarColor = '#FEDA48';
-          state.favoriteNum += 1;
-        },
-        (error) => {
-          Taro.showToast({
-            title: error.msg,
-            icon: 'none',
-            duration: 2000,
-          });
-        }
-      );
-    } catch (error) {
-      console.error(error);
-    }
+    postFavorite();
   } else {
-    try {
-      othersViewService.unfavorite(props.item.postId).then(() => {
-        state.StarColor = '';
-        state.favoriteNum -= 1;
-      });
-    } catch (error) {
-      console.error(error);
-    }
+    postCancelFavorite();
   }
 };
 </script>

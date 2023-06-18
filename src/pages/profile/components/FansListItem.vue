@@ -1,13 +1,13 @@
 <template>
   <user-info
-    :url="userData.data.avatarUrl"
-    :level="userData.data.level"
-    :name="userData.data.nickname"
+    :url="state.userData.avatarUrl"
+    :level="state.userData.level"
+    :name="state.userData.nickname"
   >
     <template v-slot:extra>
       <div class="extra">
-        <span>动态：{{ userData.data.newsNum }}</span>
-        <span>粉丝：{{ userData.data.followNum }}</span>
+        <span>动态：{{ state.userData.newsNum }}</span>
+        <span>粉丝：{{ state.userData.followNum }}</span>
       </div>
     </template>
     <template v-slot:suffix>
@@ -19,14 +19,16 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { onMounted, reactive } from 'vue';
 import { Tag as NutTag } from '@nutui/nutui-taro';
+import Taro from '@tarojs/taro';
 import UserInfo from '~/components/user_info/UserInfo.vue';
 import OthersViewService from '~/service/othersView_service';
+import PostService from '~/service/post_service';
 
 const props = defineProps<{
   item: {
-    id: Number;
+    id: number;
     nickName: string;
     avatarUrl: string;
     accountAuth: string[];
@@ -38,9 +40,7 @@ const props = defineProps<{
 const state = reactive({
   bgColor: '#FEDA48',
   attention: '关注',
-});
-const userData = reactive({
-  data: {
+  userData: {
     accountAuth: [''],
     articleNum: 0,
     avatarUrl: '',
@@ -54,37 +54,64 @@ const userData = reactive({
     hisId: 0,
     level: 0,
     likedNum: 0,
-    major: 'string',
+    major: '',
     newsNum: 0,
-    nickname: 'string',
+    nickname: '',
   },
 });
 const othersViewService = new OthersViewService();
-const getData = () => {
+const fetchUser = async () => {
   try {
-    othersViewService.getUserInfo(props.item.id).then((res) => {
-      userData.data = res.data.data;
-      state.attention = userData.data.followed ? '已关注' : '关注';
-      state.bgColor = userData.data.followed ? 'gainsboro' : '#FEDA48';
+    const { data } = await othersViewService.getUserInfo(props.item.id);
+    state.userData = data;
+    state.bgColor = data.followed ? 'gainsboro' : '#FEDA48';
+    state.attention = data.followed ? '已关注' : '关注';
+  } catch (e) {
+    Taro.showToast({
+      icon: 'none',
+      title: e.msg,
     });
-  } catch (error) {
-    console.log(error);
   }
 };
-getData();
+onMounted(() => {
+  fetchUser();
+});
+
+const postService = new PostService();
+const followUser = async () => {
+  try {
+    await postService.followUser(props.item.id);
+    state.bgColor = 'gainsboro';
+    state.attention = '已关注';
+    state.userData.followed = true;
+  } catch (e) {
+    Taro.showToast({
+      title: e.msg,
+      icon: 'error',
+      duration: 1000,
+    });
+  }
+};
+const unFollowUser = async () => {
+  try {
+    await postService.followUser(props.item.id);
+    state.bgColor = '#FEDA48';
+    state.attention = '关注';
+    state.userData.followed = false;
+  } catch (e) {
+    Taro.showToast({
+      title: e.msg,
+      icon: 'error',
+      duration: 1000,
+    });
+  }
+};
+
 const switchState = () => {
-  if (userData.data.followed) {
-    othersViewService.unFollow(props.item.id).then(() => {
-      state.attention = '关注';
-      state.bgColor = '#FEDA48';
-      userData.data.followed = false;
-    });
+  if (state.userData.followed) {
+    unFollowUser();
   } else {
-    othersViewService.follow(props.item.id).then(() => {
-      state.attention = '已关注';
-      state.bgColor = 'gainsboro';
-      userData.data.followed = true;
-    });
+    followUser();
   }
 };
 </script>

@@ -2,7 +2,7 @@
   <div class="backImg" @click="previewImage"></div>
   <div>
     <image
-      :src="userData.data.backgroundUrl"
+      :src="state.userData.backgroundUrl"
       class="othersView_image"
       :style="{ height: state.bgHeight }"
     ></image>
@@ -11,11 +11,11 @@
     <div class="othersView">
       <div class="user">
         <user
-          :avatarUrl="userData.data.avatarUrl"
-          :level="userData.data.level"
-          :nickname="userData.data.nickname"
-          :description="userData.data.description"
-          :gender="userData.data.gender"
+          :avatarUrl="state.userData.avatarUrl"
+          :level="state.userData.level"
+          :nickname="state.userData.nickname"
+          :description="state.userData.description"
+          :gender="state.userData.gender"
           experience="122"
         >
           <template v-slot:image>
@@ -39,50 +39,43 @@
         @change="changeTab"
       >
         <nut-tab-pane
-          :title="`动态(${userData.data.newsNum})`"
+          :title="`动态(${state.userData.newsNum})`"
           class="othersView_tabPane"
           style="padding-left: 0rpx"
         >
           <scroll-view
             class="scroll_block"
             scroll-y="true"
-            @scrolltolower="nextPostDataPage()"
             @scroll="handleScroll"
             :scroll-top="state.scroll_top"
           >
             <time-line
-              v-for="(item, index) in postData.data.list"
+              v-for="(item, index) in state.postsList"
               :key="index"
               :item="item"
             ></time-line>
-            <view class="data-loading">{{ state.postIsLoading }}</view>
+            <load-more :finished="state.postsFinished"></load-more>
             <view class="toTop" v-if="state.goTop_show" style="left: 648rpx" @click="toTop"></view>
           </scroll-view>
         </nut-tab-pane>
-        <nut-tab-pane :title="`收藏(${userData.data.articleNum})`" class="othersView_tabPane">
+        <nut-tab-pane :title="`收藏(${state.userData.articleNum})`" class="othersView_tabPane">
           <scroll-view
             scroll-y="true"
             class="scroll_block"
             @scroll="handleScroll"
-            @scrolltolower="nextFavoriteDataPage()"
             :scroll-top="state.scroll_top"
           >
             <view class="card">
-              <card
-                v-for="(item, index) in favoriteData.data.list"
-                :key="index"
-                :item="item"
-              ></card>
+              <card v-for="(item, index) in state.favoriteList" :key="index" :item="item"></card>
             </view>
-            <view class="data-loading">{{ state.favoriteIsLoading }}</view>
+            <load-more :finished="state.favoriteFinished"></load-more>
             <view class="toTop" v-if="state.goTop_show" style="left: 1400rpx" @click="toTop"></view>
           </scroll-view>
         </nut-tab-pane>
-        <nut-tab-pane :title="`粉丝(${userData.data.fansNum})`" class="othersView_tabPane">
+        <nut-tab-pane :title="`粉丝(${state.userData.fansNum})`" class="othersView_tabPane">
           <scroll-view
             ref="scrollContainer"
             class="scroll_block"
-            @scrolltolower="nextFansDataPage()"
             scroll-y="true"
             @scroll="handleScroll"
             :scroll-top="state.scroll_top"
@@ -90,29 +83,28 @@
             <view>
               <fans-list-item
                 class="text-data"
-                v-for="(item, index) in FansData.data.list"
+                v-for="(item, index) in state.fansList"
                 :key="index"
                 :item="item"
               ></fans-list-item>
             </view>
-            <view class="data-loading">{{ state.fansIsLoading }}</view>
+            <load-more :finished="state.fansFinished"></load-more>
             <view class="toTop" v-if="state.goTop_show" @click="toTop"></view>
           </scroll-view>
         </nut-tab-pane>
-        <nut-tab-pane :title="`关注(${userData.data.followNum})`" class="othersView_tabPane">
+        <nut-tab-pane :title="`关注(${state.userData.followNum})`" class="othersView_tabPane">
           <scroll-view
             class="scroll_block"
             scroll-y="true"
-            @scrolltolower="nextFollowDataPage()"
             @scroll="handleScroll"
             :scroll-top="state.scroll_top"
           >
             <fans-list-item
-              v-for="(item, index) in followsData.data.list"
+              v-for="(item, index) in state.followList"
               :key="index"
               :item="item"
             ></fans-list-item>
-            <view class="data-loading">{{ state.followsIsLoading }}</view>
+            <load-more :finished="state.followsFinished"></load-more>
             <view class="toTop" v-if="state.goTop_show" style="left: 2890rpx" @click="toTop"></view>
           </scroll-view>
         </nut-tab-pane>
@@ -124,38 +116,53 @@
 <script setup lang="ts">
 import { reactive, ref, computed, onMounted } from 'vue';
 import { Tag as NutTag, Tabs as NutTabs, TabPane as NutTabPane } from '@nutui/nutui-taro';
-import { usePullDownRefresh } from '@tarojs/taro';
+import Taro, { usePullDownRefresh, useReachBottom } from '@tarojs/taro';
 
-import card from './components/card.vue';
+import card from './components/Card.vue';
+import LoadMore from '../home/components/LoadMore.vue';
 import FansListItem from './components/FansListItem.vue';
-import timeLine from './components/timeLine.vue';
-import user from './components/user.vue';
+import timeLine from './components/TimeLine.vue';
+import user from './components/User.vue';
 import OthersViewService from '~/service/othersView_service';
+import PostService from '~/service/post_service';
+import {
+  FansInfoFacade,
+  FollowsInfoFacade,
+  PostsInfoFacade,
+  UserInfoFacade,
+  FavoriteInfoFacade,
+} from '~/types/person_types';
 
-const props = defineProps({
-  id: Number,
-});
+type StateType = {
+  fansList: FansInfoFacade[];
+  followList: FollowsInfoFacade[];
+  postsList: PostsInfoFacade[];
+  favoriteList: FavoriteInfoFacade[];
+  userData: UserInfoFacade;
+  tab1value: string;
+  bgHeight: string;
+  bgColor: string;
+  attention: string;
+  fansPage: number;
+  followsPage: number;
+  postPage: number;
+  favoritePage: number;
+  fansFinished: boolean;
+  followsFinished: boolean;
+  postsFinished: boolean;
+  favoriteFinished: boolean;
+  scroll_top: number;
+  goTop_show: boolean;
+  showPreview: boolean;
+  imgData: string[];
+};
 
-const state = reactive({
-  tab1value: '0',
-  bgHeight: '30%',
-  bgColor: '#FEDA48',
-  attention: '关注',
-  fansPage: 1,
-  followsPage: 1,
-  postPage: 1,
-  favoritePage: 1,
-  fansIsLoading: ' ',
-  followsIsLoading: '',
-  postIsLoading: '',
-  favoriteIsLoading: '',
-  scroll_top: -1,
-  goTop_show: false,
-  showPreview: false,
-  imgData: [''],
-});
-const userData = reactive({
-  data: {
+const state = reactive<StateType>({
+  fansList: [],
+  followList: [],
+  postsList: [],
+  favoriteList: [],
+  userData: {
     accountAuth: [''],
     articleNum: 0,
     avatarUrl: '',
@@ -173,149 +180,128 @@ const userData = reactive({
     newsNum: 0,
     nickname: '',
   },
+  tab1value: '0',
+  bgHeight: '30%',
+  bgColor: '#FEDA48',
+  attention: '关注',
+  fansPage: 1,
+  followsPage: 1,
+  postPage: 1,
+  favoritePage: 1,
+  fansFinished: false,
+  followsFinished: false,
+  postsFinished: false,
+  favoriteFinished: false,
+  scroll_top: -1,
+  goTop_show: false,
+  showPreview: false,
+  imgData: [''],
 });
-const FansData = reactive({
-  data: {
-    endRow: 0,
-    hasNextPage: true,
-    hasPreviousPage: true,
-    isFirstPage: true,
-    isLastPage: true,
-    list: [],
-    navigateFirstPage: 0,
-    navigateLastPage: 0,
-    navigatePages: 0,
-    navigatepageNums: [0],
-    nextPage: 0,
-    pageNum: 0,
-    pageSize: 0,
-    pages: 0,
-    prePage: 0,
-    size: 0,
-    startRow: 0,
-    total: 0,
-  },
+const props = defineProps({
+  id: Number,
 });
-const followsData = reactive({
-  data: {
-    endRow: 0,
-    hasNextPage: true,
-    hasPreviousPage: true,
-    isFirstPage: true,
-    isLastPage: true,
-    list: [],
-    navigateFirstPage: 0,
-    navigateLastPage: 0,
-    navigatePages: 0,
-    navigatepageNums: [0],
-    nextPage: 0,
-    pageNum: 0,
-    pageSize: 0,
-    pages: 0,
-    prePage: 0,
-    size: 0,
-    startRow: 0,
-    total: 0,
-  },
-});
-const favoriteData = reactive({
-  data: {
-    endRow: 0,
-    hasNextPage: true,
-    hasPreviousPage: true,
-    isFirstPage: true,
-    isLastPage: true,
-    list: [],
-    navigateFirstPage: 0,
-    navigateLastPage: 0,
-    navigatePages: 0,
-    navigatepageNums: [0],
-    nextPage: 0,
-    pageNum: 0,
-    pageSize: 0,
-    pages: 0,
-    prePage: 0,
-    size: 0,
-    startRow: 0,
-    total: 0,
-  },
-});
-const postData = reactive({
-  data: {
-    endRow: 0,
-    hasNextPage: true,
-    hasPreviousPage: true,
-    isFirstPage: true,
-    isLastPage: true,
-    list: [],
-    navigateFirstPage: 0,
-    navigateLastPage: 0,
-    navigatePages: 0,
-    navigatepageNums: [0],
-    nextPage: 0,
-    pageNum: 0,
-    pageSize: 0,
-    pages: 0,
-    prePage: 0,
-    size: 0,
-    startRow: 0,
-    total: 0,
-  },
-});
+
 const sexUrl = computed(() => {
-  if (userData.data.gender === 1) {
-    return require('./icon/male.svg');
+  if (state.userData.gender === 1) {
+    return require('~/assets/icon/male.svg');
   }
-  if (userData.data.gender === 0) {
-    return require('./icon/female.svg');
+  if (state.userData.gender === 0) {
+    return require('~/assets/icon/female.svg');
   }
   return '';
 });
 const othersViewService = new OthersViewService();
-const getData = () => {
+const fetchUser = async () => {
   try {
-    othersViewService.getUserInfo(props.id).then((res) => {
-      userData.data = res.data.data;
-      state.attention = userData.data.followed ? '已关注' : '关注';
-      state.bgColor = userData.data.followed ? 'gainsboro' : '#FEDA48';
-      state.imgData[0] = userData.data.backgroundUrl;
+    const { data } = await othersViewService.getUserInfo(props.id);
+    state.userData = data;
+  } catch (e) {
+    Taro.showToast({
+      icon: 'none',
+      title: e.msg,
     });
-  } catch (error) {
-    console.error(error);
-  }
-  try {
-    othersViewService.getFansInfo(props.id, state.fansPage).then((res) => {
-      FansData.data = res.data.data;
-      state.fansPage += 1;
-    });
-  } catch (error) {
-    console.log(error);
-  }
-  try {
-    othersViewService.getfollowsInfo(props.id, state.followsPage).then((res) => {
-      followsData.data = res.data.data;
-      state.followsPage += 1;
-    });
-  } catch (error) {
-    console.error(error);
-  }
-  try {
-    othersViewService.getPosts(props.id, state.postPage).then((res) => {
-      postData.data = res.data.data;
-      state.postPage += 1;
-    });
-  } catch (error) {
-    console.error(error);
-  }
-  try {
-    othersViewService.getFavoriteArticles(props.id, state.favoritePage).then((res) => {
-      favoriteData.data = res.data.data;
-      state.favoritePage += 1;
-    });
-  } catch (error) {
-    console.error(error);
   }
 };
+const fetchPosts = async () => {
+  try {
+    const { postPage } = state;
+    const { data } = await othersViewService.getPosts(props.id, postPage);
+    state.postsFinished = !data.hasNextPage;
+    if (postPage === 1) {
+      state.postsList = data.list;
+    } else {
+      state.postsList.push(...data.list);
+    }
+  } catch (e) {
+    Taro.showToast({
+      icon: 'none',
+      title: e.msg,
+    });
+  }
+};
+
+const fetchFans = async () => {
+  try {
+    const { fansPage } = state;
+    const { data } = await othersViewService.getFansInfo(props.id, fansPage);
+    state.fansFinished = !data.hasNextPage;
+    if (fansPage === 1) {
+      state.fansList = data.list;
+    } else {
+      state.fansList.push(...data.list);
+    }
+  } catch (e) {
+    Taro.showToast({
+      icon: 'none',
+      title: e.msg,
+    });
+  }
+};
+
+const fetchFollows = async () => {
+  try {
+    const { followsPage } = state;
+    const { data } = await othersViewService.getfollowsInfo(props.id, followsPage);
+    state.followsFinished = !data.hasNextPage;
+    if (followsPage === 1) {
+      state.followList = data.list;
+    } else {
+      state.followList.push(...data.list);
+    }
+  } catch (e) {
+    Taro.showToast({
+      icon: 'none',
+      title: e.msg,
+    });
+  }
+};
+
+const fetchFavorites = async () => {
+  try {
+    const { favoritePage } = state;
+    const { data } = await othersViewService.getFavoriteArticles(props.id, favoritePage);
+    state.favoriteFinished = !data.hasNextPage;
+    if (favoritePage === 1) {
+      state.favoriteList = data.list;
+    } else {
+      state.favoriteList.push(...data.list);
+    }
+  } catch (e) {
+    Taro.showToast({
+      icon: 'none',
+      title: e.msg,
+    });
+  }
+};
+
+const getData = () => {
+  fetchPosts();
+  fetchFans();
+  fetchFollows();
+  fetchFavorites();
+  fetchUser();
+};
+
 onMounted(() => {
   getData();
 });
@@ -326,67 +312,61 @@ usePullDownRefresh(() => {
   state.followsPage = 0;
   getData();
 });
-const nextFansDataPage = () => {
-  if (state.fansPage <= FansData.data.navigateLastPage) {
-    state.fansIsLoading = '数据加载中...';
-    othersViewService.getFansInfo(props.id, state.fansPage).then((res) => {
-      FansData.data.list.push(...res.data.data.list);
-      state.fansPage += 1;
-      if (state.fansPage > FansData.data.navigateLastPage) {
-        state.fansIsLoading = '数据加载完毕';
-      }
+
+useReachBottom(() => {
+  if (!state.fansFinished) {
+    state.fansPage += 1;
+    fetchFans();
+  }
+  if (!state.favoriteFinished) {
+    state.favoritePage += 1;
+    fetchFavorites();
+  }
+  if (!state.followsFinished) {
+    state.followsPage += 1;
+    fetchFollows();
+  }
+  if (!state.postsFinished) {
+    state.postPage += 1;
+    fetchPosts();
+  }
+});
+
+const postService = new PostService();
+const followUser = async () => {
+  try {
+    await postService.followUser(props.id);
+    state.bgColor = 'gainsboro';
+    state.attention = '已关注';
+    state.userData.followed = true;
+  } catch (e) {
+    Taro.showToast({
+      title: e.msg,
+      icon: 'error',
+      duration: 1000,
     });
   }
 };
-const nextFollowDataPage = () => {
-  if (state.followsPage <= followsData.data.navigateLastPage) {
-    state.followsIsLoading = '数据加载中...';
-    othersViewService.getfollowsInfo(props.id, state.followsPage).then((res) => {
-      followsData.data.list.push(...res.data.data.list);
-      state.followsPage += 1;
-      if (state.followsPage > followsData.data.navigateLastPage) {
-        state.followsIsLoading = '数据加载完毕';
-      }
+const unFollowUser = async () => {
+  try {
+    await postService.followUser(props.id);
+    state.bgColor = '#FEDA48';
+    state.attention = '关注';
+    state.userData.followed = false;
+  } catch (e) {
+    Taro.showToast({
+      title: e.msg,
+      icon: 'error',
+      duration: 1000,
     });
   }
 };
-const nextPostDataPage = () => {
-  if (state.postPage <= postData.data.navigateLastPage) {
-    state.postIsLoading = '数据加载中...';
-    othersViewService.getPosts(props.id, state.postPage).then((res) => {
-      postData.data.list.push(...res.data.data.list);
-      state.postPage += 1;
-      if (state.postPage > postData.data.navigateLastPage) {
-        state.postIsLoading = '数据加载完毕';
-      }
-    });
-  }
-};
-const nextFavoriteDataPage = () => {
-  if (state.favoritePage <= favoriteData.data.navigateLastPage) {
-    state.favoriteIsLoading = '数据加载中';
-    othersViewService.getFavoriteArticles(props.id, state.favoritePage).then((res) => {
-      favoriteData.data.list.push(...res.data.data.list);
-      state.favoritePage += 1;
-      if (state.favoritePage > favoriteData.data.navigateLastPage) {
-        state.favoriteIsLoading = '数据加载完毕';
-      }
-    });
-  }
-};
+
 const switchState = () => {
-  if (userData.data.followed) {
-    othersViewService.unFollow(props.id).then(() => {
-      state.attention = '关注';
-      state.bgColor = '#FEDA48';
-      userData.data.followed = false;
-    });
+  if (state.userData.followed) {
+    unFollowUser();
   } else {
-    othersViewService.follow(props.id).then(() => {
-      state.attention = '已关注';
-      state.bgColor = 'gainsboro';
-      userData.data.followed = true;
-    });
+    followUser();
   }
 };
 const scrollContainer = ref(null);
@@ -543,7 +523,7 @@ const changeTab = () => {
   height: 80px;
   border-radius: 40px;
   background-color: #feda48;
-  background-image: url(./icon/top.svg);
+  background-image: url('~/src/assets/icon/top.svg');
   background-repeat: no-repeat;
   background-size: 70%;
   background-position: center;

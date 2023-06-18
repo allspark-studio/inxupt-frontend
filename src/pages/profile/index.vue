@@ -25,8 +25,8 @@ onLoginMounted(async () => {
 
 const judgeShow = computed(() => {
   if (userId.value === currentParams) {
-    return false;
+    return true;
   }
-  return true;
+  return false;
 });
 </script>

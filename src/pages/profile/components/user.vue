@@ -42,14 +42,8 @@
 <script setup lang="ts">
 import { Tag as NutTag, Avatar as NutAvatar, Progress as NutProgress } from '@nutui/nutui-taro';
 import { CSSProperties, computed } from 'vue';
-import { LEVEL_COLOR_LIST } from './constants';
+import { LEVEL_COLOR_LIST } from '~/components/user_info/constants';
 
-export interface AvatarProps {
-  size?: string;
-  shape?: string;
-  color?: string;
-  bgColor?: string;
-}
 export interface UserInfoProps {
   nickname: string;
   url: string;
@@ -59,7 +53,6 @@ export interface UserInfoProps {
   avatarUrl: string;
   experience: number;
   userNameStyle?: string | CSSProperties;
-  avatarProps?: AvatarProps;
 }
 const props = defineProps<UserInfoProps>();
 const levelStr = computed(() => `LV${props.level}`);
