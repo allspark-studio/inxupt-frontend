@@ -402,7 +402,6 @@ const changeTab = () => {
     .user {
       .user_attention {
         margin-top: 35px;
-        margin-right: 17px;
         font-family: 'Yuanti SC';
         font-style: normal;
         font-family: 400;
