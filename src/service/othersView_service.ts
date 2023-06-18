@@ -42,7 +42,7 @@ export default class OthersViewService {
   }
 
   async getPost(postId: Number) {
-    const data = await axios.get(`post/${postId}`);
+    const { data } = await axios.get(`post/${postId}`);
     return data;
   }
 }
