@@ -5,7 +5,7 @@ import {
   PostsInfoFacade,
   UserInfoFacade,
 } from '~/types/person_types';
-import { CustomResponseData } from '~/types/response_types';
+import { CustomResponseData, PagedResponseData } from '~/types/response_types';
 
 export default class OthersViewService {
   async getUserInfo(userId: Number) {
@@ -14,21 +14,24 @@ export default class OthersViewService {
   }
 
   async getFansInfo(userId: Number, pageNum: Number) {
-    const { data } = await axios.get<FansInfoFacade>(`user/${userId}/fans`, {
+    const { data } = await axios.get<PagedResponseData<FansInfoFacade>>(`user/${userId}/fans`, {
       params: { pageNum },
     });
     return data;
   }
 
   async getfollowsInfo(userId: Number, pageNum: Number) {
-    const { data } = await axios.get<FollowsInfoFacade>(`user/${userId}/follows`, {
-      params: { pageNum },
-    });
+    const { data } = await axios.get<PagedResponseData<FollowsInfoFacade>>(
+      `user/${userId}/follows`,
+      {
+        params: { pageNum },
+      }
+    );
     return data;
   }
 
   async getPosts(userId: number, pageNum: Number) {
-    const { data } = await axios.get<PostsInfoFacade>(`user/${userId}/posts`, {
+    const { data } = await axios.get<PagedResponseData<PostsInfoFacade>>(`user/${userId}/posts`, {
       params: { pageNum },
     });
     return data;

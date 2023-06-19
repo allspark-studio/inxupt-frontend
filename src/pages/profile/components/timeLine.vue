@@ -131,15 +131,14 @@ const state = reactive({
     type: 0,
   },
 });
-const getData = () => {
+const getData = async () => {
   try {
-    othersViewService.getPost(props.item.postId).then((res) => {
-      state.postData = res.data.data;
-      state.FabulousColor = state.postData.liked ? '#FEDA48' : '';
-      state.StarColor = state.postData.favorited ? '#FEDA48' : '';
-      state.likeNum = state.postData.likeNum;
-      state.favoriteNum = state.postData.favoriteNum;
-    });
+    const { data } = await othersViewService.getPost(props.item.postId);
+    state.postData = data;
+    state.FabulousColor = state.postData.liked ? '#FEDA48' : '';
+    state.StarColor = state.postData.favorited ? '#FEDA48' : '';
+    state.likeNum = state.postData.likeNum;
+    state.favoriteNum = state.postData.favoriteNum;
   } catch (error) {
     console.error(error);
   }

@@ -30,20 +30,17 @@
           </template>
         </user>
       </div>
-      <nut-tabs
-        class="othersView_tabs"
-        v-model="state.tab1value"
-        swipeable="true"
-        @change="changeTab"
-      >
+      <nut-tabs class="othersView_tabs" v-model="state.tab1value" @change="changeTab">
         <nut-tab-pane
           :title="`动态(${state.userData.newsNum})`"
           class="othersView_tabPane"
           style="padding-left: 0rpx"
         >
           <scroll-view
+            :distance="10"
+            scrollY="true"
+            @scrolltolower="onReachPostBottom"
             class="scroll_block"
-            scroll-y="true"
             @scroll="handleScroll"
             :scroll-top="state.scrollTop"
           >
@@ -60,6 +57,7 @@
           <scroll-view
             scroll-y="true"
             class="scroll_block"
+            @scrolltolower="onReachFavoriteBottom"
             @scroll="handleScroll"
             :scroll-top="state.scrollTop"
           >
@@ -77,6 +75,7 @@
             scroll-y="true"
             @scroll="handleScroll"
             :scroll-top="state.scrollTop"
+            @scrolltolower="onReachFansBottom"
           >
             <view>
               <fans-list-item
@@ -95,6 +94,7 @@
             class="scroll_block"
             scroll-y="true"
             @scroll="handleScroll"
+            @scrolltolower="onReachFollowsBottom"
             :scroll-top="state.scrollTop"
           >
             <fans-list-item
@@ -114,7 +114,7 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue';
 import { Tabs as NutTabs, TabPane as NutTabPane } from '@nutui/nutui-taro';
-import Taro, { usePullDownRefresh, useReachBottom } from '@tarojs/taro';
+import Taro, { usePullDownRefresh } from '@tarojs/taro';
 
 import card from './components/Card.vue';
 import LoadMore from '../home/components/LoadMore.vue';
@@ -301,24 +301,29 @@ usePullDownRefresh(() => {
   getData();
 });
 
-useReachBottom(() => {
-  if (!state.fansFinished) {
-    state.fansPage += 1;
-    fetchFans();
-  }
-  if (!state.favoriteFinished) {
-    state.favoritePage += 1;
-    fetchFavorites();
-  }
-  if (!state.followsFinished) {
-    state.followsPage += 1;
-    fetchFollows();
-  }
-  if (!state.postsFinished) {
-    state.postPage += 1;
-    fetchPosts();
-  }
-});
+const onReachPostBottom = () => {
+  state.postPage += 1;
+  console.log(state.postPage);
+  fetchPosts();
+};
+
+const onReachFansBottom = () => {
+  state.fansPage += 1;
+  console.log(state.fansPage);
+  fetchFans();
+};
+
+const onReachFollowsBottom = () => {
+  state.followsPage += 1;
+  console.log(state.followsPage);
+  fetchFollows();
+};
+
+const onReachFavoriteBottom = () => {
+  state.favoritePage += 1;
+  console.log(state.favoritePage);
+  fetchFavorites();
+};
 
 const scrollContainer = ref(null);
 const handleScroll = (e) => {
