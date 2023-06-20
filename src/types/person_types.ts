@@ -20,63 +20,54 @@ export interface UserInfoFacade {
 }
 
 export interface FansInfoFacade extends PagedResponseData<object> {
-  endRow: number;
-  hasPreviousPage: boolean;
-  isFirstPage: boolean;
-  isLastPage: boolean;
-  navigateFirstPage: number;
-  navigateLastPage: number;
-  navigatePages: number;
-  navigatepageNums: number[];
-  nextPage: number;
-  prePage: number;
-  size: number;
-  startRow: number;
+  id: number;
+  nickName: string;
+  avatarUrl: string;
+  accountAuth: string[];
+  description: string;
+  followed: boolean;
+  level: number;
 }
 
 export interface FollowsInfoFacade extends PagedResponseData<object> {
-  endRow: number;
-  hasPreviousPage: boolean;
-  isFirstPage: boolean;
-  isLastPage: boolean;
-  navigateFirstPage: number;
-  navigateLastPage: number;
-  navigatePages: number;
-  navigatepageNums: number[];
-  nextPage: number;
-  prePage: number;
-  size: number;
-  startRow: number;
+  id: number;
+  nickName: string;
+  avatarUrl: string;
+  accountAuth: string[];
+  description: string;
+  followed: boolean;
+  level: number;
 }
 
 export interface PostsInfoFacade extends PagedResponseData<object> {
-  endRow: number;
-  hasPreviousPage: boolean;
-  isFirstPage: boolean;
-  isLastPage: boolean;
-  navigateFirstPage: number;
-  navigateLastPage: number;
-  navigatePages: number;
-  navigatepageNums: number[];
-  nextPage: number;
-  prePage: number;
-  size: number;
-  startRow: number;
+  PostInfoFacade;
 }
 
 export interface FavoriteInfoFacade extends PagedResponseData<object> {
-  endRow: number;
-  hasPreviousPage: boolean;
-  isFirstPage: boolean;
-  isLastPage: boolean;
-  navigateFirstPage: number;
-  navigateLastPage: number;
-  navigatePages: number;
-  navigatepageNums: number[];
-  nextPage: number;
-  prePage: number;
-  size: number;
-  startRow: number;
+  accountAuth: string[];
+  ats: object[];
+  authorAvatar: string;
+  authorDescription: string;
+  authorId: number;
+  authorLevel: number;
+  authorName: string;
+  body: string;
+  coined: boolean;
+  coinsNum: number;
+  commentNum: number;
+  cover: string;
+  createTime: string;
+  favoriteNum: number;
+  favorited: boolean;
+  followed: boolean;
+  likeNum: number;
+  liked: boolean;
+  mediaUrls: string;
+  postId: number;
+  pureText: string;
+  title: string;
+  top: boolean;
+  type: number;
 }
 
 export interface PostInfoFacade {

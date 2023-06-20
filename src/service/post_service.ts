@@ -1,14 +1,14 @@
 import axios from '~/request';
 
 export default class PostService {
-  followUser(userId: number) {
-    const url = `user/follow/${userId}`;
-    return axios.post<void>(url);
+  async followUser(userId: number) {
+    const { data } = await axios.get<void>(`user/follow`, { params: { userId } });
+    return data;
   }
 
-  unFollowUser(userId: number) {
-    const url = `user/follow/${userId}`;
-    axios.delete<void>(url);
+  async unFollowUser(userId: number) {
+    const { data } = await axios.delete<void>(`user/follow`, { params: { userId } });
+    return data;
   }
 
   async likeArticle(postId: number) {
