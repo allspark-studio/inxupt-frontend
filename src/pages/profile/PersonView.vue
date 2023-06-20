@@ -303,25 +303,21 @@ usePullDownRefresh(() => {
 
 const onReachPostBottom = () => {
   state.postPage += 1;
-  console.log(state.postPage);
   fetchPosts();
 };
 
 const onReachFansBottom = () => {
   state.fansPage += 1;
-  console.log(state.fansPage);
   fetchFans();
 };
 
 const onReachFollowsBottom = () => {
   state.followsPage += 1;
-  console.log(state.followsPage);
   fetchFollows();
 };
 
 const onReachFavoriteBottom = () => {
   state.favoritePage += 1;
-  console.log(state.favoritePage);
   fetchFavorites();
 };
 

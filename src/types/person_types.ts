@@ -1,3 +1,5 @@
+import { PagedResponseData } from './response_types';
+
 export interface UserInfoFacade {
   accountAuth: string[];
   articleNum: number;
@@ -17,88 +19,64 @@ export interface UserInfoFacade {
   nickname: string;
 }
 
-export interface FansInfoFacade {
+export interface FansInfoFacade extends PagedResponseData<object> {
   endRow: number;
-  hasNextPage: boolean;
   hasPreviousPage: boolean;
   isFirstPage: boolean;
   isLastPage: boolean;
-  list: object[];
   navigateFirstPage: number;
   navigateLastPage: number;
   navigatePages: number;
   navigatepageNums: number[];
   nextPage: number;
-  pageNum: number;
-  pageSize: number;
-  pages: number;
   prePage: number;
   size: number;
   startRow: number;
-  total: number;
 }
 
-export interface FollowsInfoFacade {
+export interface FollowsInfoFacade extends PagedResponseData<object> {
   endRow: number;
-  hasNextPage: boolean;
   hasPreviousPage: boolean;
   isFirstPage: boolean;
   isLastPage: boolean;
-  list: object[];
   navigateFirstPage: number;
   navigateLastPage: number;
   navigatePages: number;
   navigatepageNums: number[];
   nextPage: number;
-  pageNum: number;
-  pageSize: number;
-  pages: number;
   prePage: number;
   size: number;
   startRow: number;
-  total: number;
 }
 
-export interface PostsInfoFacade {
+export interface PostsInfoFacade extends PagedResponseData<object> {
   endRow: number;
-  hasNextPage: boolean;
   hasPreviousPage: boolean;
   isFirstPage: boolean;
   isLastPage: boolean;
-  list: object[];
   navigateFirstPage: number;
   navigateLastPage: number;
   navigatePages: number;
   navigatepageNums: number[];
   nextPage: number;
-  pageNum: number;
-  pageSize: number;
-  pages: number;
   prePage: number;
   size: number;
   startRow: number;
-  total: number;
 }
 
-export interface FavoriteInfoFacade {
+export interface FavoriteInfoFacade extends PagedResponseData<object> {
   endRow: number;
-  hasNextPage: boolean;
   hasPreviousPage: boolean;
   isFirstPage: boolean;
   isLastPage: boolean;
-  list: object[];
   navigateFirstPage: number;
   navigateLastPage: number;
   navigatePages: number;
   navigatepageNums: number[];
   nextPage: number;
-  pageNum: number;
-  pageSize: number;
-  pages: number;
   prePage: number;
   size: number;
   startRow: number;
-  total: number;
 }
 
 export interface PostInfoFacade {
