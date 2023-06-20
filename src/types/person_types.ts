@@ -1,6 +1,6 @@
-import { PagedResponseData } from './response_types';
+import { UserFacade } from './user_types';
 
-export interface UserInfoFacade {
+export interface UserInfoFacade extends UserFacade {
   accountAuth: string[];
   articleNum: number;
   avatarUrl: string;
@@ -19,7 +19,7 @@ export interface UserInfoFacade {
   nickname: string;
 }
 
-export interface FansInfoFacade extends PagedResponseData<object> {
+export interface FansInfoFacade {
   id: number;
   nickName: string;
   avatarUrl: string;
@@ -29,7 +29,7 @@ export interface FansInfoFacade extends PagedResponseData<object> {
   level: number;
 }
 
-export interface FollowsInfoFacade extends PagedResponseData<object> {
+export interface FollowsInfoFacade {
   id: number;
   nickName: string;
   avatarUrl: string;
@@ -39,11 +39,11 @@ export interface FollowsInfoFacade extends PagedResponseData<object> {
   level: number;
 }
 
-export interface PostsInfoFacade extends PagedResponseData<object> {
+export interface PostsInfoFacade {
   PostInfoFacade;
 }
 
-export interface FavoriteInfoFacade extends PagedResponseData<object> {
+export interface FavoriteInfoFacade {
   accountAuth: string[];
   ats: object[];
   authorAvatar: string;
