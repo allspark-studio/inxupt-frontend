@@ -1,5 +1,7 @@
 import axios from '~/request';
 
+export const POST_SERVICE_BASE = 'post';
+
 export default class PostService {
   async followUser(userId: number) {
     const { data } = await axios.post<void>(`user/follow/${userId}`);
@@ -30,4 +32,8 @@ export default class PostService {
     const url = `post/${postId}/favorite`;
     return axios.delete<void>(url);
   }
-}
+  
+  submitPost(dataParam) {
+    const url = `/${POST_SERVICE_BASE}`;
+    return axios.post(url, dataParam);
+  }
