@@ -219,6 +219,8 @@ const fetchUser = async () => {
   try {
     const { data } = await othersViewService.getUserInfo(props.id);
     state.userData = data;
+    state.attention = state.userData.followed ? '已关注' : '关注';
+    state.bgColor = state.userData.followed ? 'gainsboro' : '#FEDA48';
   } catch (e) {
     Taro.showToast({
       icon: 'none',
@@ -360,7 +362,7 @@ const unFollowUser = async () => {
     return;
   }
   try {
-    await postService.followUser(props.id);
+    await postService.unFollowUser(props.id);
     state.bgColor = '#FEDA48';
     state.attention = '关注';
     state.userData.followed = false;

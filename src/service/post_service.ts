@@ -7,7 +7,7 @@ export default class PostService {
   }
 
   async unFollowUser(userId: number) {
-    const { data } = await axios.delete<void>(`user/unfollow/${userId}`);
+    const { data } = await axios.delete<void>(`user/follow/${userId}`);
     return data;
   }
 

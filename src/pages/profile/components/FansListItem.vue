@@ -94,7 +94,7 @@ const followUser = async () => {
 };
 const unFollowUser = async () => {
   try {
-    await postService.followUser(props.item.id);
+    await postService.unFollowUser(props.item.id);
     state.bgColor = '#FEDA48';
     state.attention = '关注';
     state.userData.followed = false;
