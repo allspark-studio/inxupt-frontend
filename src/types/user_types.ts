@@ -16,7 +16,7 @@ export interface UserFacade {
   /** 用户签名 */
   description: string;
   /** 官方认证 */
-  accountAuth: string;
+  accountAuth: string[];
 }
 
 export interface User4ProfileMixin extends UserFacade {
