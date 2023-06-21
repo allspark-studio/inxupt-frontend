@@ -39,10 +39,6 @@ export interface FollowsInfoFacade {
   level: number;
 }
 
-export interface PostsInfoFacade {
-  PostInfoFacade;
-}
-
 export interface FavoriteInfoFacade {
   accountAuth: string[];
   ats: object[];

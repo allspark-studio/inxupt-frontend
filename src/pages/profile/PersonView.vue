@@ -1,131 +1,144 @@
 <template>
-  <div class="backImg" @click="previewImage"></div>
-  <div>
-    <image
-      :src="state.userData.backgroundUrl"
-      class="othersView_image"
-      :style="{ height: state.bgHeight }"
-    ></image>
-  </div>
-  <scroll-view class="scroll_box">
-    <div class="othersView">
-      <div class="user">
-        <user
-          :avatarUrl="state.userData.avatarUrl"
-          :level="state.userData.level"
-          :nickname="state.userData.nickname"
-          :description="state.userData.description"
-          :gender="state.userData.gender"
-          experience="122"
-        >
-          <template v-slot:suffix>
-            <div class="user_attention">
-              <span>编辑资料</span>
-            </div>
-          </template>
-          <template v-slot:setting>
-            <div class="user_setting">
-              <Setting />
-            </div>
-          </template>
-        </user>
-      </div>
-      <nut-tabs class="othersView_tabs" v-model="state.tab1value" @change="changeTab">
-        <nut-tab-pane
-          :title="`动态(${state.userData.newsNum})`"
-          class="othersView_tabPane"
-          style="padding-left: 0rpx"
-        >
-          <scroll-view
-            :distance="10"
-            scrollY="true"
-            @scrolltolower="onReachPostBottom"
-            class="scroll_block"
-            @scroll="handleScroll"
-            :scroll-top="state.scrollTop"
+  <user-info-loader v-if="!state.userData"></user-info-loader>
+  <div v-else>
+    <div class="backImg" @click="previewImage"></div>
+    <div>
+      <image
+        :src="state.userData.backgroundUrl"
+        class="othersView_image"
+        :style="{ height: state.bgHeight }"
+      ></image>
+    </div>
+    <scroll-view class="scroll_box">
+      <div class="othersView">
+        <div class="user">
+          <user
+            :avatarUrl="state.userData.avatarUrl"
+            :level="state.userData.level"
+            :nickname="state.userData.nickname"
+            :description="state.userData.description"
+            :gender="state.userData.gender"
+            experience="122"
           >
-            <time-line
-              v-for="(item, index) in state.postsList"
-              :key="index"
-              :item="item"
-            ></time-line>
-            <load-more :finished="state.postsFinished"></load-more>
-            <view class="toTop" v-if="state.goTopShow" style="left: 648rpx" @click="toTop"></view>
-          </scroll-view>
-        </nut-tab-pane>
-        <nut-tab-pane :title="`收藏(${state.userData.articleNum})`" class="othersView_tabPane">
-          <scroll-view
-            scroll-y="true"
-            class="scroll_block"
-            @scrolltolower="onReachFavoriteBottom"
-            @scroll="handleScroll"
-            :scroll-top="state.scrollTop"
+            <template v-slot:suffix>
+              <div class="user_attention">
+                <span>编辑资料</span>
+              </div>
+            </template>
+            <template v-slot:setting>
+              <div class="user_setting">
+                <Setting />
+              </div>
+            </template>
+          </user>
+        </div>
+        <nut-tabs class="othersView_tabs" v-model="state.tab1value" @change="changeTab">
+          <nut-tab-pane
+            :title="`动态(${state.userData.newsNum})`"
+            class="othersView_tabPane"
+            style="padding-left: 0rpx"
           >
-            <view class="card">
-              <card v-for="(item, index) in state.favoriteList" :key="index" :item="item"></card>
-            </view>
-            <load-more :finished="state.favoriteFinished"></load-more>
-            <view class="toTop" v-if="state.goTopShow" style="left: 1400rpx" @click="toTop"></view>
-          </scroll-view>
-        </nut-tab-pane>
-        <nut-tab-pane :title="`粉丝(${state.userData.fansNum})`" class="othersView_tabPane">
-          <scroll-view
-            ref="scrollContainer"
-            class="scroll_block"
-            scroll-y="true"
-            @scroll="handleScroll"
-            :scroll-top="state.scrollTop"
-            @scrolltolower="onReachFansBottom"
-          >
-            <view>
+            <scroll-view
+              :distance="10"
+              scrollY="true"
+              @scrolltolower="onReachPostBottom"
+              class="scroll_block"
+              @scroll="handleScroll"
+              :scroll-top="state.scrollTop"
+            >
+              <time-line
+                v-for="(item, index) in state.postsList"
+                :key="index"
+                :item="item"
+              ></time-line>
+              <load-more :finished="state.postsFinished"></load-more>
+              <view class="toTop" v-if="state.goTopShow" style="left: 648rpx" @click="toTop"></view>
+            </scroll-view>
+          </nut-tab-pane>
+          <nut-tab-pane :title="`收藏(${state.userData.articleNum})`" class="othersView_tabPane">
+            <scroll-view
+              scroll-y="true"
+              class="scroll_block"
+              @scrolltolower="onReachFavoriteBottom"
+              @scroll="handleScroll"
+              :scroll-top="state.scrollTop"
+            >
+              <view class="card">
+                <card v-for="(item, index) in state.favoriteList" :key="index" :item="item"></card>
+              </view>
+              <load-more :finished="state.favoriteFinished"></load-more>
+              <view
+                class="toTop"
+                v-if="state.goTopShow"
+                style="left: 1400rpx"
+                @click="toTop"
+              ></view>
+            </scroll-view>
+          </nut-tab-pane>
+          <nut-tab-pane :title="`粉丝(${state.userData.fansNum})`" class="othersView_tabPane">
+            <scroll-view
+              ref="scrollContainer"
+              class="scroll_block"
+              scroll-y="true"
+              @scroll="handleScroll"
+              :scroll-top="state.scrollTop"
+              @scrolltolower="onReachFansBottom"
+            >
+              <view>
+                <fans-list-item
+                  class="text-data"
+                  v-for="(item, index) in state.fansList"
+                  :key="index"
+                  :item="item"
+                ></fans-list-item>
+              </view>
+              <load-more :finished="state.fansFinished"></load-more>
+              <view class="toTop" v-if="state.goTopShow" @click="toTop"></view>
+            </scroll-view>
+          </nut-tab-pane>
+          <nut-tab-pane :title="`关注(${state.userData.followNum})`" class="othersView_tabPane">
+            <scroll-view
+              class="scroll_block"
+              scroll-y="true"
+              @scroll="handleScroll"
+              @scrolltolower="onReachFollowsBottom"
+              :scroll-top="state.scrollTop"
+            >
               <fans-list-item
-                class="text-data"
-                v-for="(item, index) in state.fansList"
+                v-for="(item, index) in state.followList"
                 :key="index"
                 :item="item"
               ></fans-list-item>
-            </view>
-            <load-more :finished="state.fansFinished"></load-more>
-            <view class="toTop" v-if="state.goTopShow" @click="toTop"></view>
-          </scroll-view>
-        </nut-tab-pane>
-        <nut-tab-pane :title="`关注(${state.userData.followNum})`" class="othersView_tabPane">
-          <scroll-view
-            class="scroll_block"
-            scroll-y="true"
-            @scroll="handleScroll"
-            @scrolltolower="onReachFollowsBottom"
-            :scroll-top="state.scrollTop"
-          >
-            <fans-list-item
-              v-for="(item, index) in state.followList"
-              :key="index"
-              :item="item"
-            ></fans-list-item>
-            <load-more :finished="state.followsFinished"></load-more>
-            <view class="toTop" v-if="state.goTopShow" style="left: 2890rpx" @click="toTop"></view>
-          </scroll-view>
-        </nut-tab-pane>
-      </nut-tabs>
-    </div>
-  </scroll-view>
+              <load-more :finished="state.followsFinished"></load-more>
+              <view
+                class="toTop"
+                v-if="state.goTopShow"
+                style="left: 2890rpx"
+                @click="toTop"
+              ></view>
+            </scroll-view>
+          </nut-tab-pane>
+        </nut-tabs>
+      </div>
+    </scroll-view>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue';
 import { Tabs as NutTabs, TabPane as NutTabPane } from '@nutui/nutui-taro';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
-
-import card from './components/Card.vue';
-import LoadMore from '../home/components/LoadMore.vue';
-import FansListItem from './components/FansListItem.vue';
-import timeLine from './components/TimeLine.vue';
-import user from './components/User.vue';
-import OthersViewService from '~/service/othersView_service';
+import card from '~/pages/profile/components/Card.vue';
+import LoadMore from '~/pages/home/components/LoadMore.vue';
+import FansListItem from '~/pages/profile/components/FansListItem.vue';
+import timeLine from '~/pages/profile/components/TimeLine.vue';
+import user from '~/pages/profile/components/User.vue';
+import UserInfoLoader from '~/pages/profile/components/UserInfoLoader.vue';
+import OthersViewService from '~/service/others_view_service';
 import {
   FansInfoFacade,
   FollowsInfoFacade,
-  PostsInfoFacade,
+  PostInfoFacade,
   UserInfoFacade,
   FavoriteInfoFacade,
 } from '~/types/person_types';
@@ -133,9 +146,9 @@ import {
 type StateType = {
   fansList: FansInfoFacade[];
   followList: FollowsInfoFacade[];
-  postsList: PostsInfoFacade[];
+  postsList: PostInfoFacade[];
   favoriteList: FavoriteInfoFacade[];
-  userData: UserInfoFacade;
+  userData: UserInfoFacade | null;
   tab1value: string;
   bgHeight: string;
   bgColor: string;
@@ -159,24 +172,7 @@ const state = reactive<StateType>({
   followList: [],
   postsList: [],
   favoriteList: [],
-  userData: {
-    accountAuth: [''],
-    articleNum: 0,
-    avatarUrl: '',
-    backgroundUrl: '',
-    description: '',
-    fansNum: 0,
-    followNum: 0,
-    followed: true,
-    gender: 0,
-    grade: '',
-    hisId: 0,
-    level: 0,
-    likedNum: 0,
-    major: '',
-    newsNum: 0,
-    nickname: '',
-  },
+  userData: null,
   tab1value: '0',
   bgHeight: '30%',
   bgColor: '#FEDA48',
@@ -195,7 +191,10 @@ const state = reactive<StateType>({
   imgData: [''],
 });
 const props = defineProps({
-  id: Number,
+  id: {
+    type: Number,
+    required: true,
+  },
 });
 
 const othersViewService = new OthersViewService();
@@ -249,7 +248,7 @@ const fetchFans = async () => {
 const fetchFollows = async () => {
   try {
     const { followsPage } = state;
-    const { data } = await othersViewService.getfollowsInfo(props.id, followsPage);
+    const { data } = await othersViewService.getFollowersInfo(props.id, followsPage);
     state.followsFinished = !data.hasNextPage;
     if (followsPage === 1) {
       state.followList = data.list;
@@ -337,6 +336,7 @@ const toTop = () => {
 };
 const previewImage = (e) => {
   const current = e.target.dataset.src;
+  // @ts-ignore
   wx.previewImage({
     current,
     urls: state.imgData,

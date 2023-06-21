@@ -44,45 +44,19 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { defineProps, reactive, onMounted } from 'vue';
 import { Ellipsis as NutEllipsis } from '@nutui/nutui-taro';
 import { Fabulous, Message, ShareN, Star } from '@nutui/icons-vue-taro';
 import Taro from '@tarojs/taro';
-import PostTime from './PostTime.vue';
-import OthersViewService from '~/service/othersView_service';
+import PostTime from '~/pages/profile/components/PostTime.vue';
+import OthersViewService from '~/service/others_view_service';
 import PostService from '~/service/post_service';
+import { PostInfoFacade } from '~/types/person_types';
 
 const postService = new PostService();
 const othersViewService = new OthersViewService();
-const props = defineProps({
-  item: {
-    postId: Number,
-    type: Number,
-    top: Boolean,
-    title: null,
-    pureText: null,
-    cover: null,
-    body: String,
-    mediaUrls: null,
-    ats: null,
-    authorId: Number,
-    authorName: String,
-    authorAvatar: String,
-    authorLevel: Number,
-    accountAuth: [''],
-    authorDescription: String,
-    createTime: String,
-    tags: null,
-    likeNum: Number,
-    commentNum: Number,
-    favoriteNum: Number,
-    coinsNum: Number,
-    liked: Boolean,
-    favorited: Boolean,
-    coined: Boolean,
-  },
-});
+const props = defineProps<{ item: PostInfoFacade }>();
 
 const state = reactive({
   StarColor: '',

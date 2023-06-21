@@ -1,12 +1,7 @@
 <template>
   <view class="ix-user-info">
     <view class="ix-user-info__content">
-      <nut-avatar
-        v-bind="avatarProps"
-        class="ix-user-info__avatar"
-        size="large"
-        @click="previewImage"
-      >
+      <nut-avatar v-bind="props" class="ix-user-info__avatar" size="large" @click="previewImage">
         <cover-image :src="avatarUrl"></cover-image>
       </nut-avatar>
       <view class="ix-user-info__detail">
@@ -46,7 +41,6 @@ import { LEVEL_COLOR_LIST } from '~/components/user_info/constants';
 
 export interface UserInfoProps {
   nickname: string;
-  url: string;
   description: string;
   level: number;
   gender: number;
@@ -69,8 +63,8 @@ const data = {
   imgalist: [props.avatarUrl],
 };
 const previewImage = (e) => {
-  console.log(e);
   const current = e.target.dataset.src;
+  // @ts-ignore
   wx.previewImage({
     current,
     urls: data.imgalist,

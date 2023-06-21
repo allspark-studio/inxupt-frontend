@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import { Tag as NutTag, Avatar as NutAvatar } from '@nutui/nutui-taro';
 import { computed, CSSProperties } from 'vue';
-import { LEVEL_COLOR_LIST } from './constants';
+import { LEVEL_COLOR_LIST } from '~/components/user_info/constants';
 
 export interface AvatarProps {
   size?: string;

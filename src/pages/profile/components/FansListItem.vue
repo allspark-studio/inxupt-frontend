@@ -23,7 +23,7 @@ import { onMounted, reactive } from 'vue';
 import { Tag as NutTag } from '@nutui/nutui-taro';
 import Taro from '@tarojs/taro';
 import UserInfo from '~/components/user_info/UserInfo.vue';
-import OthersViewService from '~/service/othersView_service';
+import OthersViewService from '~/service/others_view_service';
 import PostService from '~/service/post_service';
 
 const props = defineProps<{

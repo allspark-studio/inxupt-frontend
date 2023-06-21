@@ -2,12 +2,12 @@ import axios from '~/request';
 
 export default class PostService {
   async followUser(userId: number) {
-    const { data } = await axios.get<void>(`user/follow`, { params: { userId } });
+    const { data } = await axios.post<void>(`user/follow/${userId}`);
     return data;
   }
 
   async unFollowUser(userId: number) {
-    const { data } = await axios.delete<void>(`user/follow`, { params: { userId } });
+    const { data } = await axios.delete<void>(`user/unfollow/${userId}`);
     return data;
   }
 

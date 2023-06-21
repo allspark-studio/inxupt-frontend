@@ -1,20 +1,17 @@
 <template>
   <basic-layout>
-    <personView :id="userId"></personView>
+    <person-view :id="userId"></person-view>
   </basic-layout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import BasicLayout from '~/layout/BasicLayout.vue';
-import personView from '~/pages/profile/personView.vue';
-import { useUserStore } from '../../store/user_store';
+import PersonView from '~/pages/profile/PersonView.vue';
 import { onLoginMounted } from '~/mixins/login_mounted';
+import { useUserStore } from '~/store/user_store';
 
-const userService = useUserStore();
-const { userId, userInfo } = storeToRefs(userService);
-onLoginMounted(async () => {
-  console.log(userId.value);
-  console.log(userInfo.value);
-});
+const userStore = useUserStore();
+const { userId } = storeToRefs(userStore);
+onLoginMounted(async () => {});
 </script>
