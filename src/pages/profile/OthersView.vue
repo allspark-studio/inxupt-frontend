@@ -147,14 +147,13 @@ import {
   FollowsInfoFacade,
   PostInfoFacade,
   UserInfoFacade,
-  FavoriteInfoFacade,
 } from '~/types/person_types';
 
 type StateType = {
   fansList: FansInfoFacade[];
   followList: FollowsInfoFacade[];
   postsList: PostInfoFacade[];
-  favoriteList: FavoriteInfoFacade[];
+  favoriteList: PostInfoFacade[];
   userData: UserInfoFacade | null;
   tab1value: string;
   bgHeight: string;

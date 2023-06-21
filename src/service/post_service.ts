@@ -32,8 +32,9 @@ export default class PostService {
     const url = `post/${postId}/favorite`;
     return axios.delete<void>(url);
   }
-  
+
   submitPost(dataParam) {
     const url = `/${POST_SERVICE_BASE}`;
     return axios.post(url, dataParam);
   }
+}

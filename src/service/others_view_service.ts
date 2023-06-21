@@ -1,7 +1,6 @@
 import axios from '~/request/index';
 import {
   FansInfoFacade,
-  FavoriteInfoFacade,
   FollowsInfoFacade,
   PostInfoFacade,
   UserInfoFacade,
@@ -39,12 +38,9 @@ export default class OthersViewService {
   }
 
   async getFavoriteArticles(userId: number, pageNum: number) {
-    const { data } = await axios.get<PagedResponseData<FavoriteInfoFacade>>(
-      `user/${userId}/articles`,
-      {
-        params: { pageNum },
-      }
-    );
+    const { data } = await axios.get<PagedResponseData<PostInfoFacade>>(`user/${userId}/articles`, {
+      params: { pageNum },
+    });
     return data;
   }
 

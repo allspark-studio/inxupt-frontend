@@ -69,7 +69,6 @@ import {
 import { Search2 } from '@nutui/icons-vue-taro';
 import Taro, { usePullDownRefresh, useReachBottom } from '@tarojs/taro';
 import { onLoginMounted } from '~/mixins/login_mounted';
-import BasicLayout from '~/layout/BasicLayout.vue';
 import Switches from '~/components/Switches.vue';
 import ArticleItem from '~/pages/home/components/ArticleItem.vue';
 import ArticleService from '~/service/article_service';
@@ -78,6 +77,7 @@ import { ArticleFacade, CategoryEnum } from '~/types/article_types';
 import { PaneItem, PANE_LIST } from '~/pages/home/constants';
 import LoadMore from '~/pages/home/components/LoadMore.vue';
 import { SortType } from '~/types/common_types';
+import BasicLayout from '~/layout/BasicLayout.vue';
 
 type StateType = {
   hotSearchList: any[];

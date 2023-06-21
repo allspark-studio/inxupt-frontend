@@ -33,7 +33,8 @@
     </ul>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
+import Taro from '@tarojs/taro';
 import { reactive, onMounted } from 'vue';
 import { MoreS, Fabulous, Star, Message, ShareN } from '@nutui/icons-vue-taro';
 import UserInfo from '~/components/user_info/UserInfo.vue';
@@ -42,9 +43,8 @@ import PostService from '~/service/post_service';
 import { PostInfoFacade } from '~/types/person_types';
 
 const postService = new PostService();
-const props = defineProps({
-  item: PostInfoFacade,
-});
+const props = defineProps<{ item: PostInfoFacade }>();
+
 const state = reactive({
   StarColor: '',
   FabulousColor: '',
