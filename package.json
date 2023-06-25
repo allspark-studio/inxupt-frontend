@@ -53,6 +53,7 @@
     "@tarojs/runtime": "3.6.4",
     "@tarojs/shared": "3.6.4",
     "@tarojs/taro": "3.6.4",
+    "@vueuse/core": "^10.2.0",
     "axios": "^1.4.0",
     "dayjs": "^1.11.7",
     "pinia": "^2.0.35",

@@ -51,6 +51,8 @@ import TimeAgo from '~/components/TimeAgo.vue';
 import ImageList from '~/components/ImageList.vue';
 import ArticleService from '~/service/article_service';
 import { ArticleFacade } from '~/types/article_types';
+import { getPagesPathWithParam } from '~/utils/path_utils';
+import { ARTICLE_DETAIL } from '~/constants/route';
 
 const props = defineProps<{
   articleInfo: ArticleFacade;
@@ -240,14 +242,17 @@ onMounted(() => {
     word-break: break-all;
     -webkit-box-orient: vertical;
   }
+
   .interactive {
     display: flex;
     justify-content: space-around;
     margin-top: 20px;
     margin-bottom: 10px;
+
     li {
       display: flex;
       box-sizing: border-box;
+
       span {
         margin-left: 5px;
         margin-top: 3px;
