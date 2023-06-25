@@ -12,7 +12,7 @@
         <MoreS class="more" @click="showMenu" />
       </template>
     </user-info>
-    <div class="content">
+    <div class="content" @click="navigateToArticleDetail">
       {{ articleInfo.pureText }}
     </div>
     <ul class="interactive">
@@ -43,6 +43,8 @@ import UserInfo from '~/components/user_info/UserInfo.vue';
 import TimeAgo from '~/components/TimeAgo.vue';
 import ArticleService from '~/service/article_service';
 import { ArticleFacade } from '~/types/article_types';
+import { getPagesPathWithParam } from '~/utils/path_utils';
+import { ARTICLE_DETAIL } from '~/constants/route';
 
 const props = defineProps<{
   articleInfo: ArticleFacade;
@@ -204,6 +206,13 @@ const showMenu = () => {
     fail() {},
   });
 };
+const navigateToArticleDetail = () => {
+  Taro.navigateTo({
+    url: getPagesPathWithParam(ARTICLE_DETAIL, {
+      id: props.articleInfo.postId,
+    }),
+  });
+};
 
 onMounted(() => {
   initState();
@@ -216,6 +225,7 @@ onMounted(() => {
   border-radius: 20px;
   margin-bottom: 25px;
   padding-bottom: 10px;
+
   .content {
     margin: 0px 20px;
     font-size: 30px;
@@ -226,14 +236,17 @@ onMounted(() => {
     word-break: break-all;
     -webkit-box-orient: vertical;
   }
+
   .interactive {
     display: flex;
     justify-content: space-around;
     margin-top: 20px;
     margin-bottom: 10px;
+
     li {
       display: flex;
       box-sizing: border-box;
+
       span {
         margin-left: 5px;
         margin-top: 3px;

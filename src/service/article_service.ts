@@ -65,3 +65,4 @@ export default class ArticleService {
     return data;
   }
 }
+export const ArticleServiceInstance = new ArticleService();

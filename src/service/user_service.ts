@@ -25,4 +25,15 @@ export default class UserService {
     const { data } = await axios.get<CustomResponseData<UserFacade>>(url);
     return data;
   }
+
+  followUser(userId: number) {
+    const url = `${USER_SERVICE_BASE}/follow/${userId}`;
+    return axios.post(url);
+  }
+
+  cancelFollowUser(userId: number) {
+    const url = `${USER_SERVICE_BASE}/follow/${userId}`;
+    return axios.delete(url);
+  }
 }
+export const UserServiceInstance = new UserService();

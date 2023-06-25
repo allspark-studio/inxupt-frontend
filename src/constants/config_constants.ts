@@ -6,7 +6,7 @@
  */
 import { TabBarItem } from '@tarojs/taro';
 import { getPagesPath } from '../utils/path_utils';
-import { HOME, PROFILE, NOTICE, TOPIC, POST } from './route';
+import { HOME, PROFILE, NOTICE, TOPIC, POST, ARTICLE_DETAIL } from './route';
 
 export const PAGES_PATH_MAP: Record<string, string> = {
   home: getPagesPath(HOME),
@@ -14,15 +14,17 @@ export const PAGES_PATH_MAP: Record<string, string> = {
   notice: getPagesPath(NOTICE),
   topic: getPagesPath(TOPIC),
   post: getPagesPath(POST),
+  article_detail: getPagesPath(ARTICLE_DETAIL),
 };
 
-export const PAGES_LIST = [
-  PAGES_PATH_MAP.home,
-  PAGES_PATH_MAP.profile,
-  PAGES_PATH_MAP.notice,
-  PAGES_PATH_MAP.topic,
-  PAGES_PATH_MAP.post,
-];
+export const PAGES_LIST = Object.values(PAGES_PATH_MAP);
+// export const PAGES_LIST = [
+//   PAGES_PATH_MAP.home,
+//   PAGES_PATH_MAP.profile,
+//   PAGES_PATH_MAP.notice,
+//   PAGES_PATH_MAP.topic,
+//   PAGES_PATH_MAP.post,
+// ];
 
 export const TAB_BAR_LIST: TabBarItem[] = [
   {
