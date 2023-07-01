@@ -1,6 +1,6 @@
 <template>
   <view class="ix-user-info">
-    <view class="ix-user-info__content">
+    <view class="ix-user-info__content" @click="navigateToUserDetail(userId)">
       <nut-avatar v-bind="avatarProps" class="ix-user-info__avatar">
         <img :src="url" />
       </nut-avatar>
@@ -29,6 +29,7 @@
 <script setup lang="ts">
 import { Tag as NutTag, Avatar as NutAvatar } from '@nutui/nutui-taro';
 import { computed, CSSProperties } from 'vue';
+import Taro from '@tarojs/taro';
 import { LEVEL_COLOR_LIST } from './constants';
 
 export interface AvatarProps {
@@ -42,6 +43,7 @@ export interface UserInfoProps {
   name: string;
   url: string;
   level: number;
+  userId: number;
   userNameStyle?: CSSProperties;
   avatarProps?: AvatarProps;
 }
@@ -58,6 +60,14 @@ const levelColor = computed(() => {
   }
   return LEVEL_COLOR_LIST[props.level - 1];
 });
+// 点击头像或昵称跳转到用户详情页面
+const navigateToUserDetail = (id) => {
+  if (Taro.getCurrentPages()[0].route === 'pages/home/index') {
+    Taro.navigateTo({
+      url: `/pages/profile/user?Id=${id}`,
+    });
+  }
+};
 </script>
 
 <style lang="scss">

@@ -1,32 +1,32 @@
 <template>
-  <div>
-    <nut-image-preview
-      :autoplay="0"
-      :init-no="showIndex"
-      :show="showPreview"
-      :images="previewImages"
-      @close="hideImagePreview"
-    />
-    <div ref="imageListRef" id="js-image-list" class="image-list">
-      <div
-        v-for="(image, index) in displayImages"
-        class="image-item"
-        :key="index"
-        :style="{ width: `${itemSize}px`, height: `${itemSize}px` }"
-        @click="showImagePreview(index)"
-      >
-        <div v-if="sizeInit" class="delete-btn" @click.stop="handleRemoveClick(index)">×</div>
-        <div v-if="maskShow(index) && sizeInit" class="image-mask">+{{ overflowCount }}</div>
-        <image mode="aspectFill" :src="image.src" />
-      </div>
-      <div
-        v-if="showUploadBtn && sizeInit"
-        class="upload-btn"
-        :style="{ width: `${itemSize}px`, height: `${itemSize}px` }"
-        @click="handleAddClick"
-      >
-        +
-      </div>
+  <nut-image-preview
+    class="preview"
+    style="display: fixed"
+    :autoplay="0"
+    :init-no="showIndex"
+    :show="showPreview"
+    :images="previewImages"
+    @close="hideImagePreview"
+  />
+  <div ref="imageListRef" id="js-image-list" class="image-list">
+    <div
+      v-for="(image, index) in displayImages"
+      class="image-item"
+      :key="index"
+      :style="{ width: `${itemSize}px`, height: `${itemSize}px` }"
+      @click="showImagePreview(index)"
+    >
+      <div v-if="sizeInit" class="delete-btn" @click.stop="handleRemoveClick(index)">×</div>
+      <div v-if="maskShow(index) && sizeInit" class="image-mask">+{{ overflowCount }}</div>
+      <image mode="aspectFill" :src="image.src" />
+    </div>
+    <div
+      v-if="showUploadBtn && sizeInit"
+      class="upload-btn"
+      :style="{ width: `${itemSize}px`, height: `${itemSize}px` }"
+      @click="handleAddClick"
+    >
+      +
     </div>
   </div>
 </template>
@@ -114,7 +114,8 @@ watch(
 onMounted(() => {
   // nextTick 无法解决获取元素为 null 问题，暂时使用 setTimeout 解决
   setTimeout(() => {
-    sizeInit.value = true;
+    const current = Taro.getCurrentPages();
+    if (current[0].route === 'pages/post/index') sizeInit.value = true;
     updateItemSize();
   }, 500);
   // 监听视窗变化
@@ -123,6 +124,14 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
+.nut-image-preview-swiper {
+  position: relative;
+  height: 100vh;
+}
+.nut-image-preview-taro-img {
+  width: 100vw;
+  height: 80vh;
+}
 .image-list {
   display: flex;
   flex-wrap: wrap;
@@ -132,7 +141,6 @@ onMounted(() => {
 
 .image-item {
   position: relative;
-  cursor: pointer;
 }
 
 .image-item image {
@@ -152,7 +160,6 @@ onMounted(() => {
   background: rgba(0, 0, 0, 0.5);
   color: #fff;
   font-size: 1.3rem;
-  cursor: pointer;
   z-index: 10;
   border-radius: 10px;
 }

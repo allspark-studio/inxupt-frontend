@@ -202,7 +202,6 @@ onUnmounted(() => {
 
 <style lang="scss">
 .search-bar {
-  opacity: 0.5;
   position: sticky;
   width: 750px;
   top: 0px;
