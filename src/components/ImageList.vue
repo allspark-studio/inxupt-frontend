@@ -1,20 +1,11 @@
 <template>
-  <nut-image-preview
-    class="preview"
-    style="display: fixed"
-    :autoplay="0"
-    :init-no="showIndex"
-    :show="showPreview"
-    :images="previewImages"
-    @close="hideImagePreview"
-  />
   <div ref="imageListRef" id="js-image-list" class="image-list">
     <div
       v-for="(image, index) in displayImages"
       class="image-item"
       :key="index"
       :style="{ width: `${itemSize}px`, height: `${itemSize}px` }"
-      @click="showImagePreview(index)"
+      @click="showImagePreview(image.src)"
     >
       <div v-if="sizeInit" class="delete-btn" @click.stop="handleRemoveClick(index)">×</div>
       <div v-if="maskShow(index) && sizeInit" class="image-mask">+{{ overflowCount }}</div>
@@ -33,7 +24,6 @@
 
 <script setup lang="ts">
 import { defineProps, computed, ref, onMounted, watch } from 'vue';
-import { ImagePreview as NutImagePreview } from '@nutui/nutui-taro';
 import Taro from '@tarojs/taro';
 
 const imageListRef = ref<HTMLElement>();
@@ -62,10 +52,10 @@ const props = defineProps({
 const emit = defineEmits(['add-item', 'remove-item']);
 const previewImages = computed(() => props.images.map((src: string) => ({ src })));
 const displayImages = computed(() => previewImages.value.slice(0, props.maxCount));
+
 const overflowCount = computed(() => Math.max(0, props.images.length - props.maxCount));
 const showUploadBtn = computed(() => props.images.length < props.maxCount);
 const itemSize = ref(0);
-const showIndex = ref(0);
 const showPreview = ref(false);
 const sizeInit = ref(false);
 
@@ -74,12 +64,12 @@ const maskShow = (index: number) => {
   return overflowCount.value > 0 && index === displayImages.value.length - 1;
 };
 
-const showImagePreview = (index: number) => {
-  showIndex.value = index;
+const showImagePreview = (src: string) => {
+  Taro.previewImage({
+    current: src,
+    urls: props.images as string[],
+  });
   showPreview.value = true;
-};
-const hideImagePreview = () => {
-  showPreview.value = false;
 };
 const handleAddClick = () => {
   emit('add-item');

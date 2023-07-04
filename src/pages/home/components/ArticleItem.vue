@@ -16,7 +16,10 @@
     <div class="content" @click="navigateToDetailPage(articleInfo.postId)">
       {{ articleInfo.pureText }}
     </div>
-    <image-list :images="articleInfo.mediaUrls"></image-list>
+    <image-list
+      v-if="articleInfo.mediaUrls && articleInfo.mediaUrls.length"
+      :images="articleInfo.mediaUrls || []"
+    ></image-list>
     <ul class="interactive">
       <li @click="switchFabulousColor(articleInfo.postId)">
         <Fabulous :color="state.FabulousColor" />
