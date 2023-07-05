@@ -2,13 +2,15 @@
   <div class="wrapper">
     <div class="top-box">
       <div class="user-info">
-        <UserInfo
-          :name="data.authorName"
-          :url="data.authorAvatar"
-          :level="data.authorLevel"
-          :author-id="data.authorId"
-          :create-time="data.createTime"
-          :initial-followed="data.followed"
+        <ArticleUserInfo
+          type="article"
+          :name="postDetail.authorName"
+          :avatar="postDetail.authorAvatar"
+          :level="postDetail.authorLevel"
+          :author-id="postDetail.authorId"
+          :create-time="postDetail.createTime"
+          :initial-followed="postDetail.followed"
+          :report-func="() => reportArticle(postDetail.postId)"
         />
       </div>
       <nut-skeleton
@@ -20,20 +22,20 @@
         row="3"
         round
       />
-      <!-- <div class="content" v-html="data.body"></div> -->
+      <!-- <div class="content" v-html="postDetail.body"></div> -->
       <div class="action-bar">
         <IconState
           @on-change="
             (state) => {
               if (state) {
-                ArticleServiceInstance.likeArticle(data.postId);
+                ArticleServiceInstance.likeArticle(postDetail.postId);
               } else {
-                ArticleServiceInstance.cancelLikeArticle(data.postId);
+                ArticleServiceInstance.cancelLikeArticle(postDetail.postId);
               }
             }
           "
-          :initial-click="data.liked"
-          :initial-sum="data.likeNum"
+          :initial-click="postDetail.liked"
+          :initial-sum="postDetail.likeNum"
           active-color="#FEDA48"
           normal-color="#333"
         >
@@ -43,14 +45,14 @@
           @on-change="
             (state) => {
               if (state) {
-                ArticleServiceInstance.favoriteArticle(data.postId);
+                ArticleServiceInstance.favoriteArticle(postDetail.postId);
               } else {
-                ArticleServiceInstance.cancelFavoriteArticle(data.postId);
+                ArticleServiceInstance.cancelFavoriteArticle(postDetail.postId);
               }
             }
           "
-          :initial-click="data.favorited"
-          :initial-sum="data.favoriteNum"
+          :initial-click="postDetail.favorited"
+          :initial-sum="postDetail.favoriteNum"
           active-color="#FEDA48"
           normal-color="#333"
         >
@@ -77,77 +79,191 @@
     </div>
     <div class="comments-box">
       <div class="title-box">
-        <h3 class="title">评论 {{ data.commentNum }}</h3>
-        <Switches active-text="时间" inactive-text="热度" />
+        <h3 class="title">评论 {{ postDetail.commentNum }}</h3>
+        <Switches active-text="时间" inactive-text="热度" @change="switchCommentType" />
       </div>
       <div class="comment" v-for="(comment, index) in comments" :key="comment.commentId">
-        <UserInfo
-          :url="comment.authorAvatar"
+        <ArticleUserInfo
+          type="comment"
+          :avatar="comment.authorAvatar"
           :name="comment.authorNickname"
           :level="comment.authorLevel"
           :author-id="comment.authorId"
           :create-time="comment.createTime"
+          :report-func="() => reportComment(comment.commentId)"
         />
         <!-- :initial-followed="comment" -->
-        <p>
-          {{ comment.text }}
-        </p>
-        <div class="comment-action-bar">
-          <IconState
-            @on-change="
-              (state) => {
-                if (state) {
-                  CommentServiceInstance.likeComment(comment.commentId);
-                } else {
-                  CommentServiceInstance.unlikeComment(comment.commentId);
+        <div class="comment-box">
+          <p class="comment-content">
+            {{ comment.text }}
+          </p>
+          <div class="comment-action-bar">
+            <IconState
+              @on-change="
+                (state) => {
+                  if (state) {
+                    CommentServiceInstance.likeComment(comment.commentId);
+                  } else {
+                    CommentServiceInstance.unlikeComment(comment.commentId);
+                  }
                 }
-              }
-            "
-            :initial-click="comment.liked"
-            :initial-sum="comment.likeNum"
-            active-color="#FEDA48"
-            normal-color="#333"
-          >
-            <Fabulous />
-          </IconState>
-          <IconState
-            @on-change="
-              () => {
-                /*
-                if (state) {
-                  CommentServiceInstance.favoriteArticle(data.postId);
-                } else {
-                  ArticleServiceInstance.cancelFavoriteArticle(data.postId);
-                }
-                */
-              }
-            "
-            :initial-sum="comment.subComments.length"
-            active-color="#FEDA48"
-            normal-color="#333"
-          >
-            <Message />
-          </IconState>
+              "
+              :initial-click="comment.liked"
+              :initial-sum="comment.likeNum"
+              active-color="#FEDA48"
+              normal-color="#333"
+            >
+              <Fabulous />
+            </IconState>
+            <IconSum :initial-sum="comment.subComments.length" normal-color="#333">
+              <Message />
+            </IconSum>
+          </div>
+          <div class="comment-reply" v-if="comment.subComments.length">
+            <div
+              class="comment-reply-item"
+              v-for="(reply, index) in comment.subComments"
+              :key="reply.commentId"
+              @click="() => handleShowComment(index)"
+            >
+              <ReplyUserName
+                :username="reply.authorNickname"
+                :user-id="reply.authorId"
+                :reply-user-id="reply.replyUserId"
+                :reply-username="reply.replyUserNickname"
+                v-if="reply.replyUserId"
+              />
+              <UserName v-else :username="reply.authorNickname" :user-id="reply.authorId" />
+              :
+              {{ reply.text }}
+            </div>
+          </div>
         </div>
         <nut-divider v-if="index !== comments.length - 1" style="color: #fafafa" />
       </div>
     </div>
   </div>
+  <NutPopup
+    position="bottom"
+    closeable
+    round
+    :style="{ height: '70%' }"
+    v-model:visible="data.isShowComment"
+  >
+    <div class="comment-detail-title">
+      {{ `${comments[data.showCommentIndex]?.subComments.length}条回复` }}
+    </div>
+    <div>
+      <div class="comment-detail-content">
+        <ArticleUserInfo
+          :avatar="comments[data.showCommentIndex]?.authorAvatar"
+          :name="comments[data.showCommentIndex]?.authorNickname"
+          :level="comments[data.showCommentIndex]?.authorLevel"
+          :author-id="comments[data.showCommentIndex]?.authorId"
+          :create-time="comments[data.showCommentIndex]?.createTime"
+          :initial-followed="false"
+          :report-func="() => reportComment(comments[data.showCommentIndex]?.commentId)"
+        />
+        <div class="comment-box">
+          <p>
+            {{ comments[data.showCommentIndex]?.text }}
+          </p>
+          <div class="comment-action-bar">
+            <IconState
+              @on-change="
+                (state) => {
+                  if (state) {
+                    CommentServiceInstance.likeComment(comments[data.showCommentIndex].commentId);
+                  } else {
+                    CommentServiceInstance.unlikeComment(comments[data.showCommentIndex].commentId);
+                  }
+                }
+              "
+              :initial-click="comments[data.showCommentIndex].liked"
+              :initial-sum="comments[data.showCommentIndex].likeNum"
+              active-color="#FEDA48"
+              normal-color="#333"
+            >
+              <Fabulous />
+            </IconState>
+            <IconSum
+              :initial-sum="comments[data.showCommentIndex].subComments.length"
+              normal-color="#333"
+            >
+              <Message />
+            </IconSum>
+          </div>
+        </div>
+      </div>
+      <div class="comment-reply-box">
+        <div
+          v-for="subComment in comments[data.showCommentIndex]?.subComments"
+          :key="subComment.commentId"
+        >
+          <!-- todo 缺少一个follow -->
+          <ArticleUserInfo
+            :avatar="subComment.authorAvatar"
+            :name="subComment.authorNickname"
+            :level="subComment.authorLevel"
+            :author-id="subComment.authorId"
+            :create-time="subComment.createTime"
+            :initial-followed="false"
+            :report-func="() => reportComment(subComment.commentId)"
+          />
+          <div class="comment-box">
+            <p>
+              {{ subComment.text }}
+            </p>
+            <div class="comment-action-bar">
+              <IconState
+                @on-change="
+                  (state) => {
+                    if (state) {
+                      CommentServiceInstance.likeComment(subComment.commentId);
+                    } else {
+                      CommentServiceInstance.unlikeComment(subComment.commentId);
+                    }
+                  }
+                "
+                :initial-click="subComment.liked"
+                :initial-sum="subComment.likeNum"
+                active-color="#FEDA48"
+                normal-color="#333"
+              >
+                <Fabulous />
+              </IconState>
+            </div>
+            <!-- <IconSum :initial-sum="subComment.length" normal-color="#333">
+              <Message />
+            </IconSum> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </NutPopup>
 </template>
-// todo 后端follow有问题
 <script setup lang="ts">
-import { computed, watchEffect } from 'vue';
+import { computed, watchEffect, reactive } from 'vue';
 import { useAsyncState } from '@vueuse/core';
-import { Skeleton as NutSkeleton, Divider as NutDivider } from '@nutui/nutui-taro';
+import {
+  Skeleton as NutSkeleton,
+  Divider as NutDivider,
+  Popup as NutPopup,
+} from '@nutui/nutui-taro';
 import { Fabulous, Star, ShareN, Message } from '@nutui/icons-vue-taro';
 import { useRouteParam } from '~/utils/hooks';
 import { PostServiceInstance, IPostDetail } from '~/service/post_service';
-import UserInfo from './components/UserInfo.vue';
+import Switches from '~/components/Switches.vue';
 import IconState from '~/components/IconState.vue';
+import ArticleUserInfo from './components/ArticleUserInfo.vue';
 import { ArticleServiceInstance } from '~/service/article_service';
 import { CommentServiceInstance, IComment } from '~/service/comment_service';
-import Switches from '~/components/Switches.vue';
+import IconSum from '~/components/IconSum.vue';
+import UserName from './components/UserName.vue';
+import ReplyUserName from './components/ReplyUserName.vue';
 
+const { reportComment } = CommentServiceInstance;
+const { reportArticle } = ArticleServiceInstance;
 const { id } = useRouteParam();
 const {
   state,
@@ -156,7 +272,8 @@ const {
 } = useAsyncState(PostServiceInstance.getPostDetail, {} as any, {
   immediate: false,
 });
-const data = computed<IPostDetail>(() => state.value.data ?? {});
+// const isShowComment = reactive({});
+const postDetail = computed<IPostDetail>(() => state.value.data ?? {});
 const { state: commentsResponse, execute: getComments } = useAsyncState(
   CommentServiceInstance.getPostAllComments,
   {} as any,
@@ -165,6 +282,24 @@ const { state: commentsResponse, execute: getComments } = useAsyncState(
   }
 );
 const comments = computed<IComment[]>(() => commentsResponse.value.data ?? []);
+
+// todo 优化切换效果
+
+const switchCommentType = (e: boolean) => {
+  if (e) {
+    getComments(0, id!, 'new');
+  } else {
+    getComments(0, id!, 'hot');
+  }
+};
+const data = reactive({
+  isShowComment: true,
+  showCommentIndex: 0,
+});
+const handleShowComment = (index: number) => {
+  data.isShowComment = true;
+  data.showCommentIndex = index;
+};
 
 watchEffect(() => {
   if (typeof id === 'undefined') return;
@@ -209,9 +344,35 @@ $bgColor: #e6eaed;
   display: flex;
   width: 160rpx;
   justify-content: space-between;
-  margin-top: 8rpx;
+  margin-top: 24rpx;
 }
 .comment {
   margin: 16rpx 0;
 }
+.comment-box {
+  margin-left: 106rpx;
+}
+.comment-reply {
+  margin-top: 24rpx;
+  background-color: #efefef;
+  padding: 8rpx 12rpx;
+}
+.comment-detail-title {
+  font-size: 32rpx;
+  font-weight: 400;
+  height: 60rpx;
+  margin-top: 24rpx;
+  letter-spacing: 8rpx;
+  margin-bottom: 16rpx;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
+}
+.comment-detail-content {
+  padding-bottom: 24rpx;
+  border-bottom: 16rpx solid #efefef;
+}
+.comment-reply-box {
+  margin-top: 24rpx;
+}
+/* .reply-comment-content */
 </style>

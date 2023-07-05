@@ -10,6 +10,7 @@
 </template>
 
 <script setup lang="ts">
+// todo： 考虑是否直接继承IconSum
 import { useDebounceFn } from '@vueuse/core';
 import { watchEffect, reactive } from 'vue';
 
