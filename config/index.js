@@ -64,6 +64,12 @@ const config = {
       },
     },
     hot: true,
+    enableExtract: true,
+    // miniCssExtractPluginOption: {
+    //   //忽略css文件引入顺序
+    //   ignoreOrder: true,
+    // },
+    // esModule: false,
   },
   h5: {
     publicPath: '/',

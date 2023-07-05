@@ -21,15 +21,32 @@ export interface IComment {
   coinsNum: number;
   liked: boolean;
   coined: boolean;
-  subComments: (Comment & {
+  subComments: {
+    commentId: number;
+    rootId: number;
+    parentId: number;
+    text: string;
+    mediaUrls: any;
+    state: number;
+    privately: boolean;
+    authorId: number;
+    authorNickname: string;
+    authorAvatar: string;
+    authorLevel: number;
+    accountAuth: string[];
+    createTime: string;
+    likeNum: number;
+    coinsNum: number;
+    liked: boolean;
+    coined: boolean;
     replyUserId: number;
     replyUserNickname: string;
-  })[];
+  }[];
 }
 
 export default class CommentService {
-  async getPostAllComments(postId: string) {
-    const { data } = await axios.get(`post/${postId}/comments`);
+  async getPostAllComments(postId: string, type: 'new' | 'hot' = 'new') {
+    const { data } = await axios.get(`post/${postId}/comments?sortedBy=${type === 'new' ? 0 : 1}`);
     return data;
   }
 
@@ -61,6 +78,10 @@ export default class CommentService {
 
   unlikeComment(commentId: number) {
     return axios.delete(`comment/${commentId}/like`);
+  }
+
+  reportComment(commentId: number) {
+    return axios.post(`comment/${commentId}/report`);
   }
 }
 export const CommentServiceInstance = new CommentService();
