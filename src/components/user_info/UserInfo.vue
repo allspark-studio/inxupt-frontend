@@ -31,6 +31,7 @@ import { Tag as NutTag, Avatar as NutAvatar } from '@nutui/nutui-taro';
 import { computed, CSSProperties } from 'vue';
 import Taro from '@tarojs/taro';
 import { LEVEL_COLOR_LIST } from './constants';
+import { PAGES_PATH_MAP } from '~/constants/config_constants';
 
 export interface AvatarProps {
   size?: string;
@@ -61,12 +62,10 @@ const levelColor = computed(() => {
   return LEVEL_COLOR_LIST[props.level - 1];
 });
 // 点击头像或昵称跳转到用户详情页面
-const navigateToUserDetail = (id) => {
-  if (Taro.getCurrentPages()[0].route === 'pages/home/index') {
-    Taro.navigateTo({
-      url: `/pages/profile/user?Id=${id}`,
-    });
-  }
+const navigateToUserDetail = (id: number) => {
+  Taro.navigateTo({
+    url: `/${PAGES_PATH_MAP.userProfile}?id=${id}`,
+  });
 };
 </script>
 

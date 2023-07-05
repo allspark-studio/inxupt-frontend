@@ -13,13 +13,15 @@
         <MoreS class="more" @click="showMenu" />
       </template>
     </user-info>
-    <div class="content" @click="navigateToDetailPage(articleInfo.postId)">
-      {{ articleInfo.pureText }}
+    <div class="article-item__content" @click="navigateToDetailPage(articleInfo.postId)">
+      <div>
+        {{ articleInfo.pureText }}
+      </div>
+      <image-list
+        v-if="articleInfo.mediaUrls && articleInfo.mediaUrls.length"
+        :images="articleInfo.mediaUrls || []"
+      ></image-list>
     </div>
-    <image-list
-      v-if="articleInfo.mediaUrls && articleInfo.mediaUrls.length"
-      :images="articleInfo.mediaUrls || []"
-    ></image-list>
     <ul class="interactive">
       <li @click="switchFabulousColor(articleInfo.postId)">
         <Fabulous :color="state.FabulousColor" />
@@ -228,7 +230,7 @@ onMounted(() => {
   border-radius: 20px;
   margin-bottom: 25px;
   padding-bottom: 10px;
-  .content {
+  &__content {
     margin: 0px 20px;
     font-size: 30px;
     overflow: hidden;
