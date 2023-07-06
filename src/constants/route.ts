@@ -5,3 +5,4 @@ export const PROFILE = 'profile';
 export const TOPIC = 'topic';
 export const POST = 'post';
 export const NOTICE = 'notice';
+export const USER = 'user';

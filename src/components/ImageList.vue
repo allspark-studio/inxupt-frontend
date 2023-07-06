@@ -1,39 +1,29 @@
 <template>
-  <div>
-    <nut-image-preview
-      :autoplay="0"
-      :init-no="showIndex"
-      :show="showPreview"
-      :images="previewImages"
-      @close="hideImagePreview"
-    />
-    <div ref="imageListRef" id="js-image-list" class="image-list">
-      <div
-        v-for="(image, index) in displayImages"
-        class="image-item"
-        :key="index"
-        :style="{ width: `${itemSize}px`, height: `${itemSize}px` }"
-        @click="showImagePreview(index)"
-      >
-        <div v-if="sizeInit" class="delete-btn" @click.stop="handleRemoveClick(index)">×</div>
-        <div v-if="maskShow(index) && sizeInit" class="image-mask">+{{ overflowCount }}</div>
-        <image mode="aspectFill" :src="image.src" />
-      </div>
-      <div
-        v-if="showUploadBtn && sizeInit"
-        class="upload-btn"
-        :style="{ width: `${itemSize}px`, height: `${itemSize}px` }"
-        @click="handleAddClick"
-      >
-        +
-      </div>
+  <div ref="imageListRef" id="js-image-list" class="image-list">
+    <div
+      v-for="(image, index) in displayImages"
+      class="image-item"
+      :key="index"
+      :style="{ width: `${itemSize}px`, height: `${itemSize}px` }"
+      @click="showImagePreview(image.src)"
+    >
+      <div v-if="sizeInit" class="delete-btn" @click.stop="handleRemoveClick(index)">×</div>
+      <div v-if="maskShow(index) && sizeInit" class="image-mask">+{{ overflowCount }}</div>
+      <image mode="aspectFill" :src="image.src" />
+    </div>
+    <div
+      v-if="showUploadBtn && sizeInit"
+      class="upload-btn"
+      :style="{ width: `${itemSize}px`, height: `${itemSize}px` }"
+      @click="handleAddClick"
+    >
+      +
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps, computed, ref, onMounted, watch } from 'vue';
-import { ImagePreview as NutImagePreview } from '@nutui/nutui-taro';
 import Taro from '@tarojs/taro';
 
 const imageListRef = ref<HTMLElement>();
@@ -62,10 +52,10 @@ const props = defineProps({
 const emit = defineEmits(['add-item', 'remove-item']);
 const previewImages = computed(() => props.images.map((src: string) => ({ src })));
 const displayImages = computed(() => previewImages.value.slice(0, props.maxCount));
+
 const overflowCount = computed(() => Math.max(0, props.images.length - props.maxCount));
 const showUploadBtn = computed(() => props.images.length < props.maxCount);
 const itemSize = ref(0);
-const showIndex = ref(0);
 const showPreview = ref(false);
 const sizeInit = ref(false);
 
@@ -74,12 +64,12 @@ const maskShow = (index: number) => {
   return overflowCount.value > 0 && index === displayImages.value.length - 1;
 };
 
-const showImagePreview = (index: number) => {
-  showIndex.value = index;
+const showImagePreview = (src: string) => {
+  Taro.previewImage({
+    current: src,
+    urls: props.images as string[],
+  });
   showPreview.value = true;
-};
-const hideImagePreview = () => {
-  showPreview.value = false;
 };
 const handleAddClick = () => {
   emit('add-item');
@@ -114,7 +104,8 @@ watch(
 onMounted(() => {
   // nextTick 无法解决获取元素为 null 问题，暂时使用 setTimeout 解决
   setTimeout(() => {
-    sizeInit.value = true;
+    const current = Taro.getCurrentPages();
+    if (current[0].route === 'pages/post/index') sizeInit.value = true;
     updateItemSize();
   }, 500);
   // 监听视窗变化
@@ -123,6 +114,14 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
+.nut-image-preview-swiper {
+  position: relative;
+  height: 100vh;
+}
+.nut-image-preview-taro-img {
+  width: 100vw;
+  height: 80vh;
+}
 .image-list {
   display: flex;
   flex-wrap: wrap;
@@ -132,7 +131,6 @@ onMounted(() => {
 
 .image-item {
   position: relative;
-  cursor: pointer;
 }
 
 .image-item image {
@@ -152,7 +150,6 @@ onMounted(() => {
   background: rgba(0, 0, 0, 0.5);
   color: #fff;
   font-size: 1.3rem;
-  cursor: pointer;
   z-index: 10;
   border-radius: 10px;
 }

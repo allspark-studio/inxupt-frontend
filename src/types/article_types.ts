@@ -6,7 +6,7 @@ export interface ArticleFacade {
   pureText: null | string;
   cover: null | string;
   body: null | string;
-  mediaUrls: null | string;
+  mediaUrls: string[];
   authorId: number;
   authorName: string;
   authorAvatar: string;

@@ -4,6 +4,7 @@
       :name="articleInfo.authorName"
       :url="articleInfo.authorAvatar"
       :level="articleInfo.authorLevel"
+      :userId="articleInfo.authorId"
     >
       <template v-slot:extra>
         <time-ago :time="articleInfo.createTime" />
@@ -12,8 +13,14 @@
         <MoreS class="more" @click="showMenu" />
       </template>
     </user-info>
-    <div class="content">
-      {{ articleInfo.pureText }}
+    <div class="article-item__content" @click="navigateToDetailPage(articleInfo.postId)">
+      <div>
+        {{ articleInfo.pureText }}
+      </div>
+      <image-list
+        v-if="articleInfo.mediaUrls && articleInfo.mediaUrls.length"
+        :images="articleInfo.mediaUrls || []"
+      ></image-list>
     </div>
     <ul class="interactive">
       <li @click="switchFabulousColor(articleInfo.postId)">
@@ -24,7 +31,7 @@
         <Star :color="state.StarColor" />
         <span>{{ state.favoriteCount }}</span>
       </li>
-      <li>
+      <li @click="navigateToDetailPage(articleInfo.postId)">
         <Message />
         <span>{{ articleInfo.commentNum }}</span>
       </li>
@@ -41,6 +48,7 @@ import { MoreS, Fabulous, Star, Message, ShareN } from '@nutui/icons-vue-taro';
 import Taro from '@tarojs/taro';
 import UserInfo from '~/components/user_info/UserInfo.vue';
 import TimeAgo from '~/components/TimeAgo.vue';
+import ImageList from '~/components/ImageList.vue';
 import ArticleService from '~/service/article_service';
 import { ArticleFacade } from '~/types/article_types';
 
@@ -69,6 +77,12 @@ const initState = () => {
   state.StarColor = props.articleInfo.favorited ? '#FEDA48' : '';
 
   state.item[0] = props.articleInfo.followed ? '已关注' : '关注';
+};
+// 点击文本跳转详情页
+const navigateToDetailPage = (id) => {
+  Taro.navigateTo({
+    url: `/pages/profile/content?userId=${id}`,
+  });
 };
 // 发送点赞请求
 const postLike = async (id: number) => {
@@ -216,7 +230,7 @@ onMounted(() => {
   border-radius: 20px;
   margin-bottom: 25px;
   padding-bottom: 10px;
-  .content {
+  &__content {
     margin: 0px 20px;
     font-size: 30px;
     overflow: hidden;
