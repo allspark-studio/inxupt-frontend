@@ -83,7 +83,7 @@
         <Switches active-text="时间" inactive-text="热度" @change="switchCommentType" />
       </div>
       <div class="comment" v-for="(comment, index) in comments" :key="comment.commentId">
-        <ArticleUserInfo
+        <!-- <ArticleUserInfo
           type="comment"
           :avatar="comment.authorAvatar"
           :name="comment.authorNickname"
@@ -91,40 +91,21 @@
           :author-id="comment.authorId"
           :create-time="comment.createTime"
           :report-func="() => reportComment(comment.commentId)"
-        />
+        /> -->
         <!-- :initial-followed="comment" -->
+        <TalkItem
+          :post-id="id!"
+          :comment="comment"
+          :origin="Origin.Article"
+          @get-comments="getComments"
+        />
         <div class="comment-box">
-          <p class="comment-content">
-            {{ comment.text }}
-          </p>
-          <div class="comment-action-bar">
-            <IconState
-              @on-change="
-                (state) => {
-                  if (state) {
-                    CommentServiceInstance.likeComment(comment.commentId);
-                  } else {
-                    CommentServiceInstance.unlikeComment(comment.commentId);
-                  }
-                }
-              "
-              :initial-click="comment.liked"
-              :initial-sum="comment.likeNum"
-              active-color="#FEDA48"
-              normal-color="#333"
-            >
-              <Fabulous />
-            </IconState>
-            <IconSum :initial-sum="comment.subComments.length" normal-color="#333">
-              <Message />
-            </IconSum>
-          </div>
           <div class="comment-reply" v-if="comment.subComments.length">
             <div
               class="comment-reply-item"
-              v-for="(reply, index) in comment.subComments"
+              v-for="reply in comment.subComments"
               :key="reply.commentId"
-              @click="() => handleShowComment(index)"
+              @click="handleShowComment"
             >
               <ReplyUserName
                 :username="reply.authorNickname"
@@ -142,115 +123,68 @@
         <nut-divider v-if="index !== comments.length - 1" style="color: #fafafa" />
       </div>
     </div>
+    <div class="comment-bottom">再怎么找也没有了</div>
+    <div class="comment-input-button-box">
+      <input
+        class="comment-input-button"
+        placeholder="发一条友善的小评论吧~"
+        @click="handleShowComment"
+      />
+    </div>
+    <CommentBox
+      :origin="Origin.Article"
+      :post-id="id!"
+      :root-id="0"
+      :parent-id="0"
+      :reply-user-id="postDetail.authorId"
+      ref="commentRef"
+      @get-comments="getComments"
+    />
   </div>
   <NutPopup
     position="bottom"
     closeable
     round
-    :style="{ height: '70%' }"
+    :style="{ height: '70%', overflow: 'none' }"
     v-model:visible="data.isShowComment"
   >
     <div class="comment-detail-title">
       {{ `${comments[data.showCommentIndex]?.subComments.length}条回复` }}
     </div>
-    <div>
+    <div :style="{ height: 'calc(100% - 120rpx)', overflowY: 'scroll' }">
       <div class="comment-detail-content">
-        <ArticleUserInfo
-          :avatar="comments[data.showCommentIndex]?.authorAvatar"
-          :name="comments[data.showCommentIndex]?.authorNickname"
-          :level="comments[data.showCommentIndex]?.authorLevel"
-          :author-id="comments[data.showCommentIndex]?.authorId"
-          :create-time="comments[data.showCommentIndex]?.createTime"
-          :initial-followed="false"
-          :report-func="() => reportComment(comments[data.showCommentIndex]?.commentId)"
+        <TalkItem
+          :post-id="id!"
+          :comment="comments[data.showCommentIndex]"
+          :origin="Origin.Article"
+          @get-comments="getComments"
         />
-        <div class="comment-box">
-          <p>
-            {{ comments[data.showCommentIndex]?.text }}
-          </p>
-          <div class="comment-action-bar">
-            <IconState
-              @on-change="
-                (state) => {
-                  if (state) {
-                    CommentServiceInstance.likeComment(comments[data.showCommentIndex].commentId);
-                  } else {
-                    CommentServiceInstance.unlikeComment(comments[data.showCommentIndex].commentId);
-                  }
-                }
-              "
-              :initial-click="comments[data.showCommentIndex].liked"
-              :initial-sum="comments[data.showCommentIndex].likeNum"
-              active-color="#FEDA48"
-              normal-color="#333"
-            >
-              <Fabulous />
-            </IconState>
-            <IconSum
-              :initial-sum="comments[data.showCommentIndex].subComments.length"
-              normal-color="#333"
-            >
-              <Message />
-            </IconSum>
-          </div>
-        </div>
       </div>
       <div class="comment-reply-box">
         <div
           v-for="subComment in comments[data.showCommentIndex]?.subComments"
           :key="subComment.commentId"
         >
-          <!-- todo 缺少一个follow -->
-          <ArticleUserInfo
-            :avatar="subComment.authorAvatar"
-            :name="subComment.authorNickname"
-            :level="subComment.authorLevel"
-            :author-id="subComment.authorId"
-            :create-time="subComment.createTime"
-            :initial-followed="false"
-            :report-func="() => reportComment(subComment.commentId)"
+          <TalkItem
+            :post-id="id!"
+            :comment="(subComment as any)"
+            :origin="Origin.Comment"
+            @get-comments="getComments"
           />
-          <div class="comment-box">
-            <p>
-              {{ subComment.text }}
-            </p>
-            <div class="comment-action-bar">
-              <IconState
-                @on-change="
-                  (state) => {
-                    if (state) {
-                      CommentServiceInstance.likeComment(subComment.commentId);
-                    } else {
-                      CommentServiceInstance.unlikeComment(subComment.commentId);
-                    }
-                  }
-                "
-                :initial-click="subComment.liked"
-                :initial-sum="subComment.likeNum"
-                active-color="#FEDA48"
-                normal-color="#333"
-              >
-                <Fabulous />
-              </IconState>
-            </div>
-            <!-- <IconSum :initial-sum="subComment.length" normal-color="#333">
-              <Message />
-            </IconSum> -->
-          </div>
         </div>
       </div>
     </div>
   </NutPopup>
 </template>
 <script setup lang="ts">
-import { computed, watchEffect, reactive } from 'vue';
+import { computed, watchEffect, reactive, ref } from 'vue';
 import { useAsyncState } from '@vueuse/core';
 import {
   Skeleton as NutSkeleton,
   Divider as NutDivider,
   Popup as NutPopup,
 } from '@nutui/nutui-taro';
-import { Fabulous, Star, ShareN, Message } from '@nutui/icons-vue-taro';
+import { Fabulous, Star, ShareN } from '@nutui/icons-vue-taro';
 import { useRouteParam } from '~/utils/hooks';
 import { PostServiceInstance, IPostDetail } from '~/service/post_service';
 import Switches from '~/components/Switches.vue';
@@ -258,11 +192,12 @@ import IconState from '~/components/IconState.vue';
 import ArticleUserInfo from './components/ArticleUserInfo.vue';
 import { ArticleServiceInstance } from '~/service/article_service';
 import { CommentServiceInstance, IComment } from '~/service/comment_service';
-import IconSum from '~/components/IconSum.vue';
 import UserName from './components/UserName.vue';
 import ReplyUserName from './components/ReplyUserName.vue';
+import TalkItem from './components/TalkItem.vue';
+import { Origin } from './const';
+import CommentBox from './components/CommentBox.vue';
 
-const { reportComment } = CommentServiceInstance;
 const { reportArticle } = ArticleServiceInstance;
 const { id } = useRouteParam();
 const {
@@ -272,17 +207,18 @@ const {
 } = useAsyncState(PostServiceInstance.getPostDetail, {} as any, {
   immediate: false,
 });
+const commentRef = ref();
 // const isShowComment = reactive({});
 const postDetail = computed<IPostDetail>(() => state.value.data ?? {});
+const type = ref<'new' | 'hot'>('new');
 const { state: commentsResponse, execute: getComments } = useAsyncState(
-  CommentServiceInstance.getPostAllComments,
+  () => CommentServiceInstance.getPostAllComments(id!, type.value),
   {} as any,
   {
     immediate: false,
   }
 );
 const comments = computed<IComment[]>(() => commentsResponse.value.data ?? []);
-
 // todo 优化切换效果
 
 const switchCommentType = (e: boolean) => {
@@ -293,18 +229,19 @@ const switchCommentType = (e: boolean) => {
   }
 };
 const data = reactive({
-  isShowComment: true,
+  isShowComment: false,
   showCommentIndex: 0,
+  isShowCommentInput: true,
+  inputCommentId: 0,
 });
-const handleShowComment = (index: number) => {
+const handleShowComment = () => {
   data.isShowComment = true;
-  data.showCommentIndex = index;
 };
 
 watchEffect(() => {
   if (typeof id === 'undefined') return;
   execute(0, id);
-  getComments(0, id);
+  getComments();
 });
 </script>
 <style lang="scss" module>
@@ -340,18 +277,6 @@ $bgColor: #e6eaed;
   letter-spacing: 8rpx;
 }
 
-.comment-action-bar {
-  display: flex;
-  width: 160rpx;
-  justify-content: space-between;
-  margin-top: 24rpx;
-}
-.comment {
-  margin: 16rpx 0;
-}
-.comment-box {
-  margin-left: 106rpx;
-}
 .comment-reply {
   margin-top: 24rpx;
   background-color: #efefef;
@@ -373,6 +298,48 @@ $bgColor: #e6eaed;
 }
 .comment-reply-box {
   margin-top: 24rpx;
+}
+.comment-input {
+  max-height: 300rpx;
+  min-height: 150rpx;
+  background-color: #efefef;
+}
+.comment-input-wrapper {
+  background-color: #efefef;
+  border-radius: 16rpx;
+  overflow: hidden;
+  margin: 48rpx 24rpx 8rpx 24rpx;
+}
+.comment-input-wrapper .nut-textarea {
+  background-color: #efefef;
+}
+.comment-input-bar {
+  display: flex;
+  justify-content: space-between;
+  margin: 16rpx 16rpx 32rpx 16rpx;
+}
+.comment-submit {
+  background-color: $primary-color;
+}
+.comment-input-button-box {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #f4f1f1;
+  height: 120rpx;
+}
+.comment-input-button {
+  background-color: #e2e0e0;
+  height: 44rpx;
+  border-radius: 999rpx;
+  padding-left: 2em;
+  margin: 32rpx 24rpx;
+}
+.comment-bottom {
+  padding-bottom: 144rpx;
+  text-align: center;
+  color: #999;
 }
 /* .reply-comment-content */
 </style>
