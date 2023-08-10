@@ -128,7 +128,7 @@
       <input
         class="comment-input-button"
         placeholder="发一条友善的小评论吧~"
-        @click="handleShowComment"
+        @click="handleShowCommentBox"
       />
     </div>
     <CommentBox
@@ -223,9 +223,9 @@ const comments = computed<IComment[]>(() => commentsResponse.value.data ?? []);
 
 const switchCommentType = (e: boolean) => {
   if (e) {
-    getComments(0, id!, 'new');
+    type.value = 'new';
   } else {
-    getComments(0, id!, 'hot');
+    type.value = 'hot';
   }
 };
 const data = reactive({
@@ -237,10 +237,15 @@ const data = reactive({
 const handleShowComment = () => {
   data.isShowComment = true;
 };
+const handleShowCommentBox = () => {
+  commentRef.value?.showCommentBox();
+};
 
 watchEffect(() => {
   if (typeof id === 'undefined') return;
   execute(0, id);
+});
+watchEffect(() => {
   getComments();
 });
 </script>
