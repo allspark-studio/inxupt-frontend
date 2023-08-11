@@ -126,6 +126,7 @@
     <div class="comment-bottom">再怎么找也没有了</div>
     <div class="comment-input-button-box">
       <input
+        disabled
         class="comment-input-button"
         placeholder="发一条友善的小评论吧~"
         @click="handleShowCommentBox"
@@ -178,6 +179,7 @@
 </template>
 <script setup lang="ts">
 import { computed, watchEffect, reactive, ref } from 'vue';
+import Taro from '@tarojs/taro';
 import { useAsyncState } from '@vueuse/core';
 import {
   Skeleton as NutSkeleton,
@@ -212,14 +214,21 @@ const commentRef = ref();
 const postDetail = computed<IPostDetail>(() => state.value.data ?? {});
 const type = ref<'new' | 'hot'>('new');
 const { state: commentsResponse, execute: getComments } = useAsyncState(
-  () => CommentServiceInstance.getPostAllComments(id!, type.value),
+  async () => {
+    Taro.showLoading({
+      title: '加载中',
+    });
+    const res = await CommentServiceInstance.getPostAllComments(id!, type.value);
+    Taro.hideLoading();
+    return res;
+  },
   {} as any,
   {
     immediate: false,
+    resetOnExecute: false,
   }
 );
 const comments = computed<IComment[]>(() => commentsResponse.value.data ?? []);
-// todo 优化切换效果
 
 const switchCommentType = (e: boolean) => {
   if (e) {
@@ -322,9 +331,6 @@ $bgColor: #e6eaed;
   display: flex;
   justify-content: space-between;
   margin: 16rpx 16rpx 32rpx 16rpx;
-}
-.comment-submit {
-  background-color: $primary-color;
 }
 .comment-input-button-box {
   position: fixed;

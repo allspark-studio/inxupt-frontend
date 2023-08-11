@@ -10,6 +10,7 @@
       />
     </div>
     <div class="comment-input-bar">
+      <div></div>
       <NutButton class="comment-submit" size="small" @click="submitComment">说一嘴</NutButton>
     </div>
   </NutPopup>
@@ -74,5 +75,10 @@ defineExpose({ showCommentBox });
 }
 .comment-box {
   margin-left: 106rpx;
+}
+.comment-submit {
+  background-color: #feda48;
+  color: #333;
+  border: none;
 }
 </style>
