@@ -105,15 +105,13 @@
               class="comment-reply-item"
               v-for="reply in comment.subComments"
               :key="reply.commentId"
-              @click="handleShowComment"
+              @click="() => handleShowComment(index)"
             >
-              <ReplyUserName
-                :username="reply.authorNickname"
-                :user-id="reply.authorId"
-                :reply-user-id="reply.replyUserId"
-                :reply-username="reply.replyUserNickname"
-                v-if="reply.replyUserId"
-              />
+              <template v-if="reply.replyUserId !== comment.authorId">
+                <UserName :username="reply.authorNickname" :user-id="reply.authorId" />
+                回复
+                <UserName :username="'@' + reply.replyUserNickname" :user-id="reply.replyUserId" />
+              </template>
               <UserName v-else :username="reply.authorNickname" :user-id="reply.authorId" />
               :
               {{ reply.text }}
@@ -171,6 +169,7 @@
             :comment="(subComment as any)"
             :origin="Origin.Comment"
             @get-comments="getComments"
+            :root-comment-author-id="comments[data.showCommentIndex].authorId"
           />
         </div>
       </div>
@@ -195,7 +194,6 @@ import ArticleUserInfo from './components/ArticleUserInfo.vue';
 import { ArticleServiceInstance } from '~/service/article_service';
 import { CommentServiceInstance, IComment } from '~/service/comment_service';
 import UserName from './components/UserName.vue';
-import ReplyUserName from './components/ReplyUserName.vue';
 import TalkItem from './components/TalkItem.vue';
 import { Origin } from './const';
 import CommentBox from './components/CommentBox.vue';
@@ -243,8 +241,9 @@ const data = reactive({
   isShowCommentInput: true,
   inputCommentId: 0,
 });
-const handleShowComment = () => {
+const handleShowComment = (index: number) => {
   data.isShowComment = true;
+  data.showCommentIndex = index;
 };
 const handleShowCommentBox = () => {
   commentRef.value?.showCommentBox();

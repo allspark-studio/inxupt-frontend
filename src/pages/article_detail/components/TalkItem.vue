@@ -11,6 +11,11 @@
   <!-- :initial-followed="comment" -->
   <div class="comment-box">
     <p class="comment-content">
+      <template v-if="origin !== Origin.Article && comment?.replyUserId !== rootCommentAuthorId">
+        回复
+        <UserName :user-id="comment?.replyUserId!" :username="'@'+comment?.replyUserNickname!" />
+        :
+      </template>
       {{ comment.text }}
     </p>
     <div class="comment-action-bar">
@@ -32,9 +37,8 @@
         <Fabulous />
       </IconState>
       <IconSum
-        v-if="origin === Origin.Article"
-        @click="() => showCommentInput()"
-        :initial-sum="comment?.subComments?.length"
+        @click="() => showCommentInput(comment.commentId)"
+        :initial-sum="comment?.subComments?.length ?? 0"
         normal-color="#333"
       >
         <Message />
@@ -43,7 +47,7 @@
   </div>
   <CommentBox
     :origin="Origin.Comment"
-    :root-id="comment.commentId"
+    :root-id="comment.rootId === 0 ? comment.commentId : comment.rootId"
     :post-id="postId"
     :parent-id="comment.commentId"
     :reply-user-id="comment.authorId"
@@ -61,16 +65,20 @@ import IconSum from '~/components/IconSum.vue';
 import { CommentServiceInstance, IComment } from '~/service/comment_service';
 import { Origin } from '../const';
 import CommentBox from './CommentBox.vue';
+import UserName from './UserName.vue';
 
 const { reportComment } = CommentServiceInstance;
-const props = defineProps<{
-  comment: IComment;
+defineProps<{
+  comment: Partial<IComment & IComment['subComments'][number]> &
+    (IComment | IComment['subComments'][number]);
   origin: Origin;
   postId: string;
+  rootCommentAuthorId?: number;
 }>();
+
 const commentBox = ref();
-const showCommentInput = () => {
-  commentBox.value.showCommentBox(props.comment.commentId);
+const showCommentInput = (id: number) => {
+  commentBox.value.showCommentBox(id);
 };
 const emit = defineEmits(['getComments']);
 const refresh = () => {

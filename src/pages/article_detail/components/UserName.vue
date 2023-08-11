@@ -12,6 +12,7 @@ const props = defineProps<{
 }>();
 
 const onClick = () => {
+  console.log('jump');
   Taro.navigateTo({
     // todo finfish user page
     url: `/pages/user/user?userId=${props.userId}`,

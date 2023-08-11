@@ -1,6 +1,6 @@
 <template>
   <UserName :username="props.username" :user-id="props.userId" />
-  <Text class="comment-reply-at">@</Text>
+  <Text class="comment-reply-at">回复@</Text>
   <UserName :username="props.replyUsername" :user-id="props.replyUserId" />
 </template>
 

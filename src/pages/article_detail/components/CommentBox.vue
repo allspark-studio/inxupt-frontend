@@ -27,18 +27,20 @@ const props = defineProps<{
   origin: Origin;
   rootId: number;
   postId: string;
-  parentId: number;
   replyUserId: number;
 }>();
 const data = reactive<{
   isShowCommentInput: boolean;
   userComment: string;
+  parentId: number;
 }>({
   isShowCommentInput: false,
   userComment: '',
+  parentId: props.rootId,
 });
-const showCommentBox = () => {
+const showCommentBox = (parentId: number) => {
   data.isShowCommentInput = true;
+  data.parentId = parentId;
 };
 const emit = defineEmits(['getComments']);
 const submitComment = () => {
@@ -46,7 +48,7 @@ const submitComment = () => {
     body: data.userComment,
     mediaUrls: [],
     rootId: props.rootId,
-    parentId: props.parentId,
+    parentId: data.parentId,
     replyUserId: props.replyUserId,
     privately: false,
   })
