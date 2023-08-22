@@ -22,7 +22,7 @@
         row="3"
         round
       />
-      <!-- <div class="content" v-html="postDetail.body"></div> -->
+      <div class="content" v-html="postDetail.body"></div>
       <div class="action-bar">
         <IconState
           @on-change="
@@ -58,41 +58,33 @@
         >
           <Star />
         </IconState>
-        <IconState
-          @on-change="
-            (state) => {
-              if (state) {
-                // ArticleServiceInstance.favoriteArticle(data.postId);
-              } else {
-                // ArticleServiceInstance.cancelFavoriteArticle(data.postId);
+        <Button class="share-button" open-type="share" share-message-title="快来一起看有趣的文章吧">
+          <IconState
+            @on-change="
+              (state) => {
+                Taro.showShareMenu({});
+                if (state) {
+                  // ArticleServiceInstance.favoriteArticle(data.postId);
+                } else {
+                  // ArticleServiceInstance.cancelFavoriteArticle(data.postId);
+                }
               }
-            }
-          "
-          :initial-click="false"
-          :initial-sum="0"
-          active-color="#FEDA48"
-          normal-color="#333"
-        >
-          <ShareN />
-        </IconState>
+            "
+            :initial-click="false"
+            active-color="#FEDA48"
+            normal-color="#333"
+          >
+            <ShareN />
+          </IconState>
+        </Button>
       </div>
     </div>
     <div class="comments-box">
       <div class="title-box">
         <h3 class="title">评论 {{ postDetail.commentNum }}</h3>
-        <Switches active-text="时间" inactive-text="热度" @change="switchCommentType" />
+        <Switches active-text="热度" inactive-text="时间" @change="switchCommentType" />
       </div>
       <div class="comment" v-for="(comment, index) in comments" :key="comment.commentId">
-        <!-- <ArticleUserInfo
-          type="comment"
-          :avatar="comment.authorAvatar"
-          :name="comment.authorNickname"
-          :level="comment.authorLevel"
-          :author-id="comment.authorId"
-          :create-time="comment.createTime"
-          :report-func="() => reportComment(comment.commentId)"
-        /> -->
-        <!-- :initial-followed="comment" -->
         <TalkItem
           :post-id="id!"
           :comment="comment"
@@ -123,7 +115,8 @@
     </div>
     <div class="comment-bottom">再怎么找也没有了</div>
     <div class="comment-input-button-box">
-      <input
+      <Input
+        :maxlength="0"
         disabled
         class="comment-input-button"
         placeholder="发一条友善的小评论吧~"
@@ -186,6 +179,7 @@ import {
   Popup as NutPopup,
 } from '@nutui/nutui-taro';
 import { Fabulous, Star, ShareN } from '@nutui/icons-vue-taro';
+import { Button, Input } from '@tarojs/components';
 import { useRouteParam } from '~/utils/hooks';
 import { PostServiceInstance, IPostDetail } from '~/service/post_service';
 import Switches from '~/components/Switches.vue';
@@ -246,7 +240,7 @@ const handleShowComment = (index: number) => {
   data.showCommentIndex = index;
 };
 const handleShowCommentBox = () => {
-  commentRef.value?.showCommentBox();
+  commentRef.value?.showCommentBox(0);
 };
 
 watchEffect(() => {
@@ -272,6 +266,7 @@ $bgColor: #e6eaed;
 .action-bar {
   display: flex;
   justify-content: space-between;
+  padding: 0 48rpx;
   padding-bottom: 16rpx;
 }
 .comments-box {
@@ -341,15 +336,24 @@ $bgColor: #e6eaed;
 }
 .comment-input-button {
   background-color: #e2e0e0;
-  height: 44rpx;
+  height: 88rpx;
   border-radius: 999rpx;
   padding-left: 2em;
-  margin: 32rpx 24rpx;
+  margin: 16rpx 24rpx;
 }
 .comment-bottom {
   padding-bottom: 144rpx;
   text-align: center;
   color: #999;
+}
+.share-button {
+  background: none;
+  border: none;
+  outline: none;
+  margin: 0;
+}
+.share-button::after {
+  border: none;
 }
 /* .reply-comment-content */
 </style>

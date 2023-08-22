@@ -22,6 +22,6 @@ const onClick = () => {
 
 <style>
 .reply-username {
-  color: #00f;
+  color: #1ca5db;
 }
 </style>

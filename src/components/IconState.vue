@@ -5,17 +5,16 @@
     :style="{ color: data.isClick ? props.activeColor : props.normalColor ?? 'inherit' }"
   >
     <slot />
-    <span class="sum">{{ data.sum }}</span>
+    <span class="sum" v-if="typeof data.sum === 'number'">{{ data.sum }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
-// todo： 考虑是否直接继承IconSum
 import { useDebounceFn } from '@vueuse/core';
 import { watchEffect, reactive } from 'vue';
 
 const props = defineProps<{
-  initialSum: number;
+  initialSum?: number;
   initialClick?: boolean;
   activeColor: string;
   normalColor?: string;
@@ -34,10 +33,10 @@ watchEffect(() => {
 });
 const changeState = useDebounceFn(() => {
   if (data.isClick) {
-    data.sum -= 1;
+    if (data.sum) data.sum -= 1;
     emit('onChange', false);
   } else {
-    data.sum += 1;
+    if (data.sum) data.sum += 1;
     emit('onChange', true);
   }
   data.isClick = !data.isClick;

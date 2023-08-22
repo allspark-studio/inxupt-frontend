@@ -8,7 +8,6 @@
     :create-time="comment.createTime"
     :report-func="() => reportComment(comment.commentId)"
   />
-  <!-- :initial-followed="comment" -->
   <div class="comment-box">
     <p class="comment-content">
       <template v-if="origin !== Origin.Article && comment?.replyUserId !== rootCommentAuthorId">
@@ -18,6 +17,7 @@
       </template>
       {{ comment.text }}
     </p>
+    <ImgList :images="comment.mediaUrls" mode="preview" />
     <div class="comment-action-bar">
       <IconState
         @on-change="
@@ -66,6 +66,7 @@ import { CommentServiceInstance, IComment } from '~/service/comment_service';
 import { Origin } from '../const';
 import CommentBox from './CommentBox.vue';
 import UserName from './UserName.vue';
+import ImgList from './ImgList.vue';
 
 const { reportComment } = CommentServiceInstance;
 defineProps<{
@@ -98,5 +99,8 @@ const refresh = () => {
 }
 .comment-box {
   margin-left: 106rpx;
+}
+.comment-content {
+  margin-bottom: 24rpx;
 }
 </style>
