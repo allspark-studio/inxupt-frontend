@@ -10,3 +10,20 @@ import { PAGES } from '../constants/route';
 export function getPagesPath(...subPath: string[]) {
   return `${PAGES}/${subPath.join('/')}/index`;
 }
+
+/**
+ * 获取页面文件的路径
+ * 例如：首页的页面文件位于 pages/home/index.vue
+ * 则 getPagesPath(HOME) => 'pages/home/index';
+ * @param subPath pages/下的页面路径
+ * @returns
+ */
+export function getPagesPathWithParam(pathName: string, props?: any) {
+  return `/${PAGES}/${pathName}/index${
+    props
+      ? `?${Object.entries(props)
+          .map(([key, value]) => `${key}=${value}`)
+          .join('&')}`
+      : ''
+  }`;
+}
