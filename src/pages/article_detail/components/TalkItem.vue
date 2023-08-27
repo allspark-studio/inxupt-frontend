@@ -38,7 +38,7 @@
       </IconState>
       <IconSum
         @click="() => showCommentInput(comment.commentId)"
-        :initial-sum="comment?.subComments?.length ?? 0"
+        :sum="comment?.subComments?.length ?? 0"
         normal-color="#333"
       >
         <Message />

@@ -1,24 +1,15 @@
 <template>
   <div class="action" :style="{ color: props.normalColor ?? 'inherit' }">
     <slot />
-    <span class="sum">{{ data.sum }}</span>
+    <span class="sum">{{ props.sum }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
-import { watchEffect, reactive } from 'vue';
-
 const props = defineProps<{
-  initialSum: number;
+  sum: number;
   normalColor?: string;
 }>();
-const data = reactive({
-  sum: props.initialSum,
-});
-
-watchEffect(() => {
-  data.sum = props.initialSum;
-});
 </script>
 
 <style lang="scss" module>
